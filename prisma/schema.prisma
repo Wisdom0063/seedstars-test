@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model CustomerSegment {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  personas  Persona[]
+
+  @@map("customer_segments")
+}
+
+model Persona {
+  id          String   @id @default(cuid())
+  name        String
+  age         Int?
+  gender      String?
+  location    String?
+  education   String?
+  incomePerMonth String?
+  
+  // Pain Points
+  painPoints  String?  // JSON array of pain points
+  
+  // Purchasing Behavior
+  purchasingBehavior String? // JSON object with purchasing details
+  
+  // Channels
+  channels    String?  // JSON array of preferred channels
+  
+  // Quote/Description
+  quote       String?
+  description String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Reference to customer segment
+  segmentId   String
+  segment     CustomerSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+
+  @@map("personas")
+}
