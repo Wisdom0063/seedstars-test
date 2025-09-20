@@ -19,22 +19,22 @@ export default function CustomerSegmentsPage() {
         try {
             setLoading(true);
             setError(null);
-            const personas = await api.personas.getAll();
-            setPersonas(personas);
+            const data = await api.personas.getAll();
+            setPersonas(data);
         } catch (err) {
-            if (err instanceof ApiError) {
-                setError(err.message);
-            } else {
-                setError('An unexpected error occurred');
-            }
+            const errorMessage = err instanceof ApiError 
+                ? err.message 
+                : 'Failed to fetch personas';
+            setError(errorMessage);
+            console.error('Error fetching personas:', err);
         } finally {
             setLoading(false);
         }
     };
 
     const handlePersonaClick = (persona: Persona) => {
-        console.log('Clicked persona:', persona);
-        // You can add navigation or modal logic here
+        console.log('Persona clicked:', persona);
+        // TODO: Implement persona detail view or modal
     };
 
     if (loading) {
