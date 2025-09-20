@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "seed": "npx tsx seed/index.ts"
+    "seed": "npx ts-node seed/index.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",
@@ -29,7 +29,6 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.3",
     "tailwindcss": "^4",
-    "ts-node": "^10.9.1",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5"
   }
