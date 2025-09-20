@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import PersonaCards, { PersonaCard } from '@/components/views/customer-segment/card';
 import { api, ApiError } from '@/lib/api';
 import { Persona } from '@/lib/api/customer-segment';
-import { PersonaTable } from '@/components/views/customer-segment/table';
-import { PersonaKanban } from '@/components/views/customer-segment/kanban';
+import { ViewManager } from '@/components/views/view-manager';
+import { ViewSource } from '@/lib/api/views';
 
 export default function CustomerSegmentsPage() {
     const [personas, setPersonas] = useState<Persona[]>([]);
@@ -71,19 +70,14 @@ export default function CustomerSegmentsPage() {
     return (
         <div className="container mx-auto px-4 py-8">
             {/* Header */}
-            <div className="mb-8">
+            <div className="mb-6">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Customer Personas</h1>
                 <p className="text-gray-600">
                     Explore detailed personas across different customer segments
                 </p>
-                <div className="mt-4 flex items-center gap-4">
-                    <span className="text-sm text-gray-500">
-                        {personas.length} {personas.length === 1 ? 'persona' : 'personas'} found
-                    </span>
-                </div>
             </div>
 
-            {/* Personas Grid */}
+            {/* Personas Views */}
             {personas.length === 0 ? (
                 <div className="text-center py-12">
                     <p className="text-gray-500 text-lg">No personas found</p>
@@ -92,10 +86,15 @@ export default function CustomerSegmentsPage() {
                     </p>
                 </div>
             ) : (
-                // <PersonaCards personas={personas} />
-
-                // <PersonaTable personas={personas} />
-                <PersonaKanban personas={personas} />
+                <ViewManager
+                    personas={personas}
+                    source={ViewSource.PERSONAS}
+                    onPersonaClick={handlePersonaClick}
+                    onPersonaMove={(personaId, newSegmentId) => {
+                        console.log('Move persona:', personaId, 'to segment:', newSegmentId);
+                        // TODO: Implement persona move logic
+                    }}
+                />
             )}
         </div>
     );
