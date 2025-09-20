@@ -52,3 +52,51 @@ model Persona {
 
   @@map("personas")
 }
+
+model View {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isDefault   Boolean  @default(false)
+  
+  // View source - what type of data this view displays
+  source      ViewSource 
+  
+  // View configuration
+  layout      ViewLayout @default(CARD)
+  
+  // Filters (JSON)
+  filters     String?  // JSON object with filter criteria
+  
+  // Sorting
+  sortBy      String?  // Field to sort by
+  sortOrder   SortOrder @default(ASC)
+  
+  // Grouping
+  groupBy     String?  // Field to group by
+  
+  // Visible columns/fields (JSON array)
+  visibleFields String? // JSON array of field names
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("views")
+}
+
+enum ViewSource {
+  PERSONAS
+  VALUE_PROPOSITIONS
+  BUSINESS_MODEL_CANVAS
+}
+
+enum ViewLayout {
+  CARD
+  TABLE
+  KANBAN
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}

@@ -1,4 +1,5 @@
 import { customerSegmentsApi, personasApi } from './customer-segment';
+import { viewsApi } from './views';
 
 // API Response Types
 export interface ApiResponse<T> {
@@ -66,6 +67,7 @@ async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
 export const api = {
     customerSegments: customerSegmentsApi,
     personas: personasApi,
+    views: viewsApi,
 };
 
 // Export the base fetcher for custom requests
