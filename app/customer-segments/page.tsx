@@ -5,6 +5,7 @@ import PersonaCards, { PersonaCard } from '@/components/views/customer-segment/c
 import { api, ApiError } from '@/lib/api';
 import { Persona } from '@/lib/api/customer-segment';
 import { PersonaTable } from '@/components/views/customer-segment/table';
+import { PersonaKanban } from '@/components/views/customer-segment/kanban';
 
 export default function CustomerSegmentsPage() {
     const [personas, setPersonas] = useState<Persona[]>([]);
@@ -93,7 +94,8 @@ export default function CustomerSegmentsPage() {
             ) : (
                 // <PersonaCards personas={personas} />
 
-                <PersonaTable personas={personas} />
+                // <PersonaTable personas={personas} />
+                <PersonaKanban personas={personas} />
             )}
         </div>
     );
