@@ -18,7 +18,9 @@ import {
   Table,
   Grid3X3,
   Kanban,
-  Eye
+  Eye,
+  X,
+  ChevronRight
 } from 'lucide-react';
 import { View, ViewLayout, ViewSource } from '@/lib/api/views';
 
@@ -28,6 +30,7 @@ interface ViewSelectorProps {
   onViewChange: (view: View) => void;
   onCreateView: () => void;
   onEditView: (view: View) => void;
+  onLayoutChange: (layout: ViewLayout) => void;
   source: ViewSource;
 }
 
@@ -43,97 +46,182 @@ export function ViewSelector({
   onViewChange,
   onCreateView,
   onEditView,
+  onLayoutChange,
   source,
 }: ViewSelectorProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [showViewSettings, setShowViewSettings] = useState(false);
+  const [settingsView, setSettingsView] = useState<View | null>(null);
 
   const filteredViews = views.filter(view => view.source === source);
-  const CurrentLayoutIcon = LayoutIcons[currentView.layout];
+
+  const handleViewSettingsClick = (view: View, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSettingsView(view);
+    setShowViewSettings(true);
+  };
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Current View Display */}
-      <div className="flex items-center gap-2">
-        <CurrentLayoutIcon className="h-4 w-4 text-gray-600" />
-        <span className="font-medium text-gray-900">{currentView.name}</span>
-        {currentView.isDefault && (
-          <Star className="h-3 w-3 text-yellow-500 fill-current" />
-        )}
+    <>
+      {/* View Switcher - Layout Switcher Style */}
+      <div className="flex items-center bg-gray-100 rounded-lg p-1">
+        {filteredViews.map((view) => {
+          const LayoutIcon = LayoutIcons[view.layout];
+          const isActive = view.id === currentView.id;
+
+          return (
+            <div key={view.id} className="relative group">
+              <button
+                onClick={() => onViewChange(view)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                }`}
+              >
+                <LayoutIcon className="h-4 w-4" />
+                <span>{view.name}</span>
+                {view.isDefault && (
+                  <Star className="h-3 w-3 text-yellow-500 fill-current" />
+                )}
+              </button>
+              
+              {/* Settings Button */}
+              <button
+                onClick={(e) => handleViewSettingsClick(view, e)}
+                className="absolute -top-1 -right-1 h-5 w-5 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <Settings className="h-3 w-3 text-gray-600" />
+              </button>
+            </div>
+          );
+        })}
+        
+        {/* New View Button */}
+        <button
+          onClick={onCreateView}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-white/50 transition-colors"
+        >
+          <Plus className="h-4 w-4" />
+          <span>New</span>
+        </button>
       </div>
 
-      {/* View Dropdown */}
-      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-7 px-2">
-            <ChevronDown className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
+      {/* View Settings Modal */}
+      {showViewSettings && settingsView && (
+        <ViewSettingsModal
+          view={settingsView}
+          onClose={() => {
+            setShowViewSettings(false);
+            setSettingsView(null);
+          }}
+          onLayoutChange={onLayoutChange}
+          onEditView={onEditView}
+        />
+      )}
+    </>
+  );
+}
 
-        <DropdownMenuContent align="start" className="w-64">
-          <div className="px-2 py-1.5">
-            <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-              Views
+// View Settings Modal Component
+interface ViewSettingsModalProps {
+  view: View;
+  onClose: () => void;
+  onLayoutChange: (layout: ViewLayout) => void;
+  onEditView: (view: View) => void;
+}
+
+function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSettingsModalProps) {
+  const [selectedLayout, setSelectedLayout] = useState(view.layout);
+
+  const handleLayoutChange = (layout: ViewLayout) => {
+    setSelectedLayout(layout);
+    onLayoutChange(layout);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-xl w-96 max-h-[80vh] overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="text-lg font-semibold text-gray-900">View settings</h2>
+          <button
+            onClick={onClose}
+            className="p-1 hover:bg-gray-100 rounded-md"
+          >
+            <X className="h-5 w-5 text-gray-500" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-4 space-y-4">
+          {/* View Name */}
+          <div className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+            <Star className="h-5 w-5 text-gray-400" />
+            <div className="flex-1">
+              <div className="font-medium text-gray-900">{view.name}</div>
+            </div>
+            <button className="p-1 hover:bg-gray-200 rounded">
+              <Settings className="h-4 w-4 text-gray-400" />
+            </button>
+          </div>
+
+          {/* Layout */}
+          <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+            <div className="flex items-center gap-3">
+              <Grid3X3 className="h-5 w-5 text-gray-400" />
+              <span className="font-medium text-gray-900">Layout</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-500">
+              <span className="capitalize">{selectedLayout.toLowerCase()}</span>
+              <ChevronRight className="h-4 w-4" />
             </div>
           </div>
 
-          {filteredViews.map((view) => {
-            const LayoutIcon = LayoutIcons[view.layout];
-            const isActive = view.id === currentView.id;
-
-            return (
-              <DropdownMenuItem
-                key={view.id}
-                onClick={() => {
-                  alert("view changed")
-                  onViewChange(view);
-                  setIsOpen(false);
-                }}
-                className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${isActive ? 'bg-blue-50 text-blue-700' : ''
+          {/* Layout Options */}
+          <div className="pl-8 space-y-2">
+            <div className="grid grid-cols-3 gap-2">
+              {Object.entries(LayoutIcons).map(([layout, Icon]) => (
+                <button
+                  key={layout}
+                  onClick={() => handleLayoutChange(layout as ViewLayout)}
+                  className={`flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${
+                    selectedLayout === layout
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
                   }`}
-              >
-                <LayoutIcon className="h-4 w-4 text-gray-500" />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{view.name}</span>
-                    {view.isDefault && (
-                      <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                    )}
-                  </div>
-                  {view.description && (
-                    <div className="text-xs text-gray-500 mt-0.5">
-                      {view.description}
-                    </div>
-                  )}
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditView(view);
-                  }}
                 >
-                  <Settings className="h-3 w-3" />
-                </Button>
-              </DropdownMenuItem>
-            );
-          })}
+                  <Icon className="h-6 w-6 text-gray-600" />
+                  <span className="text-sm font-medium capitalize">
+                    {layout.toLowerCase()}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
 
-          <DropdownMenuSeparator />
+          {/* Property Visibility */}
+          <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
+            <div className="flex items-center gap-3">
+              <Eye className="h-5 w-5 text-gray-400" />
+              <span className="font-medium text-gray-900">Property visibility</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-500">
+              <span>{view.visibleFields?.length || 0}</span>
+              <ChevronRight className="h-4 w-4" />
+            </div>
+          </div>
+        </div>
 
-          <DropdownMenuItem
-            onClick={() => {
-              onCreateView();
-              setIsOpen(false);
-            }}
-            className="flex items-center gap-3 px-3 py-2 cursor-pointer text-blue-600"
-          >
-            <Plus className="h-4 w-4" />
-            <span className="text-sm font-medium">New view</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        {/* Footer */}
+        <div className="flex justify-end gap-2 p-4 border-t bg-gray-50">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={onClose}>
+            Done
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ViewSelector } from './view-selector';
-import { LayoutSwitcher } from './layout-switcher';
 import { Button } from '@/components/ui/button';
 import {
     Filter,
@@ -51,12 +50,10 @@ export function ViewToolbar({
     onSortsChange,
     data = [],
 }: ViewToolbarProps) {
-
-    console.log('filters', filters);
     return (
         <div>
             <div className="flex items-center justify-between py-3 border-b bg-white">
-                {/* Left side - View selector and layout switcher */}
+                {/* Left side - View selector */}
                 <div className="flex items-center gap-4">
                     <ViewSelector
                         views={views}
@@ -64,14 +61,8 @@ export function ViewToolbar({
                         onViewChange={onViewChange}
                         onCreateView={onCreateView}
                         onEditView={onEditView}
-                        source={source}
-                    />
-
-                    <div className="h-4 w-px bg-gray-300" />
-
-                    <LayoutSwitcher
-                        currentLayout={currentView.layout}
                         onLayoutChange={onLayoutChange}
+                        source={source}
                     />
                 </div>
 
