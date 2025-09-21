@@ -210,22 +210,30 @@ function FilterChip({ filterId, config, value, data, onUpdate, onRemove }: Filte
     const getDisplayText = () => {
         if (config.type === 'multiselect' && Array.isArray(value)) {
             if (value.length === 0) return 'Select...';
-            if (value.length === 1) return `is ${value[0]}`;
-            return `is any of ${value.length} values`;
+            
+            // Get display labels for the selected values
+            const options = config.getOptions ? config.getOptions(data) : [];
+            const selectedLabels = value.map(selectedValue => {
+                const option = options.find((opt: any) => opt.value === selectedValue);
+                return option ? option.label : selectedValue;
+            });
+            
+            if (selectedLabels.length === 1) return selectedLabels[0];
+            return selectedLabels.join(', ');
         }
         if (config.type === 'range') {
             if (!value || (value.min === undefined && value.max === undefined)) {
                 return 'Select range...';
             }
             const { min, max } = value;
-            if (min !== undefined && max !== undefined) return `is between ${min} and ${max}`;
-            if (min !== undefined) return `is ≥ ${min}`;
-            if (max !== undefined) return `is ≤ ${max}`;
+            if (min !== undefined && max !== undefined) return `${min} - ${max}`;
+            if (min !== undefined) return `≥ ${min}`;
+            if (max !== undefined) return `≤ ${max}`;
             return 'Select range...';
         }
         if (config.type === 'text') {
             if (!value || value.trim() === '') return 'Enter text...';
-            return `contains "${value}"`;
+            return value;
         }
         return 'Select...';
     };
@@ -339,35 +347,40 @@ function FilterChip({ filterId, config, value, data, onUpdate, onRemove }: Filte
     };
 
     return (
-        <div className="flex items-center bg-white border border-gray-200 rounded-lg shadow-sm">
-            <div className="flex items-center px-3 py-2">
-                <Icon className="h-4 w-4 text-gray-500 mr-2" />
-                <span className="text-sm font-medium text-gray-700">{config.label}</span>
-                <span className="text-sm text-gray-500 mx-2">{getDisplayText()}</span>
+        <div className="w-48 bg-white border border-gray-200 rounded-lg shadow-sm">
+            {/* Header with label and remove button */}
+            <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100">
+                <div className="flex items-center gap-2">
+                    <Icon className="h-4 w-4 text-gray-500" />
+                    <span className="text-xs font-medium text-gray-700">{config.label}</span>
+                </div>
+                <button
+                    onClick={onRemove}
+                    className="p-1 hover:bg-gray-100 rounded transition-colors"
+                >
+                    <X className="h-3 w-3 text-gray-400 hover:text-gray-600" />
+                </button>
             </div>
 
+            {/* Value display and dropdown trigger */}
             <Popover open={isOpen} onOpenChange={setIsOpen}>
                 <PopoverTrigger asChild>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 px-2 border-l border-gray-200 rounded-l-none hover:bg-gray-50"
-                    >
-                        <ChevronDown className="h-4 w-4" />
-                    </Button>
+                    <button className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                                <div className="text-sm text-gray-900 break-words">
+                                    {getDisplayText()}
+                                </div>
+                            </div>
+                            <ChevronDown className="h-4 w-4 text-gray-400 ml-2 flex-shrink-0" />
+                        </div>
+                    </button>
                 </PopoverTrigger>
 
                 <PopoverContent align="start" className="p-0">
                     {renderFilterContent()}
                 </PopoverContent>
             </Popover>
-
-            <button
-                onClick={onRemove}
-                className="p-2 hover:bg-gray-50 border-l border-gray-200 rounded-r-lg transition-colors"
-            >
-                <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
-            </button>
         </div>
     );
 }
