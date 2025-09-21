@@ -25,6 +25,7 @@ export function ViewManager({
     const [currentView, setCurrentView] = useState<View | null>(null);
     const [loading, setLoading] = useState(true);
     const [searchValue, setSearchValue] = useState('');
+    const [filters, setFilters] = useState<Record<string, any>>({});
 
     // Load views on mount
     useEffect(() => {
@@ -62,20 +63,62 @@ export function ViewManager({
         }
     };
 
-    // Filter personas based on search
+    // Filter and search personas
     const filteredPersonas = useMemo(() => {
-        if (!searchValue.trim()) return personas;
+        let result = [...personas];
 
-        const searchLower = searchValue.toLowerCase();
-        return personas.filter(persona =>
-            persona.name.toLowerCase().includes(searchLower) ||
-            persona.location?.toLowerCase().includes(searchLower) ||
-            persona.education?.toLowerCase().includes(searchLower) ||
-            persona.segment.name.toLowerCase().includes(searchLower) ||
-            persona.painPoints?.some(point => point.toLowerCase().includes(searchLower)) ||
-            persona.channels?.some(channel => channel.toLowerCase().includes(searchLower))
-        );
-    }, [personas, searchValue]);
+        // Apply search filter
+        if (searchValue.trim()) {
+            const searchLower = searchValue.toLowerCase();
+            result = result.filter(persona =>
+                persona.name.toLowerCase().includes(searchLower) ||
+                persona.location?.toLowerCase().includes(searchLower) ||
+                persona.education?.toLowerCase().includes(searchLower) ||
+                persona.segment.name.toLowerCase().includes(searchLower) ||
+                persona.painPoints?.some(point => point.toLowerCase().includes(searchLower)) ||
+                persona.channels?.some(channel => channel.toLowerCase().includes(searchLower))
+            );
+        }
+
+        // Apply filters
+        if (filters.segments?.length) {
+            result = result.filter(persona => filters.segments.includes(persona.segment.id));
+        }
+        if (filters.locations?.length) {
+            result = result.filter(persona => persona.location && filters.locations.includes(persona.location));
+        }
+        if (filters.education?.length) {
+            result = result.filter(persona => persona.education && filters.education.includes(persona.education));
+        }
+        if (filters.income?.length) {
+            result = result.filter(persona => persona.incomePerMonth && filters.income.includes(persona.incomePerMonth));
+        }
+        if (filters.ageRange?.min !== undefined || filters.ageRange?.max !== undefined) {
+            result = result.filter(persona => {
+                if (!persona.age) return false;
+                const min = filters.ageRange?.min ?? 0;
+                const max = filters.ageRange?.max ?? 999;
+                return persona.age >= min && persona.age <= max;
+            });
+        }
+        if (filters.painPoints?.length) {
+            result = result.filter(persona =>
+                persona.painPoints?.some(point => filters.painPoints.includes(point))
+            );
+        }
+        if (filters.channels?.length) {
+            result = result.filter(persona =>
+                persona.channels?.some(channel => filters.channels.includes(channel))
+            );
+        }
+        if (filters.id) {
+            result = result.filter(persona => 
+                persona.id.toLowerCase().includes(filters.id.toLowerCase())
+            );
+        }
+
+        return result;
+    }, [personas, searchValue, filters]);
 
     const handleViewChange = (view: View) => {
         setCurrentView(view);
@@ -113,6 +156,10 @@ export function ViewManager({
     const handleEditView = (view: View) => {
         // TODO: Implement edit view modal
         console.log('Edit view:', view);
+    };
+
+    const handleFiltersChange = (newFilters: Record<string, any>) => {
+        setFilters(newFilters);
     };
 
     const renderContent = () => {
@@ -172,6 +219,9 @@ export function ViewManager({
                 itemCount={filteredPersonas.length}
                 searchValue={searchValue}
                 onSearchChange={setSearchValue}
+                filters={filters}
+                onFiltersChange={handleFiltersChange}
+                data={personas}
             />
 
             <div className="min-h-[400px]">
