@@ -33,14 +33,6 @@ export function ViewManager({
         loadViews();
     }, [source]);
 
-    // Debug: Log when filters or sorts change
-    useEffect(() => {
-        console.log('Filters changed:', filters);
-    }, [filters]);
-
-    useEffect(() => {
-        console.log('Sorts changed:', sorts);
-    }, [sorts]);
 
     const loadViews = async () => {
         try {
@@ -138,12 +130,10 @@ export function ViewManager({
 
         // Apply sorting (multiple criteria)
         if (sorts.length > 0) {
-            console.log('Applying sorts:', sorts);
             result.sort((a, b) => {
                 for (const sort of sorts) {
                     // Skip sorts with invalid fields
                     if (!sort || !sort.field) {
-                        console.warn('Skipping invalid sort:', sort);
                         continue;
                     }
                     
@@ -172,13 +162,6 @@ export function ViewManager({
     }, [personas, searchValue, filters, sorts]);
 
     const handleViewChange = (view: View) => {
-        console.log('=== VIEW CHANGE ===');
-        console.log('Switching from:', currentView?.name, 'to:', view.name);
-        console.log('Previous filters:', filters);
-        console.log('Previous sorts:', sorts);
-        console.log('New view activeFilters:', view.activeFilters);
-        console.log('New view activeSorts:', view.activeSorts);
-        
         setCurrentView(view);
         
         // Update views list if this is an updated view (not just a switch)
@@ -192,10 +175,6 @@ export function ViewManager({
         const newSorts = view.activeSorts 
             ? view.activeSorts.filter(sort => sort && sort.field && typeof sort.field === 'string')
             : [];
-        
-        console.log('Setting filters to:', newFilters);
-        console.log('Setting sorts to:', newSorts);
-        console.log('===================');
         
         setFilters(newFilters);
         setSorts(newSorts);
@@ -294,6 +273,7 @@ export function ViewManager({
         const commonProps = {
             personas: filteredPersonas,
             onPersonaClick,
+            visibleFields: currentView.visibleFields || [],
         };
 
         switch (currentView.layout) {

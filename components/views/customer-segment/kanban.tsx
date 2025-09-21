@@ -17,6 +17,7 @@ interface PersonaKanbanProps {
   personas: Persona[];
   onPersonaClick?: (persona: Persona) => void;
   onPersonaMove?: (personaId: string, newSegmentId: string) => void;
+  visibleFields?: string[];
 }
 
 // Transform Persona to KanbanItem format
@@ -34,7 +35,19 @@ interface SegmentKanbanColumn extends Record<string, unknown> {
 }
 
 // Persona Card Component for Kanban
-function PersonaKanbanCard({ persona, onPersonaClick }: { persona: Persona; onPersonaClick?: (persona: Persona) => void }) {
+function PersonaKanbanCard({ 
+  persona, 
+  onPersonaClick, 
+  visibleFields = [] 
+}: { 
+  persona: Persona; 
+  onPersonaClick?: (persona: Persona) => void;
+  visibleFields?: string[];
+}) {
+  // Helper function to check if a field should be visible
+  const isFieldVisible = (fieldName: string) => {
+    return visibleFields.length === 0 || visibleFields.includes(fieldName);
+  };
   return (
     <div 
       className="space-y-3 cursor-pointer"
@@ -46,15 +59,17 @@ function PersonaKanbanCard({ persona, onPersonaClick }: { persona: Persona; onPe
           {persona.name.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1">
-          <div className="font-medium text-sm">{persona.name}</div>
-          {persona.age && (
+          {isFieldVisible('name') && (
+            <div className="font-medium text-sm">{persona.name}</div>
+          )}
+          {isFieldVisible('age') && persona.age && (
             <div className="text-xs text-gray-500">{persona.age} years old</div>
           )}
         </div>
       </div>
 
       {/* Quote */}
-      {persona.quote && (
+      {isFieldVisible('quote') && persona.quote && (
         <div className="bg-gray-50 p-2 rounded border-l-2 border-l-gray-300">
           <div className="flex items-start gap-2">
             <Quote className="h-3 w-3 text-gray-400 mt-0.5 shrink-0" />
@@ -67,21 +82,21 @@ function PersonaKanbanCard({ persona, onPersonaClick }: { persona: Persona; onPe
 
       {/* Demographics */}
       <div className="space-y-1 text-xs">
-        {persona.location && (
+        {isFieldVisible('location') && persona.location && (
           <div className="flex items-center gap-2">
             <MapPin className="h-3 w-3 text-gray-500" />
             <span className="text-gray-700 truncate">{persona.location}</span>
           </div>
         )}
         
-        {persona.education && (
+        {isFieldVisible('education') && persona.education && (
           <div className="flex items-center gap-2">
             <GraduationCap className="h-3 w-3 text-gray-500" />
             <span className="text-gray-700 truncate">{persona.education}</span>
           </div>
         )}
         
-        {persona.incomePerMonth && (
+        {isFieldVisible('incomePerMonth') && persona.incomePerMonth && (
           <div className="flex items-center gap-2">
             <DollarSign className="h-3 w-3 text-gray-500" />
             <span className="text-gray-700 truncate">{persona.incomePerMonth}</span>
@@ -90,25 +105,25 @@ function PersonaKanbanCard({ persona, onPersonaClick }: { persona: Persona; onPe
       </div>
 
       {/* Pain Points Preview */}
-      {persona.painPoints && persona.painPoints.length > 0 && (
+      {isFieldVisible('painPoints') && persona.painPoints && persona.painPoints.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <Tag className="h-3 w-3 text-red-500" />
             <span className="text-xs font-medium text-gray-700">Pain Points</span>
           </div>
           <div className="flex flex-wrap gap-1">
-            {persona.painPoints.slice(0, 1).map((point, index) => (
-              <Badge 
-                key={index} 
-                variant="outline" 
+            {persona.painPoints.slice(0, 2).map((point, index) => (
+              <Badge
+                key={index}
+                variant="outline"
                 className="text-xs bg-red-50 text-red-700 border-red-200"
               >
-                {point.length > 25 ? `${point.substring(0, 25)}...` : point}
+                {point.length > 15 ? `${point.substring(0, 15)}...` : point}
               </Badge>
             ))}
-            {persona.painPoints.length > 1 && (
+            {persona.painPoints.length > 2 && (
               <Badge variant="outline" className="text-xs">
-                +{persona.painPoints.length - 1}
+                +{persona.painPoints.length - 2}
               </Badge>
             )}
           </div>
@@ -116,7 +131,7 @@ function PersonaKanbanCard({ persona, onPersonaClick }: { persona: Persona; onPe
       )}
 
       {/* Channels Preview */}
-      {persona.channels && persona.channels.length > 0 && (
+      {isFieldVisible('channels') && persona.channels && persona.channels.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <Tag className="h-3 w-3 text-blue-500" />
@@ -124,9 +139,9 @@ function PersonaKanbanCard({ persona, onPersonaClick }: { persona: Persona; onPe
           </div>
           <div className="flex flex-wrap gap-1">
             {persona.channels.slice(0, 2).map((channel, index) => (
-              <Badge 
-                key={index} 
-                variant="outline" 
+              <Badge
+                key={index}
+                variant="outline"
                 className="text-xs bg-blue-50 text-blue-700 border-blue-200"
               >
                 {channel}
@@ -144,7 +159,7 @@ function PersonaKanbanCard({ persona, onPersonaClick }: { persona: Persona; onPe
   );
 }
 
-export function PersonaKanban({ personas, onPersonaClick, onPersonaMove }: PersonaKanbanProps) {
+export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visibleFields }: PersonaKanbanProps) {
   // Transform personas to kanban items and extract unique segments
   const { kanbanData, columns } = useMemo(() => {
     const segmentMap = new Map<string, SegmentKanbanColumn>();
@@ -226,6 +241,7 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove }: Perso
                   <PersonaKanbanCard 
                     persona={(item as PersonaKanbanItem).persona} 
                     onPersonaClick={onPersonaClick}
+                    visibleFields={visibleFields}
                   />
                 </KanbanCard>
               )}

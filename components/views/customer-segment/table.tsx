@@ -34,12 +34,18 @@ import { Persona } from '@/lib/api/customer-segment';
 interface PersonaTableProps {
     personas: Persona[];
     onPersonaClick?: (persona: Persona) => void;
+    visibleFields?: string[];
 }
 
-export function PersonaTable({ personas, onPersonaClick }: PersonaTableProps) {
-    const columns: ColumnDef<Persona>[] = useMemo(
+export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: PersonaTableProps) {
+    // Helper function to check if a field should be visible
+    const isFieldVisible = (fieldName: string) => {
+        return visibleFields.length === 0 || visibleFields.includes(fieldName);
+    };
+    const allColumns: ColumnDef<Persona>[] = useMemo(
         () => [
             {
+                id: 'name',
                 accessorKey: 'name',
                 header: ({ column }) => (
                     <Button
@@ -60,7 +66,7 @@ export function PersonaTable({ personas, onPersonaClick }: PersonaTableProps) {
                             </div>
                             <div>
                                 <div className="font-medium">{persona.name}</div>
-                                {persona.age && (
+                                {isFieldVisible('age') && persona.age && (
                                     <div className="text-sm text-gray-500">{persona.age} years old</div>
                                 )}
                             </div>
@@ -69,6 +75,26 @@ export function PersonaTable({ personas, onPersonaClick }: PersonaTableProps) {
                 },
             },
             {
+                id: 'age',
+                accessorKey: 'age',
+                header: ({ column }) => (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+                        className="h-8 p-0 hover:bg-transparent"
+                    >
+                        Age
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                ),
+                cell: ({ row }) => (
+                    <span className="text-gray-700">
+                        {row.original.age || '-'}
+                    </span>
+                ),
+            },
+            {
+                id: 'segment',
                 accessorKey: 'segment.name',
                 header: ({ column }) => (
                     <Button
@@ -87,6 +113,17 @@ export function PersonaTable({ personas, onPersonaClick }: PersonaTableProps) {
                 ),
             },
             {
+                id: 'gender',
+                accessorKey: 'gender',
+                header: 'Gender',
+                cell: ({ row }) => (
+                    <span className="text-gray-700">
+                        {row.original.gender || '-'}
+                    </span>
+                ),
+            },
+            {
+                id: 'location',
                 accessorKey: 'location',
                 header: 'Location',
                 cell: ({ row }) => (
@@ -96,6 +133,7 @@ export function PersonaTable({ personas, onPersonaClick }: PersonaTableProps) {
                 ),
             },
             {
+                id: 'education',
                 accessorKey: 'education',
                 header: 'Education',
                 cell: ({ row }) => (
@@ -105,6 +143,7 @@ export function PersonaTable({ personas, onPersonaClick }: PersonaTableProps) {
                 ),
             },
             {
+                id: 'incomePerMonth',
                 accessorKey: 'incomePerMonth',
                 header: 'Income',
                 cell: ({ row }) => (
@@ -114,6 +153,7 @@ export function PersonaTable({ personas, onPersonaClick }: PersonaTableProps) {
                 ),
             },
             {
+                id: 'painPoints',
                 accessorKey: 'painPoints',
                 header: 'Pain Points',
                 cell: ({ row }) => {
@@ -141,6 +181,7 @@ export function PersonaTable({ personas, onPersonaClick }: PersonaTableProps) {
                 },
             },
             {
+                id: 'channels',
                 accessorKey: 'channels',
                 header: 'Channels',
                 cell: ({ row }) => {
@@ -167,9 +208,37 @@ export function PersonaTable({ personas, onPersonaClick }: PersonaTableProps) {
                     );
                 },
             },
+            {
+                id: 'quote',
+                accessorKey: 'quote',
+                header: 'Quote',
+                cell: ({ row }) => (
+                    <span className="text-gray-700 italic max-w-xs truncate">
+                        {row.original.quote ? `"${row.original.quote}"` : '-'}
+                    </span>
+                ),
+            },
+            {
+                id: 'description',
+                accessorKey: 'description',
+                header: 'Description',
+                cell: ({ row }) => (
+                    <span className="text-gray-700 max-w-xs truncate">
+                        {row.original.description || '-'}
+                    </span>
+                ),
+            },
         ],
-        []
+        [isFieldVisible]
     );
+
+    // Filter columns based on visible fields
+    const columns = useMemo(() => {
+        if (visibleFields.length === 0) return allColumns;
+        return allColumns.filter(column => 
+            column.id && isFieldVisible(column.id)
+        );
+    }, [allColumns, visibleFields, isFieldVisible]);
 
     const [globalFilter, setGlobalFilter] = React.useState('');
 

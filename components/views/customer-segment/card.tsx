@@ -11,13 +11,19 @@ interface PersonaCardProps {
     persona: Persona;
     onClick?: (persona: Persona) => void;
     className?: string;
+    visibleFields?: string[];
 }
 
 export function PersonaCard({
     persona,
     onClick,
-    className = ""
+    className = "",
+    visibleFields = []
 }: PersonaCardProps) {
+    // Helper function to check if a field should be visible
+    const isFieldVisible = (fieldName: string) => {
+        return visibleFields.length === 0 || visibleFields.includes(fieldName);
+    };
     return (
         <Card
             className={`
@@ -34,25 +40,29 @@ export function PersonaCard({
                             {persona.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                            <CardTitle className="text-lg font-semibold text-gray-900">
-                                {persona.name}
-                            </CardTitle>
-                            {persona.age && (
+                            {isFieldVisible('name') && (
+                                <CardTitle className="text-lg font-semibold text-gray-900">
+                                    {persona.name}
+                                </CardTitle>
+                            )}
+                            {isFieldVisible('age') && persona.age && (
                                 <p className="text-sm text-gray-500">
                                     {persona.age} years old
                                 </p>
                             )}
                         </div>
                     </div>
-                    <Badge variant="outline" className="shrink-0">
-                        {persona.segment.name}
-                    </Badge>
+                    {isFieldVisible('segment') && (
+                        <Badge variant="outline" className="shrink-0">
+                            {persona.segment.name}
+                        </Badge>
+                    )}
                 </div>
             </CardHeader>
 
             <CardContent className="pt-0 space-y-4">
                 {/* Quote */}
-                {persona.quote && (
+                {isFieldVisible('quote') && persona.quote && (
                     <div className="bg-gray-50 p-3 rounded-lg border-l-2 border-l-gray-300">
                         <div className="flex items-start gap-2">
                             <Quote className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
@@ -65,28 +75,28 @@ export function PersonaCard({
 
                 {/* Demographics */}
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                    {persona.location && (
+                    {isFieldVisible('location') && persona.location && (
                         <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-700 truncate">{persona.location}</span>
                         </div>
                     )}
 
-                    {persona.education && (
+                    {isFieldVisible('education') && persona.education && (
                         <div className="flex items-center gap-2">
                             <GraduationCap className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-700 truncate">{persona.education}</span>
                         </div>
                     )}
 
-                    {persona.gender && (
+                    {isFieldVisible('gender') && persona.gender && (
                         <div className="flex items-center gap-2">
                             <User className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-700 truncate">{persona.gender}</span>
                         </div>
                     )}
 
-                    {persona.incomePerMonth && (
+                    {isFieldVisible('incomePerMonth') && persona.incomePerMonth && (
                         <div className="flex items-center gap-2">
                             <DollarSign className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-700 truncate">{persona.incomePerMonth}</span>
@@ -95,7 +105,7 @@ export function PersonaCard({
                 </div>
 
                 {/* Pain Points Preview */}
-                {persona.painPoints && persona.painPoints.length > 0 && (
+                {isFieldVisible('painPoints') && persona.painPoints && persona.painPoints.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Tag className="h-4 w-4 text-red-500" />
@@ -121,7 +131,7 @@ export function PersonaCard({
                 )}
 
                 {/* Channels Preview */}
-                {persona.channels && persona.channels.length > 0 && (
+                {isFieldVisible('channels') && persona.channels && persona.channels.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Tag className="h-4 w-4 text-blue-500" />
@@ -152,14 +162,21 @@ export function PersonaCard({
 
 
 
-export default function PersonaCards({ personas }: { personas: Persona[] }) {
+interface PersonaCardsProps {
+    personas: Persona[];
+    onPersonaClick?: (persona: Persona) => void;
+    visibleFields?: string[];
+}
+
+export default function PersonaCards({ personas, onPersonaClick, visibleFields }: PersonaCardsProps) {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {personas.map((persona) => (
                 <PersonaCard
                     key={persona.id}
                     persona={persona}
-                    onClick={() => console.log('Clicked persona:', persona)}
+                    onClick={onPersonaClick}
+                    visibleFields={visibleFields}
                 />
             ))}
         </div>
