@@ -78,6 +78,7 @@ export function ViewManager({
 
     // Helper function to get nested object values
     const getNestedValue = (obj: any, path: string): any => {
+        if (!path || typeof path !== 'string') return undefined;
         return path.split('.').reduce((current, key) => current?.[key], obj);
     };
 
@@ -137,8 +138,15 @@ export function ViewManager({
 
         // Apply sorting (multiple criteria)
         if (sorts.length > 0) {
+            console.log('Applying sorts:', sorts);
             result.sort((a, b) => {
                 for (const sort of sorts) {
+                    // Skip sorts with invalid fields
+                    if (!sort || !sort.field) {
+                        console.warn('Skipping invalid sort:', sort);
+                        continue;
+                    }
+                    
                     let aValue = getNestedValue(a, sort.field);
                     let bValue = getNestedValue(b, sort.field);
 
@@ -173,10 +181,17 @@ export function ViewManager({
         
         setCurrentView(view);
         
+        // Update views list if this is an updated view (not just a switch)
+        if (currentView && view.id === currentView.id && view.updatedAt !== currentView.updatedAt) {
+            setViews(prev => prev.map(v => v.id === view.id ? view : v));
+        }
+        
         // Load active filters and sorts from the selected view
         // Explicitly handle null values to ensure proper clearing
         const newFilters = view.activeFilters ? { ...view.activeFilters } : {};
-        const newSorts = view.activeSorts ? [...view.activeSorts] : [];
+        const newSorts = view.activeSorts 
+            ? view.activeSorts.filter(sort => sort && sort.field && typeof sort.field === 'string')
+            : [];
         
         console.log('Setting filters to:', newFilters);
         console.log('Setting sorts to:', newSorts);

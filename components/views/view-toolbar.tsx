@@ -164,6 +164,10 @@ export function ViewToolbar({
                     onClose={() => setShowViewSettings(false)}
                     onLayoutChange={onLayoutChange}
                     onEditView={onEditView}
+                    onViewUpdate={(updatedView) => {
+                        // Update the current view in the parent component
+                        onViewChange(updatedView);
+                    }}
                 />
             )}
         </div>

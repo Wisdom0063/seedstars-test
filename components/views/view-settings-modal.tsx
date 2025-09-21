@@ -12,13 +12,14 @@ import {
   X,
   ChevronRight
 } from 'lucide-react';
-import { View, ViewLayout } from '@/lib/api/views';
+import { View, ViewLayout, viewsApi } from '@/lib/api/views';
 
 interface ViewSettingsModalProps {
   view: View;
   onClose: () => void;
   onLayoutChange: (layout: ViewLayout) => void;
   onEditView: (view: View) => void;
+  onViewUpdate?: (updatedView: View) => void;
 }
 
 const LayoutIcons = {
@@ -27,7 +28,7 @@ const LayoutIcons = {
   [ViewLayout.KANBAN]: Kanban,
 };
 
-export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSettingsModalProps) {
+export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, onViewUpdate }: ViewSettingsModalProps) {
   const [selectedLayout, setSelectedLayout] = useState(view.layout);
   const [viewName, setViewName] = useState(view.name);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -53,32 +54,69 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }:
     { id: 'updatedAt', label: 'Updated At' },
   ];
 
-  const handleLayoutChange = (layout: ViewLayout) => {
+  const handleLayoutChange = async (layout: ViewLayout) => {
     setSelectedLayout(layout);
     onLayoutChange(layout);
+
+    // Auto-save layout change
+    try {
+      const updatedView = await viewsApi.update({
+        id: view.id,
+        layout,
+      });
+      onViewUpdate?.(updatedView);
+    } catch (error) {
+      console.error('Failed to update view layout:', error);
+      // Revert on error
+      setSelectedLayout(view.layout);
+    }
   };
 
-  const handleNameSave = () => {
+  const handleNameSave = async () => {
+    if (viewName === view.name) {
+      setIsEditingName(false);
+      return;
+    }
+
     setIsEditingName(false);
-    // TODO: Call API to update view name
-    console.log('Updating view name to:', viewName);
+
+    // Auto-save name change
+    try {
+      const updatedView = await viewsApi.update({
+        id: view.id,
+        name: viewName,
+      });
+      onViewUpdate?.(updatedView);
+    } catch (error) {
+      console.error('Failed to update view name:', error);
+      // Revert on error
+      setViewName(view.name);
+    }
   };
 
-  const togglePropertyVisibility = (propertyId: string) => {
-    setVisibleFields(prev => 
-      prev.includes(propertyId)
-        ? prev.filter(id => id !== propertyId)
-        : [...prev, propertyId]
-    );
+  const togglePropertyVisibility = async (propertyId: string) => {
+    const newVisibleFields = visibleFields.includes(propertyId)
+      ? visibleFields.filter(id => id !== propertyId)
+      : [...visibleFields, propertyId];
+
+    setVisibleFields(newVisibleFields);
+
+    // Auto-save visible fields change
+    try {
+      const updatedView = await viewsApi.update({
+        id: view.id,
+        visibleFields: newVisibleFields,
+      });
+      onViewUpdate?.(updatedView);
+    } catch (error) {
+      console.error('Failed to update view visible fields:', error);
+      // Revert on error
+      setVisibleFields(view.visibleFields || []);
+    }
   };
 
   const handleSave = () => {
-    // TODO: Call API to save all changes
-    console.log('Saving view changes:', {
-      name: viewName,
-      layout: selectedLayout,
-      visibleFields
-    });
+    // All changes are already auto-saved
     onClose();
   };
 
@@ -119,7 +157,7 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }:
                   autoFocus
                 />
               ) : (
-                <div 
+                <div
                   className="font-medium text-gray-900 cursor-pointer"
                   onClick={() => setIsEditingName(true)}
                 >
@@ -127,7 +165,7 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }:
                 </div>
               )}
             </div>
-            <button 
+            <button
               onClick={() => setIsEditingName(true)}
               className="p-1 hover:bg-gray-200 rounded"
             >
@@ -154,11 +192,10 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }:
                 <button
                   key={layout}
                   onClick={() => handleLayoutChange(layout as ViewLayout)}
-                  className={`flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${
-                    selectedLayout === layout
+                  className={`flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${selectedLayout === layout
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                    }`}
                 >
                   <Icon className="h-6 w-6 text-gray-600" />
                   <span className="text-sm font-medium capitalize">
@@ -171,7 +208,7 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }:
 
           {/* Property Visibility */}
           <div>
-            <div 
+            <div
               className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer"
               onClick={() => setShowPropertyVisibility(!showPropertyVisibility)}
             >
@@ -198,11 +235,10 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }:
                     >
                       <span className="text-sm text-gray-700">{property.label}</span>
                       <button
-                        className={`p-1 rounded transition-colors ${
-                          isVisible 
-                            ? 'text-blue-600 hover:bg-blue-50' 
+                        className={`p-1 rounded transition-colors ${isVisible
+                            ? 'text-blue-600 hover:bg-blue-50'
                             : 'text-gray-400 hover:bg-gray-100'
-                        }`}
+                          }`}
                       >
                         <Eye className={`h-4 w-4 ${isVisible ? '' : 'opacity-50'}`} />
                       </button>
@@ -212,16 +248,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }:
               </div>
             )}
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="flex justify-end gap-2 p-4 border-t bg-gray-50">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave}>
-            Done
-          </Button>
         </div>
       </div>
     </div>

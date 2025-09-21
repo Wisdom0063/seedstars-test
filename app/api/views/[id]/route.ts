@@ -118,6 +118,7 @@ export async function PUT(
     const parsedView = {
       ...view,
       activeFilters: view.activeFilters ? JSON.parse(view.activeFilters) : null,
+      activeSorts: view.activeSorts ? JSON.parse(view.activeSorts) : null,
       visibleFields: view.visibleFields ? JSON.parse(view.visibleFields) : null,
     };
 
