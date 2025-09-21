@@ -10,10 +10,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  ChevronDown, 
-  Plus, 
-  Settings, 
+import {
+  ChevronDown,
+  Plus,
+  Settings,
   Star,
   Table,
   Grid3X3,
@@ -68,28 +68,28 @@ export function ViewSelector({
             <ChevronDown className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        
+
         <DropdownMenuContent align="start" className="w-64">
           <div className="px-2 py-1.5">
             <div className="text-xs font-medium text-gray-500 uppercase tracking-wide">
               Views
             </div>
           </div>
-          
+
           {filteredViews.map((view) => {
             const LayoutIcon = LayoutIcons[view.layout];
             const isActive = view.id === currentView.id;
-            
+
             return (
               <DropdownMenuItem
                 key={view.id}
                 onClick={() => {
+                  alert("view changed")
                   onViewChange(view);
                   setIsOpen(false);
                 }}
-                className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${
-                  isActive ? 'bg-blue-50 text-blue-700' : ''
-                }`}
+                className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${isActive ? 'bg-blue-50 text-blue-700' : ''
+                  }`}
               >
                 <LayoutIcon className="h-4 w-4 text-gray-500" />
                 <div className="flex-1">
@@ -119,9 +119,9 @@ export function ViewSelector({
               </DropdownMenuItem>
             );
           })}
-          
+
           <DropdownMenuSeparator />
-          
+
           <DropdownMenuItem
             onClick={() => {
               onCreateView();

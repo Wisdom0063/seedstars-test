@@ -33,6 +33,15 @@ export function ViewManager({
         loadViews();
     }, [source]);
 
+    // Debug: Log when filters or sorts change
+    useEffect(() => {
+        console.log('Filters changed:', filters);
+    }, [filters]);
+
+    useEffect(() => {
+        console.log('Sorts changed:', sorts);
+    }, [sorts]);
+
     const loadViews = async () => {
         try {
             setLoading(true);
@@ -155,10 +164,26 @@ export function ViewManager({
     }, [personas, searchValue, filters, sorts]);
 
     const handleViewChange = (view: View) => {
+        console.log('=== VIEW CHANGE ===');
+        console.log('Switching from:', currentView?.name, 'to:', view.name);
+        console.log('Previous filters:', filters);
+        console.log('Previous sorts:', sorts);
+        console.log('New view activeFilters:', view.activeFilters);
+        console.log('New view activeSorts:', view.activeSorts);
+        
         setCurrentView(view);
+        
         // Load active filters and sorts from the selected view
-        setFilters(view.activeFilters || {});
-        setSorts(view.activeSorts || []);
+        // Explicitly handle null values to ensure proper clearing
+        const newFilters = view.activeFilters ? { ...view.activeFilters } : {};
+        const newSorts = view.activeSorts ? [...view.activeSorts] : [];
+        
+        console.log('Setting filters to:', newFilters);
+        console.log('Setting sorts to:', newSorts);
+        console.log('===================');
+        
+        setFilters(newFilters);
+        setSorts(newSorts);
     };
 
     const handleLayoutChange = async (layout: ViewLayout) => {
