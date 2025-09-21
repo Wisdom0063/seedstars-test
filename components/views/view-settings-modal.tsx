@@ -193,8 +193,8 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
                   key={layout}
                   onClick={() => handleLayoutChange(layout as ViewLayout)}
                   className={`flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${selectedLayout === layout
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
                     }`}
                 >
                   <Icon className="h-6 w-6 text-gray-600" />
@@ -236,8 +236,8 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
                       <span className="text-sm text-gray-700">{property.label}</span>
                       <button
                         className={`p-1 rounded transition-colors ${isVisible
-                            ? 'text-blue-600 hover:bg-blue-50'
-                            : 'text-gray-400 hover:bg-gray-100'
+                          ? 'text-blue-600 hover:bg-blue-50'
+                          : 'text-gray-400 hover:bg-gray-100'
                           }`}
                       >
                         <Eye className={`h-4 w-4 ${isVisible ? '' : 'opacity-50'}`} />

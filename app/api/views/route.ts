@@ -87,9 +87,9 @@ export async function POST(request: NextRequest) {
 
     const view = await prisma.view.create({
       data: {
-        name: body.name,
+        name: body.name || 'Untitled View',
         description: body.description,
-        source: body.source || 'PERSONAS',
+        source: body.source,
         layout: body.layout || 'CARD',
         filters: body.filters ? JSON.stringify(body.filters) : null,
         sortBy: body.sortBy,

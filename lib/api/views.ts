@@ -63,7 +63,7 @@ export interface ViewFilters {
 export interface CreateViewRequest {
   name: string;
   description?: string;
-  source?: ViewSource;
+  source: ViewSource;
   layout?: ViewLayout;
   filters?: ViewFilters;
   activeFilters?: Record<string, any>;
