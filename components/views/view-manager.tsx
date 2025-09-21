@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { ViewSettingsModal } from './view-settings-modal';
+import { LayoutSelectionPopup } from './layout-selection-popup';
 import { ViewToolbar } from './view-toolbar';
 import PersonaCards from '../views/customer-segment/card';
 import { PersonaTable } from '../views/customer-segment/table';
@@ -27,6 +29,9 @@ export function ViewManager({
     const [searchValue, setSearchValue] = useState('');
     const [filters, setFilters] = useState<Record<string, any>>({});
     const [sorts, setSorts] = useState<ViewSortCriteria[]>([]);
+    const [showLayoutSelection, setShowLayoutSelection] = useState(false);
+    const [showViewSettings, setShowViewSettings] = useState(false);
+    const [viewToEdit, setViewToEdit] = useState<View | null>(null);
 
     // Load views on mount
     useEffect(() => {
@@ -205,13 +210,49 @@ export function ViewManager({
     };
 
     const handleCreateView = () => {
-        // TODO: Implement create view modal
-        console.log('Create new view');
+        setShowLayoutSelection(true);
+    };
+
+    const handleLayoutSelect = async (layout: ViewLayout) => {
+        try {
+            // Create view with just layout and source
+            const newView = await viewsApi.create({
+                name: 'Untitled View',
+                source,
+                layout,
+            });
+
+            // Add to views list and set as current
+            setViews(prev => [...prev, newView]);
+            setCurrentView(newView);
+
+            // Close layout selection and open view settings
+            setShowLayoutSelection(false);
+            setViewToEdit(newView);
+            setShowViewSettings(true);
+        } catch (error) {
+            console.error('Failed to create view:', error);
+        }
     };
 
     const handleEditView = (view: View) => {
-        // TODO: Implement edit view modal
-        console.log('Edit view:', view);
+        setViewToEdit(view);
+        setShowViewSettings(true);
+    };
+
+    const handleViewSettingsClose = () => {
+        setShowViewSettings(false);
+        setViewToEdit(null);
+    };
+
+    const handleViewUpdate = (updatedView: View) => {
+        // Update views list
+        setViews(prev => prev.map(v => v.id === updatedView.id ? updatedView : v));
+        
+        // Update current view if it's the one being edited
+        if (currentView && currentView.id === updatedView.id) {
+            setCurrentView(updatedView);
+        }
     };
 
     const handleFiltersChange = async (newFilters: Record<string, any>) => {
@@ -335,6 +376,25 @@ export function ViewManager({
             <div className="min-h-[400px]">
                 {renderContent()}
             </div>
+
+            {/* Layout Selection Popup */}
+            {showLayoutSelection && (
+                <LayoutSelectionPopup
+                    onClose={() => setShowLayoutSelection(false)}
+                    onLayoutSelect={handleLayoutSelect}
+                />
+            )}
+
+            {/* View Settings Modal */}
+            {showViewSettings && viewToEdit && (
+                <ViewSettingsModal
+                    view={viewToEdit}
+                    onClose={handleViewSettingsClose}
+                    onLayoutChange={handleLayoutChange}
+                    onEditView={handleEditView}
+                    onViewUpdate={handleViewUpdate}
+                />
+            )}
         </div>
     );
 }
