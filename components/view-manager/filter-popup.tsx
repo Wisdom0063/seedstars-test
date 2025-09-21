@@ -8,18 +8,9 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
-import { 
+import {
   Filter,
-  Search,
-  User,
-  MapPin,
-  GraduationCap,
-  DollarSign,
-  Users,
-  Heart,
-  MessageCircle,
-  Calendar,
-  Hash,
+  Search
 } from 'lucide-react';
 import { ViewSource } from '@/lib/api/views';
 
@@ -35,90 +26,22 @@ interface FilterPopupProps {
   source: ViewSource;
   activeFilters: Record<string, any>;
   onAddFilter: (filterId: string) => void;
+  getFilterFields?: (source: ViewSource) => FilterField[];
 }
 
-// Define available filter fields based on source
-const getFilterFields = (source: ViewSource): FilterField[] => {
-  const commonFields: FilterField[] = [
-    {
-      id: 'segments',
-      label: 'Customer Segment',
-      icon: Users,
-      type: 'multiselect',
-      description: 'Filter by customer segment'
-    },
-    {
-      id: 'locations',
-      label: 'Location',
-      icon: MapPin,
-      type: 'multiselect',
-      description: 'Filter by location'
-    },
-    {
-      id: 'education',
-      label: 'Education',
-      icon: GraduationCap,
-      type: 'multiselect',
-      description: 'Filter by education level'
-    },
-    {
-      id: 'income',
-      label: 'Income Level',
-      icon: DollarSign,
-      type: 'multiselect',
-      description: 'Filter by income range'
-    },
-    {
-      id: 'ageRange',
-      label: 'Age Range',
-      icon: User,
-      type: 'range',
-      description: 'Filter by age range'
-    },
-    {
-      id: 'painPoints',
-      label: 'Pain Points',
-      icon: Heart,
-      type: 'multiselect',
-      description: 'Filter by pain points'
-    },
-    {
-      id: 'channels',
-      label: 'Preferred Channels',
-      icon: MessageCircle,
-      type: 'multiselect',
-      description: 'Filter by preferred channels'
-    },
-    {
-      id: 'createdAt',
-      label: 'Created Date',
-      icon: Calendar,
-      type: 'date',
-      description: 'Filter by creation date'
-    },
-    {
-      id: 'id',
-      label: 'ID',
-      icon: Hash,
-      type: 'text',
-      description: 'Filter by ID'
-    }
-  ];
 
-  return commonFields;
-};
 
-export function FilterPopup({ source, activeFilters, onAddFilter }: FilterPopupProps) {
+export function FilterPopup({ source, activeFilters, onAddFilter, getFilterFields }: FilterPopupProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filterFields = getFilterFields(source);
-  
+  const filterFields = getFilterFields ? getFilterFields(source) : [];
+
   // Filter out already active filters and apply search
   const availableFields = filterFields.filter(field => {
     const isActive = activeFilters.hasOwnProperty(field.id);
     const matchesSearch = field.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         field.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      field.description?.toLowerCase().includes(searchQuery.toLowerCase());
     return !isActive && matchesSearch;
   });
 
@@ -133,9 +56,9 @@ export function FilterPopup({ source, activeFilters, onAddFilter }: FilterPopupP
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           className={`h-8 ${activeFilterCount > 0 ? 'bg-blue-50 border-blue-200 text-blue-700' : ''}`}
         >
           <Filter className="h-4 w-4 mr-1.5" />
@@ -147,7 +70,7 @@ export function FilterPopup({ source, activeFilters, onAddFilter }: FilterPopupP
           )}
         </Button>
       </PopoverTrigger>
-      
+
       <PopoverContent align="start" className="w-80 p-0">
         <div className="p-4 border-b">
           <div className="relative">

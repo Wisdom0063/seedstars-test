@@ -15,6 +15,7 @@ import { View, ViewLayout, ViewSource, ViewSortCriteria } from '@/lib/api/views'
 import { FilterPopup } from './filter-popup';
 import { ActiveFiltersBar } from './active-filters-bar';
 import { SortDropdown } from './sort-dropdown';
+import { FilterConfig } from './generic-view-manager';
 
 interface ViewToolbarProps {
     views: View[];
@@ -32,6 +33,7 @@ interface ViewToolbarProps {
     sorts?: ViewSortCriteria[];
     onSortsChange?: (sorts: ViewSortCriteria[]) => void;
     data?: any[];
+    filterConfig?: FilterConfig;
 }
 
 export function ViewToolbar({
@@ -50,6 +52,7 @@ export function ViewToolbar({
     sorts = [],
     onSortsChange,
     data = [],
+    filterConfig,
 }: ViewToolbarProps) {
     const [showViewSettings, setShowViewSettings] = useState(false);
 
@@ -84,12 +87,13 @@ export function ViewToolbar({
                         <FilterPopup
                             source={source}
                             activeFilters={filters}
+                            getFilterFields={filterConfig?.getFilterFields}
                             onAddFilter={(filterId) => {
                                 const newFilters = { ...filters };
                                 // Initialize with empty value based on filter type
-                                if (['segments', 'locations', 'education', 'income', 'painPoints', 'channels'].includes(filterId)) {
+                                if (['segments', 'locations', 'education', 'income', 'painPoints', 'channels', 'gender'].includes(filterId)) {
                                     newFilters[filterId] = [];
-                                } else if (filterId === 'ageRange') {
+                                } else if (['age', 'ageRange'].includes(filterId)) {
                                     newFilters[filterId] = {};
                                 } else {
                                     newFilters[filterId] = '';
