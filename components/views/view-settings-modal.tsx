@@ -1,18 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
-  ChevronDown,
-  Plus,
   Settings,
   Star,
   Table,
@@ -22,16 +12,13 @@ import {
   X,
   ChevronRight
 } from 'lucide-react';
-import { View, ViewLayout, ViewSource } from '@/lib/api/views';
+import { View, ViewLayout } from '@/lib/api/views';
 
-interface ViewSelectorProps {
-  views: View[];
-  currentView: View;
-  onViewChange: (view: View) => void;
-  onCreateView: () => void;
-  onEditView: (view: View) => void;
+interface ViewSettingsModalProps {
+  view: View;
+  onClose: () => void;
   onLayoutChange: (layout: ViewLayout) => void;
-  source: ViewSource;
+  onEditView: (view: View) => void;
 }
 
 const LayoutIcons = {
@@ -40,97 +27,7 @@ const LayoutIcons = {
   [ViewLayout.KANBAN]: Kanban,
 };
 
-export function ViewSelector({
-  views,
-  currentView,
-  onViewChange,
-  onCreateView,
-  onEditView,
-  onLayoutChange,
-  source,
-}: ViewSelectorProps) {
-  const [showViewSettings, setShowViewSettings] = useState(false);
-  const [settingsView, setSettingsView] = useState<View | null>(null);
-
-  const filteredViews = views.filter(view => view.source === source);
-
-  const handleViewSettingsClick = (view: View, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setSettingsView(view);
-    setShowViewSettings(true);
-  };
-
-  return (
-    <>
-      {/* View Switcher - Layout Switcher Style */}
-      <div className="flex items-center bg-gray-100 rounded-lg p-1">
-        {filteredViews.map((view) => {
-          const LayoutIcon = LayoutIcons[view.layout];
-          const isActive = view.id === currentView.id;
-
-          return (
-            <div key={view.id} className="relative group">
-              <button
-                onClick={() => onViewChange(view)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-                }`}
-              >
-                <LayoutIcon className="h-4 w-4" />
-                <span>{view.name}</span>
-                {view.isDefault && (
-                  <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                )}
-              </button>
-              
-              {/* Settings Button */}
-              <button
-                onClick={(e) => handleViewSettingsClick(view, e)}
-                className="absolute -top-1 -right-1 h-5 w-5 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <Settings className="h-3 w-3 text-gray-600" />
-              </button>
-            </div>
-          );
-        })}
-        
-        {/* New View Button */}
-        <button
-          onClick={onCreateView}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-white/50 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          <span>New</span>
-        </button>
-      </div>
-
-      {/* View Settings Modal */}
-      {showViewSettings && settingsView && (
-        <ViewSettingsModal
-          view={settingsView}
-          onClose={() => {
-            setShowViewSettings(false);
-            setSettingsView(null);
-          }}
-          onLayoutChange={onLayoutChange}
-          onEditView={onEditView}
-        />
-      )}
-    </>
-  );
-}
-
-// View Settings Modal Component
-interface ViewSettingsModalProps {
-  view: View;
-  onClose: () => void;
-  onLayoutChange: (layout: ViewLayout) => void;
-  onEditView: (view: View) => void;
-}
-
-function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSettingsModalProps) {
+export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSettingsModalProps) {
   const [selectedLayout, setSelectedLayout] = useState(view.layout);
   const [viewName, setViewName] = useState(view.name);
   const [isEditingName, setIsEditingName] = useState(false);

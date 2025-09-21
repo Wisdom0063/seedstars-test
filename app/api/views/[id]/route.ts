@@ -30,6 +30,8 @@ export async function GET(
       ...view,
       filters: view.filters ? JSON.parse(view.filters) : null,
       visibleFields: view.visibleFields ? JSON.parse(view.visibleFields) : null,
+      activeSorts: view.activeSorts ? JSON.parse(view.activeSorts) : null,
+      activeFilters: view.activeFilters ? JSON.parse(view.activeFilters) : null,
     };
 
     return NextResponse.json({
@@ -56,9 +58,6 @@ export async function PUT(
   try {
     const { id } = await params;
     const body: Omit<UpdateViewRequest, 'id'> = await request.json();
-
-    console.log('Updating view body:', body);
-
     // Check if view exists
     const existingView = await prisma.view.findUnique({
       where: { id },
@@ -82,6 +81,9 @@ export async function PUT(
       ...(body.activeFilters !== undefined && {
         activeFilters: body.activeFilters ? JSON.stringify(body.activeFilters) : null
       }),
+      ...(body.activeSorts !== undefined && {
+        activeSorts: body.activeSorts ? JSON.stringify(body.activeSorts) : null
+      }),
       ...(body.sortBy !== undefined && { sortBy: body.sortBy }),
       ...(body.sortOrder && { sortOrder: body.sortOrder }),
       ...(body.groupBy !== undefined && { groupBy: body.groupBy }),
@@ -99,6 +101,9 @@ export async function PUT(
         ...(body.layout && { layout: body.layout }),
         ...(body.activeFilters !== undefined && {
           activeFilters: body.activeFilters ? JSON.stringify(body.activeFilters) : null
+        }),
+        ...(body.activeSorts !== undefined && {
+          activeSorts: body.activeSorts ? JSON.stringify(body.activeSorts) : null
         }),
         ...(body.sortBy !== undefined && { sortBy: body.sortBy }),
         ...(body.sortOrder && { sortOrder: body.sortOrder }),

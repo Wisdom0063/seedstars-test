@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ViewSelector } from './view-selector';
+import { ViewSettingsModal } from './view-settings-modal';
 import { Button } from '@/components/ui/button';
 import {
     Filter,
@@ -50,6 +51,8 @@ export function ViewToolbar({
     onSortsChange,
     data = [],
 }: ViewToolbarProps) {
+    const [showViewSettings, setShowViewSettings] = useState(false);
+
     return (
         <div>
             <div className="flex items-center justify-between py-3 border-b bg-white">
@@ -124,7 +127,12 @@ export function ViewToolbar({
                     )}
 
                     {/* More options */}
-                    <Button variant="outline" size="sm" className="h-8 px-2">
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-8 px-2"
+                        onClick={() => setShowViewSettings(true)}
+                    >
                         <MoreHorizontal className="h-4 w-4" />
                     </Button>
 
@@ -146,6 +154,16 @@ export function ViewToolbar({
                     data={data}
                     sorts={sorts}
                     onSortsChange={onSortsChange}
+                />
+            )}
+
+            {/* View Settings Modal */}
+            {showViewSettings && (
+                <ViewSettingsModal
+                    view={currentView}
+                    onClose={() => setShowViewSettings(false)}
+                    onLayoutChange={onLayoutChange}
+                    onEditView={onEditView}
                 />
             )}
         </div>
