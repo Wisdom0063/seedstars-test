@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { 
+import {
   ArrowUpDown,
   Plus,
   Trash2,
@@ -15,12 +15,11 @@ import {
   GripVertical,
   ChevronDown,
 } from 'lucide-react';
-import { ViewSource } from '@/lib/api/views';
-import { SortCriteria } from './sort-popup';
+import { ViewSource, ViewSortCriteria } from '@/lib/api/views';
 
 interface SortDropdownProps {
-  sorts: SortCriteria[];
-  onSortsChange: (sorts: SortCriteria[]) => void;
+  sorts: ViewSortCriteria[];
+  onSortsChange: (sorts: ViewSortCriteria[]) => void;
   source: ViewSource;
   availableFields: Array<{
     id: string;
@@ -41,7 +40,7 @@ export function SortDropdown({ sorts, onSortsChange, source, availableFields, on
   };
 
   const updateSortOrder = (sortId: string, order: 'ASC' | 'DESC') => {
-    const newSorts = sorts.map(sort => 
+    const newSorts = sorts.map(sort =>
       sort.id === sortId ? { ...sort, order } : sort
     );
     onSortsChange(newSorts);
@@ -56,9 +55,9 @@ export function SortDropdown({ sorts, onSortsChange, source, availableFields, on
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           className={`h-8 ${sortCount > 0 ? 'bg-blue-50 border-blue-200 text-blue-700' : ''}`}
         >
           <ArrowUpDown className="h-4 w-4 mr-1.5" />
@@ -66,7 +65,7 @@ export function SortDropdown({ sorts, onSortsChange, source, availableFields, on
           <ChevronDown className="h-4 w-4 ml-1" />
         </Button>
       </PopoverTrigger>
-      
+
       <PopoverContent align="start" className="w-80 p-0">
         {sortCount > 0 ? (
           <div className="p-4">
@@ -76,9 +75,9 @@ export function SortDropdown({ sorts, onSortsChange, source, availableFields, on
                 return (
                   <div key={sort.id} className="flex items-center gap-3">
                     <GripVertical className="h-4 w-4 text-gray-400" />
-                    
+
                     <div className="flex items-center gap-2 flex-1">
-                      <Icon className="h-4 w-4 text-gray-500" />
+                      {Icon && <Icon className="h-4 w-4 text-gray-500" />}
                       <span className="text-sm font-medium text-gray-700">
                         {sort.label}
                       </span>
@@ -135,9 +134,9 @@ export function SortDropdown({ sorts, onSortsChange, source, availableFields, on
                 </PopoverContent>
               </Popover>
 
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={clearAllSorts}
                 className="text-gray-600 hover:text-gray-900"
               >

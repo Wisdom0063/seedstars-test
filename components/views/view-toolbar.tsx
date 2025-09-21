@@ -11,10 +11,9 @@ import {
     MoreHorizontal,
     X,
 } from 'lucide-react';
-import { View, ViewLayout, ViewSource } from '@/lib/api/views';
+import { View, ViewLayout, ViewSource, ViewSortCriteria } from '@/lib/api/views';
 import { FilterPopup } from './filter-popup';
 import { ActiveFiltersBar } from './active-filters-bar';
-import { SortCriteria } from './sort-popup';
 import { SortDropdown } from './sort-dropdown';
 
 interface ViewToolbarProps {
@@ -30,8 +29,8 @@ interface ViewToolbarProps {
     onSearchChange?: (value: string) => void;
     filters?: Record<string, any>;
     onFiltersChange?: (filters: Record<string, any>) => void;
-    sorts?: SortCriteria[];
-    onSortsChange?: (sorts: SortCriteria[]) => void;
+    sorts?: ViewSortCriteria[];
+    onSortsChange?: (sorts: ViewSortCriteria[]) => void;
     data?: any[];
 }
 
@@ -121,7 +120,7 @@ export function ViewToolbar({
                                 { id: 'age', label: 'Age', icon: () => null, field: 'age', type: 'number' },
                             ]}
                             onAddSort={(field: any) => {
-                                const newSort: SortCriteria = {
+                                const newSort: ViewSortCriteria = {
                                     id: `${field.field}-${Date.now()}`,
                                     field: field.field,
                                     label: field.label,

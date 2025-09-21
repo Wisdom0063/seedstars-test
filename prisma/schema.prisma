@@ -68,6 +68,10 @@ model View {
   // Filters (JSON)
   filters     String?  // JSON object with filter criteria
   
+  // Active user selections (JSON)
+  activeFilters String? // JSON object with current active filter selections
+  activeSorts   String? // JSON array with current active sort selections
+  
   // Sorting
   sortBy      String?  // Field to sort by
   sortOrder   SortOrder @default(ASC)

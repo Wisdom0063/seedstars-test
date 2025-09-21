@@ -5,9 +5,8 @@ import { ViewToolbar } from './view-toolbar';
 import PersonaCards from '../views/customer-segment/card';
 import { PersonaTable } from '../views/customer-segment/table';
 import { PersonaKanban } from '../views/customer-segment/kanban';
-import { View, ViewLayout, ViewSource, viewsApi } from '@/lib/api/views';
+import { View, ViewLayout, ViewSource, ViewSortCriteria, viewsApi } from '@/lib/api/views';
 import { Persona } from '@/lib/api/customer-segment';
-import { SortCriteria } from './sort-popup';
 
 interface ViewManagerProps {
     personas: Persona[];
@@ -27,7 +26,7 @@ export function ViewManager({
     const [loading, setLoading] = useState(true);
     const [searchValue, setSearchValue] = useState('');
     const [filters, setFilters] = useState<Record<string, any>>({});
-    const [sorts, setSorts] = useState<SortCriteria[]>([]);
+    const [sorts, setSorts] = useState<ViewSortCriteria[]>([]);
 
     // Load views on mount
     useEffect(() => {
@@ -44,22 +43,25 @@ export function ViewManager({
             const defaultView = allViews.find(view => view.isDefault) || allViews[0];
             if (defaultView) {
                 setCurrentView(defaultView);
+                // Load active filters and sorts from the view
+                setFilters(defaultView.activeFilters || {});
+                setSorts(defaultView.activeSorts || []);
             }
         } catch (error) {
             console.error('Failed to load views:', error);
-            const fallbackView: View = {
-                id: 'fallback',
-                name: 'All Items',
-                isDefault: true,
-                source,
-                layout: ViewLayout.CARD,
-                sortBy: 'name',
-                sortOrder: 'ASC' as any,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            };
-            setViews([fallbackView]);
-            setCurrentView(fallbackView);
+            // const fallbackView: View = {
+            //     id: 'fallback',
+            //     name: 'All Items',
+            //     isDefault: true,
+            //     source,
+            //     layout: ViewLayout.CARD,
+            //     sortBy: 'name',
+            //     sortOrder: 'ASC' as any,
+            //     createdAt: new Date(),
+            //     updatedAt: new Date(),
+            // };
+            // setViews([fallbackView]);
+            // setCurrentView(fallbackView);
         } finally {
             setLoading(false);
         }
@@ -119,7 +121,7 @@ export function ViewManager({
             );
         }
         if (filters.id) {
-            result = result.filter(persona => 
+            result = result.filter(persona =>
                 persona.id.toLowerCase().includes(filters.id.toLowerCase())
             );
         }
@@ -154,6 +156,9 @@ export function ViewManager({
 
     const handleViewChange = (view: View) => {
         setCurrentView(view);
+        // Load active filters and sorts from the selected view
+        setFilters(view.activeFilters || {});
+        setSorts(view.activeSorts || []);
     };
 
     const handleLayoutChange = async (layout: ViewLayout) => {
@@ -190,12 +195,57 @@ export function ViewManager({
         console.log('Edit view:', view);
     };
 
-    const handleFiltersChange = (newFilters: Record<string, any>) => {
+    const handleFiltersChange = async (newFilters: Record<string, any>) => {
+        if (!currentView) return;
+        if (newFilters === currentView.activeFilters) return;
+
         setFilters(newFilters);
+
+        alert("filters changed")
+
+        // Persist active filters to the current view
+        try {
+
+            console.log("currentView", newFilters)
+            const updatedView = await viewsApi.update({
+                id: currentView.id,
+                activeFilters: newFilters,
+            });
+
+            // Update the view in the views list
+            setViews(prev => prev.map(view =>
+                view.id === updatedView.id ? updatedView : view
+            ));
+            setCurrentView(updatedView);
+        } catch (error) {
+            console.error('Failed to update view active filters:', error);
+            // Revert on error
+            // setFilters(currentView.activeFilters || {});
+        }
     };
 
-    const handleSortsChange = (newSorts: SortCriteria[]) => {
+    const handleSortsChange = async (newSorts: ViewSortCriteria[]) => {
+        if (!currentView) return;
+
         setSorts(newSorts);
+
+        // Persist active sorts to the current view
+        try {
+            const updatedView = await viewsApi.update({
+                id: currentView.id,
+                activeSorts: newSorts,
+            });
+
+            // Update the view in the views list
+            setViews(prev => prev.map(view =>
+                view.id === updatedView.id ? updatedView : view
+            ));
+            setCurrentView(updatedView);
+        } catch (error) {
+            console.error('Failed to update view active sorts:', error);
+            // Revert on error
+            setSorts(currentView.activeSorts || []);
+        }
     };
 
     const renderContent = () => {

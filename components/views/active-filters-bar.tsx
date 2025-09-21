@@ -23,15 +23,15 @@ import {
 } from 'lucide-react';
 import { ViewSource } from '@/lib/api/views';
 import { SortDropdown } from './sort-dropdown';
-import { SortCriteria } from './sort-popup';
+import { ViewSortCriteria } from '@/lib/api/views';
 
 interface ActiveFiltersBarProps {
     filters: Record<string, any>;
     onFiltersChange: (filters: Record<string, any>) => void;
     source: ViewSource;
     data?: any[];
-    sorts?: SortCriteria[];
-    onSortsChange?: (sorts: SortCriteria[]) => void;
+    sorts?: ViewSortCriteria[];
+    onSortsChange?: (sorts: ViewSortCriteria[]) => void;
 }
 
 // Helper functions
@@ -192,7 +192,7 @@ export function ActiveFiltersBar({ filters, onFiltersChange, source, data = [], 
                             { id: 'age', label: 'Age', icon: () => null, field: 'age', type: 'number' },
                         ]}
                         onAddSort={(field: any) => {
-                            const newSort: SortCriteria = {
+                            const newSort: ViewSortCriteria = {
                                 id: `${field.field}-${Date.now()}`,
                                 field: field.field,
                                 label: field.label,

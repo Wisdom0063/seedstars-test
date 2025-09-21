@@ -16,6 +16,15 @@ export enum SortOrder {
   DESC = 'DESC',
 }
 
+// Sort criteria interface for active sorts
+export interface ViewSortCriteria {
+  id: string;
+  field: string;
+  label: string;
+  order: 'ASC' | 'DESC';
+  icon?: React.ComponentType<{ className?: string }>;
+}
+
 // Base View interface
 export interface View {
   id: string;
@@ -24,7 +33,9 @@ export interface View {
   isDefault: boolean;
   source: ViewSource;
   layout: ViewLayout;
-  filters?: ViewFilters;
+  filters?: string; // Available filter configuration
+  activeFilters?: Record<string, any>; // Current active filter selections
+  activeSorts?: ViewSortCriteria[]; // Current active sort selections
   sortBy?: string;
   sortOrder: SortOrder;
   groupBy?: string;
@@ -55,6 +66,8 @@ export interface CreateViewRequest {
   source?: ViewSource;
   layout?: ViewLayout;
   filters?: ViewFilters;
+  activeFilters?: Record<string, any>;
+  activeSorts?: ViewSortCriteria[];
   sortBy?: string;
   sortOrder?: SortOrder;
   groupBy?: string;

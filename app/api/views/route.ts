@@ -21,34 +21,34 @@ export async function GET(request: NextRequest) {
     });
 
     // If no views exist, create default views
-    if (views.length === 0) {
-      const defaultViews = await Promise.all(
-        DEFAULT_VIEWS.map(view => 
-          prisma.view.create({
-            data: {
-              ...view,
-              filters: view.filters ? JSON.stringify(view.filters) : null,
-              visibleFields: view.visibleFields ? JSON.stringify(view.visibleFields) : null,
-            }
-          })
-        )
-      );
-      
-      return NextResponse.json({
-        success: true,
-        data: defaultViews.map(view => ({
-          ...view,
-          filters: view.filters ? JSON.parse(view.filters) : null,
-          visibleFields: view.visibleFields ? JSON.parse(view.visibleFields) : null,
-        })),
-        count: defaultViews.length,
-      });
-    }
+    // if (views.length === 0) {
+    //   const defaultViews = await Promise.all(
+    //     DEFAULT_VIEWS.map(view =>
+    //       prisma.view.create({
+    //         data: {
+    //           ...view,
+    //         }
+    //       })
+    //     )
+    //   );
+
+    //   return NextResponse.json({
+    //     success: true,
+    //     data: defaultViews.map(view => ({
+    //       ...view,
+    //       filters: view.filters ? JSON.parse(view.filters) : null,
+    //       visibleFields: view.visibleFields ? JSON.parse(view.visibleFields) : null,
+    //     })),
+    //     count: defaultViews.length,
+    //   });
+    // }
 
     // Parse JSON fields
     const parsedViews = views.map(view => ({
       ...view,
       filters: view.filters ? JSON.parse(view.filters) : null,
+      activeFilters: view.activeFilters ? JSON.parse(view.activeFilters) : null,
+      activeSorts: view.activeSorts ? JSON.parse(view.activeSorts) : null,
       visibleFields: view.visibleFields ? JSON.parse(view.visibleFields) : null,
     }));
 
@@ -96,6 +96,8 @@ export async function POST(request: NextRequest) {
         sortOrder: body.sortOrder || 'ASC',
         groupBy: body.groupBy,
         visibleFields: body.visibleFields ? JSON.stringify(body.visibleFields) : null,
+        activeFilters: body.activeFilters ? JSON.stringify(body.activeFilters) : null,
+        activeSorts: body.activeSorts ? JSON.stringify(body.activeSorts) : null,
       },
     });
 
@@ -103,6 +105,8 @@ export async function POST(request: NextRequest) {
     const parsedView = {
       ...view,
       filters: view.filters ? JSON.parse(view.filters) : null,
+      activeFilters: view.activeFilters ? JSON.parse(view.activeFilters) : null,
+      activeSorts: view.activeSorts ? JSON.parse(view.activeSorts) : null,
       visibleFields: view.visibleFields ? JSON.parse(view.visibleFields) : null,
     };
 

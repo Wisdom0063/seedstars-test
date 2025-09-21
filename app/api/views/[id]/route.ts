@@ -7,11 +7,12 @@ const prisma = new PrismaClient();
 // GET /api/views/[id] - Get view by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const view = await prisma.view.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!view) {
@@ -50,14 +51,17 @@ export async function GET(
 // PUT /api/views/[id] - Update view
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body: Omit<UpdateViewRequest, 'id'> = await request.json();
+
+    console.log('Updating view body:', body);
 
     // Check if view exists
     const existingView = await prisma.view.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingView) {
@@ -70,21 +74,37 @@ export async function PUT(
       );
     }
 
+    console.log('Updating view:', {
+      ...(body.name && { name: body.name }),
+      ...(body.description !== undefined && { description: body.description }),
+      ...(body.source && { source: body.source }),
+      ...(body.layout && { layout: body.layout }),
+      ...(body.activeFilters !== undefined && {
+        activeFilters: body.activeFilters ? JSON.stringify(body.activeFilters) : null
+      }),
+      ...(body.sortBy !== undefined && { sortBy: body.sortBy }),
+      ...(body.sortOrder && { sortOrder: body.sortOrder }),
+      ...(body.groupBy !== undefined && { groupBy: body.groupBy }),
+      ...(body.visibleFields !== undefined && {
+        visibleFields: body.visibleFields ? JSON.stringify(body.visibleFields) : null
+      })
+    });
+
     const view = await prisma.view.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(body.name && { name: body.name }),
         ...(body.description !== undefined && { description: body.description }),
         ...(body.source && { source: body.source }),
         ...(body.layout && { layout: body.layout }),
-        ...(body.filters !== undefined && { 
-          filters: body.filters ? JSON.stringify(body.filters) : null 
+        ...(body.activeFilters !== undefined && {
+          activeFilters: body.activeFilters ? JSON.stringify(body.activeFilters) : null
         }),
         ...(body.sortBy !== undefined && { sortBy: body.sortBy }),
         ...(body.sortOrder && { sortOrder: body.sortOrder }),
         ...(body.groupBy !== undefined && { groupBy: body.groupBy }),
-        ...(body.visibleFields !== undefined && { 
-          visibleFields: body.visibleFields ? JSON.stringify(body.visibleFields) : null 
+        ...(body.visibleFields !== undefined && {
+          visibleFields: body.visibleFields ? JSON.stringify(body.visibleFields) : null
         }),
       },
     });
@@ -92,7 +112,7 @@ export async function PUT(
     // Parse JSON fields for response
     const parsedView = {
       ...view,
-      filters: view.filters ? JSON.parse(view.filters) : null,
+      activeFilters: view.activeFilters ? JSON.parse(view.activeFilters) : null,
       visibleFields: view.visibleFields ? JSON.parse(view.visibleFields) : null,
     };
 
@@ -115,12 +135,14 @@ export async function PUT(
 // DELETE /api/views/[id] - Delete view
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     // Check if view exists
     const existingView = await prisma.view.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingView) {
@@ -145,7 +167,7 @@ export async function DELETE(
     }
 
     await prisma.view.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({
