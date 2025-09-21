@@ -24,6 +24,7 @@ import {
 import { ViewSource } from '@/lib/api/views';
 import { SortDropdown } from './sort-dropdown';
 import { ViewSortCriteria } from '@/lib/api/views';
+import { FilterConfig, SortConfig } from './generic-view-manager';
 
 interface ActiveFiltersBarProps {
     filters: Record<string, any>;
@@ -32,6 +33,8 @@ interface ActiveFiltersBarProps {
     data?: any[];
     sorts?: ViewSortCriteria[];
     onSortsChange?: (sorts: ViewSortCriteria[]) => void;
+    filterConfig?: FilterConfig;
+    sortConfig?: SortConfig;
 }
 
 // Helper functions
@@ -147,7 +150,7 @@ const getFilterConfig = (filterId: string, source: ViewSource) => {
     return configs[filterId];
 };
 
-export function ActiveFiltersBar({ filters, onFiltersChange, source, data = [], sorts, onSortsChange }: ActiveFiltersBarProps) {
+export function ActiveFiltersBar({ filters, onFiltersChange, source, data = [], sorts, onSortsChange, filterConfig, sortConfig }: ActiveFiltersBarProps) {
     const activeFilterKeys = Object.keys(filters).filter(key => {
         const value = filters[key];
         // Show filter if it exists in the filters object, regardless of whether it has values
@@ -178,19 +181,12 @@ export function ActiveFiltersBar({ filters, onFiltersChange, source, data = [], 
         <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
             <div className="flex flex-wrap gap-2">
 
-                {onSortsChange && sorts?.length && (
+                {onSortsChange && sorts?.length && sortConfig && (
                     <SortDropdown
                         sorts={sorts}
                         onSortsChange={onSortsChange}
                         source={source}
-                        availableFields={[
-                            { id: 'name', label: 'Name', icon: () => null, field: 'name', type: 'text' },
-                            { id: 'segment', label: 'Customer Segment', icon: () => null, field: 'segment.name', type: 'text' },
-                            { id: 'location', label: 'Location', icon: () => null, field: 'location', type: 'text' },
-                            { id: 'education', label: 'Education', icon: () => null, field: 'education', type: 'text' },
-                            { id: 'income', label: 'Income Level', icon: () => null, field: 'incomePerMonth', type: 'number' },
-                            { id: 'age', label: 'Age', icon: () => null, field: 'age', type: 'number' },
-                        ]}
+                        availableFields={sortConfig.getSortableFields()}
                         onAddSort={(field: any) => {
                             const newSort: ViewSortCriteria = {
                                 id: `${field.field}-${Date.now()}`,

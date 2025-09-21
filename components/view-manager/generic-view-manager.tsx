@@ -38,10 +38,19 @@ export interface FilterConfig {
     applyFilters: (items: any[], filters: Record<string, any>) => any[];
 }
 
+// Sort field interface
+export interface SortField {
+    id: string;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    field: string;
+    type: 'text' | 'number' | 'date';
+}
+
 // Sort configuration
 export interface SortConfig {
     getNestedValue: (item: any, field: string) => any;
-    getSortableFields: () => string[];
+    getSortableFields: () => SortField[];
 }
 
 // View manager configuration

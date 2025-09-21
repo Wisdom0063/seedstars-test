@@ -185,17 +185,21 @@ const personaSortConfig = {
         return path.split('.').reduce((current, key) => current?.[key], obj);
     },
 
-    getSortableFields: (): string[] => [
-        'name',
-        'age',
-        'segment.name',
-        'location',
-        'education',
-        'incomePerMonth',
-        'gender',
-        'createdAt',
-        'updatedAt'
-    ]
+    getSortableFields: () => {
+        const { User, Calendar, MapPin, GraduationCap, DollarSign, Users } = require('lucide-react');
+
+        return [
+            { id: 'name', label: 'Name', icon: User, field: 'name', type: 'text' as const },
+            { id: 'age', label: 'Age', icon: Calendar, field: 'age', type: 'number' as const },
+            { id: 'segment', label: 'Customer Segment', icon: Users, field: 'segment.name', type: 'text' as const },
+            { id: 'location', label: 'Location', icon: MapPin, field: 'location', type: 'text' as const },
+            { id: 'education', label: 'Education', icon: GraduationCap, field: 'education', type: 'text' as const },
+            { id: 'income', label: 'Income Level', icon: DollarSign, field: 'incomePerMonth', type: 'number' as const },
+            { id: 'gender', label: 'Gender', icon: User, field: 'gender', type: 'text' as const },
+            { id: 'createdAt', label: 'Created Date', icon: Calendar, field: 'createdAt', type: 'date' as const },
+            { id: 'updatedAt', label: 'Updated Date', icon: Calendar, field: 'updatedAt', type: 'date' as const }
+        ];
+    }
 };
 
 // Wrapper components to match the generic interface

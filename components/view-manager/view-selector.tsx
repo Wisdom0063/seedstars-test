@@ -72,11 +72,10 @@ export function ViewSelector({
             <div key={view.id} className="relative group">
               <button
                 onClick={() => onViewChange(view)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                  isActive
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${isActive
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
-                }`}
+                  }`}
               >
                 <LayoutIcon className="h-4 w-4" />
                 <span>{view.name}</span>
@@ -84,7 +83,7 @@ export function ViewSelector({
                   <Star className="h-3 w-3 text-yellow-500 fill-current" />
                 )}
               </button>
-              
+
               {/* Settings Button */}
               <button
                 onClick={(e) => handleViewSettingsClick(view, e)}
@@ -95,7 +94,7 @@ export function ViewSelector({
             </div>
           );
         })}
-        
+
         {/* New View Button */}
         <button
           onClick={onCreateView}
@@ -168,7 +167,7 @@ function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSe
   };
 
   const togglePropertyVisibility = (propertyId: string) => {
-    setVisibleFields(prev => 
+    setVisibleFields(prev =>
       prev.includes(propertyId)
         ? prev.filter(id => id !== propertyId)
         : [...prev, propertyId]
@@ -222,7 +221,7 @@ function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSe
                   autoFocus
                 />
               ) : (
-                <div 
+                <div
                   className="font-medium text-gray-900 cursor-pointer"
                   onClick={() => setIsEditingName(true)}
                 >
@@ -230,7 +229,7 @@ function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSe
                 </div>
               )}
             </div>
-            <button 
+            <button
               onClick={() => setIsEditingName(true)}
               className="p-1 hover:bg-gray-200 rounded"
             >
@@ -257,11 +256,10 @@ function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSe
                 <button
                   key={layout}
                   onClick={() => handleLayoutChange(layout as ViewLayout)}
-                  className={`flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${
-                    selectedLayout === layout
+                  className={`flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${selectedLayout === layout
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                    }`}
                 >
                   <Icon className="h-6 w-6 text-gray-600" />
                   <span className="text-sm font-medium capitalize">
@@ -274,7 +272,7 @@ function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSe
 
           {/* Property Visibility */}
           <div>
-            <div 
+            <div
               className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer"
               onClick={() => setShowPropertyVisibility(!showPropertyVisibility)}
             >
@@ -301,11 +299,10 @@ function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSe
                     >
                       <span className="text-sm text-gray-700">{property.label}</span>
                       <button
-                        className={`p-1 rounded transition-colors ${
-                          isVisible 
-                            ? 'text-blue-600 hover:bg-blue-50' 
+                        className={`p-1 rounded transition-colors ${isVisible
+                            ? 'text-blue-600 hover:bg-blue-50'
                             : 'text-gray-400 hover:bg-gray-100'
-                        }`}
+                          }`}
                       >
                         <Eye className={`h-4 w-4 ${isVisible ? '' : 'opacity-50'}`} />
                       </button>

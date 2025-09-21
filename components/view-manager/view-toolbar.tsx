@@ -15,7 +15,7 @@ import { View, ViewLayout, ViewSource, ViewSortCriteria } from '@/lib/api/views'
 import { FilterPopup } from './filter-popup';
 import { ActiveFiltersBar } from './active-filters-bar';
 import { SortDropdown } from './sort-dropdown';
-import { FilterConfig } from './generic-view-manager';
+import { FilterConfig, SortConfig } from './generic-view-manager';
 
 interface ViewToolbarProps {
     views: View[];
@@ -34,6 +34,7 @@ interface ViewToolbarProps {
     onSortsChange?: (sorts: ViewSortCriteria[]) => void;
     data?: any[];
     filterConfig?: FilterConfig;
+    sortConfig?: SortConfig;
 }
 
 export function ViewToolbar({
@@ -53,6 +54,7 @@ export function ViewToolbar({
     onSortsChange,
     data = [],
     filterConfig,
+    sortConfig,
 }: ViewToolbarProps) {
     const [showViewSettings, setShowViewSettings] = useState(false);
 
@@ -131,9 +133,9 @@ export function ViewToolbar({
                     )}
 
                     {/* More options */}
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
+                    <Button
+                        variant="outline"
+                        size="sm"
                         className="h-8 px-2"
                         onClick={() => setShowViewSettings(true)}
                     >
@@ -158,6 +160,8 @@ export function ViewToolbar({
                     data={data}
                     sorts={sorts}
                     onSortsChange={onSortsChange}
+                    filterConfig={filterConfig}
+                    sortConfig={sortConfig}
                 />
             )}
 
