@@ -141,7 +141,7 @@ export function ViewManager({
                     if (!sort || !sort.field) {
                         continue;
                     }
-                    
+
                     let aValue = getNestedValue(a, sort.field);
                     let bValue = getNestedValue(b, sort.field);
 
@@ -168,19 +168,19 @@ export function ViewManager({
 
     const handleViewChange = (view: View) => {
         setCurrentView(view);
-        
+
         // Update views list if this is an updated view (not just a switch)
         if (currentView && view.id === currentView.id && view.updatedAt !== currentView.updatedAt) {
             setViews(prev => prev.map(v => v.id === view.id ? view : v));
         }
-        
+
         // Load active filters and sorts from the selected view
         // Explicitly handle null values to ensure proper clearing
         const newFilters = view.activeFilters ? { ...view.activeFilters } : {};
-        const newSorts = view.activeSorts 
+        const newSorts = view.activeSorts
             ? view.activeSorts.filter(sort => sort && sort.field && typeof sort.field === 'string')
             : [];
-        
+
         setFilters(newFilters);
         setSorts(newSorts);
     };
@@ -248,7 +248,7 @@ export function ViewManager({
     const handleViewUpdate = (updatedView: View) => {
         // Update views list
         setViews(prev => prev.map(v => v.id === updatedView.id ? updatedView : v));
-        
+
         // Update current view if it's the one being edited
         if (currentView && currentView.id === updatedView.id) {
             setCurrentView(updatedView);
@@ -261,12 +261,8 @@ export function ViewManager({
 
         setFilters(newFilters);
 
-        alert("filters changed")
-
         // Persist active filters to the current view
         try {
-
-            console.log("currentView", newFilters)
             const updatedView = await viewsApi.update({
                 id: currentView.id,
                 activeFilters: newFilters,
@@ -315,6 +311,10 @@ export function ViewManager({
             personas: filteredPersonas,
             onPersonaClick,
             visibleFields: currentView.visibleFields || [],
+            onPersonaReorder: (reorderedPersonas: Persona[]) => {
+                console.log('Personas reordered:', reorderedPersonas.map(p => p.name));
+                // TODO: Optionally persist the order to the view or handle reordering logic
+            },
         };
 
         switch (currentView.layout) {

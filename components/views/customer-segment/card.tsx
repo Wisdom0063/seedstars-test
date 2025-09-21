@@ -1,10 +1,26 @@
 'use client';
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DraggableCard } from '@/components/ui/draggable-card';
 import { Badge } from '@/components/ui/badge';
 import { User, MapPin, GraduationCap, DollarSign, Quote, Tag } from 'lucide-react';
 import { Persona } from '@/lib/api/customer-segment';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    rectSortingStrategy,
+} from '@dnd-kit/sortable';
 
 
 interface PersonaCardProps {
@@ -25,7 +41,8 @@ export function PersonaCard({
         return visibleFields.length === 0 || visibleFields.includes(fieldName);
     };
     return (
-        <Card
+        <DraggableCard
+            id={persona.id}
             className={`
         cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] 
         border-l-4 border-l-green-500 bg-white
@@ -156,7 +173,7 @@ export function PersonaCard({
                     </div>
                 )}
             </CardContent>
-        </Card>
+        </DraggableCard>
     );
 }
 
@@ -166,19 +183,64 @@ interface PersonaCardsProps {
     personas: Persona[];
     onPersonaClick?: (persona: Persona) => void;
     visibleFields?: string[];
+    onPersonaReorder?: (reorderedPersonas: Persona[]) => void;
 }
 
-export default function PersonaCards({ personas, onPersonaClick, visibleFields }: PersonaCardsProps) {
+export default function PersonaCards({
+    personas,
+    onPersonaClick,
+    visibleFields,
+    onPersonaReorder
+}: PersonaCardsProps) {
+    const [items, setItems] = useState(personas);
+
+    // Update items when personas prop changes
+    React.useEffect(() => {
+        setItems(personas);
+    }, [personas]);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    function handleDragEnd(event: DragEndEvent) {
+        const { active, over } = event;
+
+        if (active.id !== over?.id) {
+            const oldIndex = items.findIndex((item) => item.id === active.id);
+            const newIndex = items.findIndex((item) => item.id === over?.id);
+
+            const newItems = arrayMove(items, oldIndex, newIndex);
+            setItems(newItems);
+            onPersonaReorder?.(newItems);
+        }
+    }
+
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {personas.map((persona) => (
-                <PersonaCard
-                    key={persona.id}
-                    persona={persona}
-                    onClick={onPersonaClick}
-                    visibleFields={visibleFields}
-                />
-            ))}
-        </div>
+        <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+        >
+            <SortableContext items={items.map(p => p.id)} strategy={rectSortingStrategy}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {items.map((persona) => (
+                        <PersonaCard
+                            key={persona.id}
+                            persona={persona}
+                            onClick={onPersonaClick}
+                            visibleFields={visibleFields}
+                        />
+                    ))}
+                </div>
+            </SortableContext>
+        </DndContext>
     );
 }
