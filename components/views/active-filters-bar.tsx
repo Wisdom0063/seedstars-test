@@ -22,12 +22,16 @@ import {
     Hash,
 } from 'lucide-react';
 import { ViewSource } from '@/lib/api/views';
+import { SortDropdown } from './sort-dropdown';
+import { SortCriteria } from './sort-popup';
 
 interface ActiveFiltersBarProps {
     filters: Record<string, any>;
     onFiltersChange: (filters: Record<string, any>) => void;
     source: ViewSource;
     data?: any[];
+    sorts?: SortCriteria[];
+    onSortsChange?: (sorts: SortCriteria[]) => void;
 }
 
 // Helper functions
@@ -143,7 +147,7 @@ const getFilterConfig = (filterId: string, source: ViewSource) => {
     return configs[filterId];
 };
 
-export function ActiveFiltersBar({ filters, onFiltersChange, source, data = [] }: ActiveFiltersBarProps) {
+export function ActiveFiltersBar({ filters, onFiltersChange, source, data = [], sorts, onSortsChange }: ActiveFiltersBarProps) {
     const activeFilterKeys = Object.keys(filters).filter(key => {
         const value = filters[key];
         // Show filter if it exists in the filters object, regardless of whether it has values
@@ -173,6 +177,32 @@ export function ActiveFiltersBar({ filters, onFiltersChange, source, data = [] }
     return (
         <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
             <div className="flex flex-wrap gap-2">
+
+                {onSortsChange && sorts?.length && (
+                    <SortDropdown
+                        sorts={sorts}
+                        onSortsChange={onSortsChange}
+                        source={source}
+                        availableFields={[
+                            { id: 'name', label: 'Name', icon: () => null, field: 'name', type: 'text' },
+                            { id: 'segment', label: 'Customer Segment', icon: () => null, field: 'segment.name', type: 'text' },
+                            { id: 'location', label: 'Location', icon: () => null, field: 'location', type: 'text' },
+                            { id: 'education', label: 'Education', icon: () => null, field: 'education', type: 'text' },
+                            { id: 'income', label: 'Income Level', icon: () => null, field: 'incomePerMonth', type: 'number' },
+                            { id: 'age', label: 'Age', icon: () => null, field: 'age', type: 'number' },
+                        ]}
+                        onAddSort={(field: any) => {
+                            const newSort: SortCriteria = {
+                                id: `${field.field}-${Date.now()}`,
+                                field: field.field,
+                                label: field.label,
+                                order: 'ASC',
+                                icon: field.icon,
+                            };
+                            onSortsChange([...sorts, newSort]);
+                        }}
+                    />
+                )}
                 {activeFilterKeys.map(filterId => {
                     const config = getFilterConfig(filterId, source);
                     if (!config) return null;
@@ -210,14 +240,14 @@ function FilterChip({ filterId, config, value, data, onUpdate, onRemove }: Filte
     const getDisplayText = () => {
         if (config.type === 'multiselect' && Array.isArray(value)) {
             if (value.length === 0) return 'Select...';
-            
+
             // Get display labels for the selected values
             const options = config.getOptions ? config.getOptions(data) : [];
             const selectedLabels = value.map(selectedValue => {
                 const option = options.find((opt: any) => opt.value === selectedValue);
                 return option ? option.label : selectedValue;
             });
-            
+
             if (selectedLabels.length === 1) return selectedLabels[0];
             return selectedLabels.join(', ');
         }

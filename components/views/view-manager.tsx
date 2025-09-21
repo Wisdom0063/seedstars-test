@@ -7,6 +7,7 @@ import { PersonaTable } from '../views/customer-segment/table';
 import { PersonaKanban } from '../views/customer-segment/kanban';
 import { View, ViewLayout, ViewSource, viewsApi } from '@/lib/api/views';
 import { Persona } from '@/lib/api/customer-segment';
+import { SortCriteria } from './sort-popup';
 
 interface ViewManagerProps {
     personas: Persona[];
@@ -26,6 +27,7 @@ export function ViewManager({
     const [loading, setLoading] = useState(true);
     const [searchValue, setSearchValue] = useState('');
     const [filters, setFilters] = useState<Record<string, any>>({});
+    const [sorts, setSorts] = useState<SortCriteria[]>([]);
 
     // Load views on mount
     useEffect(() => {
@@ -63,7 +65,12 @@ export function ViewManager({
         }
     };
 
-    // Filter and search personas
+    // Helper function to get nested object values
+    const getNestedValue = (obj: any, path: string): any => {
+        return path.split('.').reduce((current, key) => current?.[key], obj);
+    };
+
+    // Filter, search, and sort personas
     const filteredPersonas = useMemo(() => {
         let result = [...personas];
 
@@ -117,8 +124,33 @@ export function ViewManager({
             );
         }
 
+        // Apply sorting (multiple criteria)
+        if (sorts.length > 0) {
+            result.sort((a, b) => {
+                for (const sort of sorts) {
+                    let aValue = getNestedValue(a, sort.field);
+                    let bValue = getNestedValue(b, sort.field);
+
+                    // Handle null/undefined values
+                    if (aValue == null && bValue == null) continue;
+                    if (aValue == null) return sort.order === 'ASC' ? 1 : -1;
+                    if (bValue == null) return sort.order === 'ASC' ? -1 : 1;
+
+                    // Handle different data types
+                    if (typeof aValue === 'string' && typeof bValue === 'string') {
+                        aValue = aValue.toLowerCase();
+                        bValue = bValue.toLowerCase();
+                    }
+
+                    if (aValue < bValue) return sort.order === 'ASC' ? -1 : 1;
+                    if (aValue > bValue) return sort.order === 'ASC' ? 1 : -1;
+                }
+                return 0;
+            });
+        }
+
         return result;
-    }, [personas, searchValue, filters]);
+    }, [personas, searchValue, filters, sorts]);
 
     const handleViewChange = (view: View) => {
         setCurrentView(view);
@@ -160,6 +192,10 @@ export function ViewManager({
 
     const handleFiltersChange = (newFilters: Record<string, any>) => {
         setFilters(newFilters);
+    };
+
+    const handleSortsChange = (newSorts: SortCriteria[]) => {
+        setSorts(newSorts);
     };
 
     const renderContent = () => {
@@ -221,6 +257,8 @@ export function ViewManager({
                 onSearchChange={setSearchValue}
                 filters={filters}
                 onFiltersChange={handleFiltersChange}
+                sorts={sorts}
+                onSortsChange={handleSortsChange}
                 data={personas}
             />
 

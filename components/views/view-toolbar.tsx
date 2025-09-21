@@ -14,6 +14,8 @@ import {
 import { View, ViewLayout, ViewSource } from '@/lib/api/views';
 import { FilterPopup } from './filter-popup';
 import { ActiveFiltersBar } from './active-filters-bar';
+import { SortCriteria } from './sort-popup';
+import { SortDropdown } from './sort-dropdown';
 
 interface ViewToolbarProps {
     views: View[];
@@ -28,6 +30,8 @@ interface ViewToolbarProps {
     onSearchChange?: (value: string) => void;
     filters?: Record<string, any>;
     onFiltersChange?: (filters: Record<string, any>) => void;
+    sorts?: SortCriteria[];
+    onSortsChange?: (sorts: SortCriteria[]) => void;
     data?: any[];
 }
 
@@ -44,6 +48,8 @@ export function ViewToolbar({
     onSearchChange,
     filters = {},
     onFiltersChange,
+    sorts = [],
+    onSortsChange,
     data = [],
 }: ViewToolbarProps) {
 
@@ -100,11 +106,32 @@ export function ViewToolbar({
                         />
                     )}
 
-                    {/* Sort button */}
-                    <Button variant="outline" size="sm" className="h-8">
-                        <SortAsc className="h-4 w-4 mr-1.5" />
-                        Sort
-                    </Button>
+                    {/* Sort dropdown */}
+                    {onSortsChange && (
+                        <SortDropdown
+                            sorts={sorts}
+                            onSortsChange={onSortsChange}
+                            source={source}
+                            availableFields={[
+                                { id: 'name', label: 'Name', icon: () => null, field: 'name', type: 'text' },
+                                { id: 'segment', label: 'Customer Segment', icon: () => null, field: 'segment.name', type: 'text' },
+                                { id: 'location', label: 'Location', icon: () => null, field: 'location', type: 'text' },
+                                { id: 'education', label: 'Education', icon: () => null, field: 'education', type: 'text' },
+                                { id: 'income', label: 'Income Level', icon: () => null, field: 'incomePerMonth', type: 'number' },
+                                { id: 'age', label: 'Age', icon: () => null, field: 'age', type: 'number' },
+                            ]}
+                            onAddSort={(field: any) => {
+                                const newSort: SortCriteria = {
+                                    id: `${field.field}-${Date.now()}`,
+                                    field: field.field,
+                                    label: field.label,
+                                    order: 'ASC',
+                                    icon: field.icon,
+                                };
+                                onSortsChange([...sorts, newSort]);
+                            }}
+                        />
+                    )}
 
                     {/* More options */}
                     <Button variant="outline" size="sm" className="h-8 px-2">
@@ -114,22 +141,23 @@ export function ViewToolbar({
                     {/* Item count */}
                     {itemCount !== undefined && (
                         <div className="text-sm text-gray-500 ml-2">
-                            {itemCount} {itemCount === 1 ? 'item' : 'items'}
+                            {itemCount} {itemCount === 1 ? 'record' : 'records'}
                         </div>
                     )}
                 </div>
-
             </div>
 
             {/* Active Filters Bar */}
-            {/* {onFiltersChange && ( */}
-            <ActiveFiltersBar
-                filters={filters}
-                onFiltersChange={onFiltersChange as any}
-                source={source}
-                data={data}
-            />
-            {/* )} */}
+            {onFiltersChange && (
+                <ActiveFiltersBar
+                    filters={filters}
+                    onFiltersChange={onFiltersChange}
+                    source={source}
+                    data={data}
+                    sorts={sorts}
+                    onSortsChange={onSortsChange}
+                />
+            )}
         </div>
     );
 }
