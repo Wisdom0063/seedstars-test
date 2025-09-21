@@ -44,7 +44,6 @@ export function ViewManager({
             }
         } catch (error) {
             console.error('Failed to load views:', error);
-            // Create a fallback view if API fails
             const fallbackView: View = {
                 id: 'fallback',
                 name: 'All Items',

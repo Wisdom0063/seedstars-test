@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ViewSelector } from './view-selector';
 import { LayoutSwitcher } from './layout-switcher';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import {
   SortAsc,
   Search,
   MoreHorizontal,
+  X,
 } from 'lucide-react';
 import { View, ViewLayout, ViewSource } from '@/lib/api/views';
 
@@ -60,18 +61,12 @@ export function ViewToolbar({
 
       {/* Right side - Search and actions */}
       <div className="flex items-center gap-2">
-        {/* Search */}
+        {/* Animated Search */}
         {onSearchChange && (
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchValue || ''}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64"
-            />
-          </div>
+          <AnimatedSearch 
+            searchValue={searchValue} 
+            onSearchChange={onSearchChange} 
+          />
         )}
 
         {/* Filter button */}
@@ -98,6 +93,88 @@ export function ViewToolbar({
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// Animated Search Component
+interface AnimatedSearchProps {
+  searchValue?: string;
+  onSearchChange: (value: string) => void;
+}
+
+function AnimatedSearch({ searchValue, onSearchChange }: AnimatedSearchProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const handleClose = () => {
+    setIsExpanded(false);
+    onSearchChange('');
+  };
+
+  // Focus input when expanded
+  useEffect(() => {
+    if (isExpanded && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isExpanded]);
+
+  // Close when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
+        if (!searchValue?.trim()) {
+          setIsExpanded(false);
+        }
+      }
+    };
+
+    if (isExpanded) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isExpanded, searchValue]);
+
+  return (
+    <div className="relative flex items-center">
+      {/* Search Icon Button */}
+      {!isExpanded && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 px-2"
+          onClick={handleToggle}
+        >
+          <Search className="h-4 w-4" />
+        </Button>
+      )}
+
+      {/* Expanded Search Input */}
+      {isExpanded && (
+        <div className="relative animate-in slide-in-from-right-2 duration-200">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Search..."
+            value={searchValue || ''}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64 transition-all duration-200"
+          />
+          {searchValue && (
+            <button
+              onClick={handleClose}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
