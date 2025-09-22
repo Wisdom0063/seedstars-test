@@ -31,6 +31,9 @@ import {
 } from 'lucide-react';
 import { Persona } from '@/lib/api/customer-segment';
 
+import { useVirtualizer } from '@tanstack/react-virtual'
+
+
 interface PersonaTableProps {
     personas: Persona[];
     onPersonaClick?: (persona: Persona) => void;
@@ -235,7 +238,7 @@ export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: P
     // Filter columns based on visible fields
     const columns = useMemo(() => {
         if (visibleFields.length === 0) return allColumns;
-        return allColumns.filter(column => 
+        return allColumns.filter(column =>
             column.id && isFieldVisible(column.id)
         );
     }, [allColumns, visibleFields, isFieldVisible]);
@@ -261,6 +264,20 @@ export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: P
         },
     });
 
+
+    const { rows } = table.getRowModel()
+
+    const parentRef = React.useRef<HTMLDivElement>(null)
+
+    const virtualizer = useVirtualizer({
+        count: rows.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 34,
+        overscan: 20,
+    })
+
+
+
     return (
         <div className="space-y-4">
             {/* Search and Filters */}
@@ -280,55 +297,67 @@ export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: P
             </div>
 
             {/* Table */}
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="font-semibold">
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && 'selected'}
-                                    className="cursor-pointer"
-                                    onClick={() => onPersonaClick?.(row.original)}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext()
-                                            )}
-                                        </TableCell>
+            <div ref={parentRef} className="container">
+                <div style={{ height: `${virtualizer.getTotalSize()}px` }} className="rounded-md border">
+                    <Table>
+                        <TableHeader>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <TableHead key={header.id} className="font-semibold">
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                        </TableHead>
                                     ))}
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={columns.length}
-                                    className="h-24 text-center text-gray-500"
-                                >
-                                    No personas found.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+
+                            {table.getRowModel().rows?.length ? (
+                                virtualizer.getVirtualItems().map((virtualRow, index) => {
+                                    const row = rows[virtualRow.index]
+                                    return (
+                                        <TableRow
+                                            key={row.id}
+                                            data-state={row.getIsSelected() && 'selected'}
+                                            className="cursor-pointer"
+                                            onClick={() => onPersonaClick?.(row.original)}
+                                            style={{
+                                                height: `${virtualRow.size}px`,
+                                                transform: `translateY(${virtualRow.start - index * virtualRow.size
+                                                    }px)`,
+                                            }}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(
+                                                        cell.column.columnDef.cell,
+                                                        cell.getContext()
+                                                    )}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    )
+                                })
+
+                            ) : (
+                                <TableRow>
+                                    <TableCell
+                                        colSpan={columns.length}
+                                        className="h-24 text-center text-gray-500"
+                                    >
+                                        No personas found.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
             </div>
 
             {/* Pagination */}
