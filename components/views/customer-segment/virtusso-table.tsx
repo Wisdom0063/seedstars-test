@@ -276,7 +276,7 @@ export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: P
     return (
         <div className="space-y-4">
             {/* Search and Filters */}
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
                 <div className="relative flex-1 max-w-sm">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                     <Input
@@ -289,7 +289,7 @@ export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: P
                 <div className="text-sm text-gray-500">
                     {table.getFilteredRowModel().rows.length} of {personas.length} personas
                 </div>
-            </div>
+            </div> */}
 
             {/* Virtualized Table with React Virtuoso */}
             <TableVirtuoso
