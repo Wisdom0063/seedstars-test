@@ -275,10 +275,12 @@ export function PersonaViewManager({
             persona={persona}
             isOpen={isOpen}
             onClose={onClose}
-            onSave={(updatedPersona) => {
+            onSave={async (updatedPersona) => {
                 console.log('Persona updated:', updatedPersona);
                 // TODO: Implement persona update API call
-                onClose();
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 500));
+                console.log('Persona saved successfully');
             }}
             onDelete={(personaToDelete) => {
                 console.log('Persona deleted:', personaToDelete);
