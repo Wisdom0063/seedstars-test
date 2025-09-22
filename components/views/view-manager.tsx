@@ -10,6 +10,7 @@ interface ViewManagerProps {
     source: ViewSource;
     onPersonaClick?: (persona: Persona) => void;
     onPersonaMove?: (personaId: string, newSegmentId: string) => void;
+    onPersonaUpdate?: (updatedPersona: Persona) => void;
 }
 
 export function ViewManager({
@@ -17,12 +18,14 @@ export function ViewManager({
     source,
     onPersonaClick,
     onPersonaMove,
+    onPersonaUpdate,
 }: ViewManagerProps) {
     return (
         <PersonaViewManager
             personas={personas}
             onPersonaClick={onPersonaClick}
             onPersonaMove={onPersonaMove}
+            onPersonaUpdate={onPersonaUpdate}
         />
     );
 }

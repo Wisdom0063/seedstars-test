@@ -83,20 +83,20 @@ export const personasApi = {
 
     // Get a specific persona by ID
     getById: (id: string): Promise<Persona> => {
-        return fetcher<Persona>(`/api/personas/${id}`);
+        return fetcher<Persona>(`/api/customer-segments/personas/${id}`);
     },
 
     // Create a new persona
     create: (data: Omit<Persona, 'id' | 'createdAt' | 'updatedAt' | 'segment'> & { segmentId: string }): Promise<Persona> => {
-        return fetcher<Persona>('/api/personas', {
+        return fetcher<Persona>('/api/customer-segments/personas', {
             method: 'POST',
             body: JSON.stringify(data),
         });
     },
 
     // Update a persona
-    update: (id: string, data: Partial<Omit<Persona, 'id' | 'createdAt' | 'updatedAt' | 'segment'>>): Promise<Persona> => {
-        return fetcher<Persona>(`/api/personas/${id}`, {
+    update: (data: Persona): Promise<Persona> => {
+        return fetcher<Persona>('/api/customer-segments/personas', {
             method: 'PUT',
             body: JSON.stringify(data),
         });
@@ -104,7 +104,7 @@ export const personasApi = {
 
     // Delete a persona
     delete: (id: string): Promise<{ message: string }> => {
-        return fetcher<{ message: string }>(`/api/personas/${id}`, {
+        return fetcher<{ message: string }>(`/api/customer-segments/personas/${id}`, {
             method: 'DELETE',
         });
     },

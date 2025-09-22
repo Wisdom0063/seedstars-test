@@ -34,7 +34,21 @@ export default function CustomerSegmentsPage() {
 
     const handlePersonaClick = (persona: Persona) => {
         console.log('Persona clicked:', persona);
-        // TODO: Implement persona detail view or modal
+    };
+
+    const handlePersonaMove = (personaId: string, newSegmentId: string) => {
+        console.log('Persona moved:', personaId, 'to segment:', newSegmentId);
+    };
+
+    const handlePersonaUpdate = (updatedPersona: Persona) => {
+        console.log('Persona updated in real-time:', updatedPersona);
+        
+        // Update the personas state with the new data
+        setPersonas(prevPersonas => 
+            prevPersonas.map(persona => 
+                persona.id === updatedPersona.id ? updatedPersona : persona
+            )
+        );
     };
 
     if (loading) {
@@ -94,6 +108,7 @@ export default function CustomerSegmentsPage() {
                         console.log('Move persona:', personaId, 'to segment:', newSegmentId);
                         // TODO: Implement persona move logic
                     }}
+                    onPersonaUpdate={handlePersonaUpdate}
                 />
             )}
         </div>

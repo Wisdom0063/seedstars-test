@@ -26,6 +26,7 @@ interface PersonaDetailDrawerProps {
     onClose: () => void;
     onSave?: (persona: Persona) => void;
     onDelete?: (persona: Persona) => void;
+    onRealtimeUpdate?: (persona: Persona) => void;
 }
 
 export function PersonaDetailDrawer({
@@ -34,10 +35,12 @@ export function PersonaDetailDrawer({
     onClose,
     onSave,
     onDelete,
+    onRealtimeUpdate,
 }: PersonaDetailDrawerProps) {
     const [editedPersona, setEditedPersona] = useState<Persona | null>(null);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
 
     // Initialize editing state when persona changes
     React.useEffect(() => {
@@ -47,23 +50,21 @@ export function PersonaDetailDrawer({
         }
     }, [persona]);
 
-    // Autosave functionality with debounce
-    React.useEffect(() => {
+    // Autosave functionality - triggers on blur events
+    const handleSave = React.useCallback(async () => {
         if (!editedPersona || !hasUnsavedChanges || !onSave) return;
 
-        const timeoutId = setTimeout(async () => {
-            setIsSaving(true);
-            try {
-                await onSave(editedPersona);
-                setHasUnsavedChanges(false);
-            } catch (error) {
-                console.error('Failed to save persona:', error);
-            } finally {
-                setIsSaving(false);
-            }
-        }, 1000); // 1 second debounce
-
-        return () => clearTimeout(timeoutId);
+        setIsSaving(true);
+        setSaveError(null);
+        try {
+            await onSave(editedPersona);
+            setHasUnsavedChanges(false);
+        } catch (error: any) {
+            console.error('Failed to save persona:', error);
+            setSaveError(error.message || 'Failed to save changes');
+        } finally {
+            setIsSaving(false);
+        }
     }, [editedPersona, hasUnsavedChanges, onSave]);
 
     const handleDelete = () => {
@@ -73,13 +74,36 @@ export function PersonaDetailDrawer({
         onClose();
     };
 
+    const handleClose = () => {
+        // Save any unsaved changes before closing
+        if (hasUnsavedChanges) {
+            handleSave();
+        }
+        onClose();
+    };
+
     const updateField = (field: keyof Persona, value: any) => {
         if (editedPersona) {
-            setEditedPersona({
+            const updatedPersona = {
                 ...editedPersona,
                 [field]: value,
-            });
+            };
+            
+            setEditedPersona(updatedPersona);
             setHasUnsavedChanges(true);
+            setSaveError(null); // Clear any previous save errors
+            
+            // Trigger real-time UI update immediately
+            if (onRealtimeUpdate) {
+                onRealtimeUpdate(updatedPersona);
+            }
+        }
+    };
+
+    // Handle blur events to trigger save
+    const handleFieldBlur = () => {
+        if (hasUnsavedChanges) {
+            handleSave();
         }
     };
 
@@ -98,16 +122,22 @@ export function PersonaDetailDrawer({
                                 Saving...
                             </div>
                         )}
-                        {!isSaving && !hasUnsavedChanges && (
+                        {!isSaving && !hasUnsavedChanges && !saveError && (
                             <div className="flex items-center gap-2 text-sm text-green-600">
                                 <div className="w-2 h-2 bg-green-600 rounded-full"></div>
                                 Saved
                             </div>
                         )}
-                        {hasUnsavedChanges && !isSaving && (
+                        {hasUnsavedChanges && !isSaving && !saveError && (
                             <div className="flex items-center gap-2 text-sm text-orange-600">
                                 <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
                                 Unsaved changes
+                            </div>
+                        )}
+                        {saveError && (
+                            <div className="flex items-center gap-2 text-sm text-red-600">
+                                <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                                {saveError}
                             </div>
                         )}
                     </div>
@@ -128,6 +158,7 @@ export function PersonaDetailDrawer({
                                 id="name"
                                 value={editedPersona.name}
                                 onChange={(e) => updateField('name', e.target.value)}
+                                onBlur={handleFieldBlur}
                                 placeholder="Enter name"
                             />
                         </div>
@@ -138,6 +169,7 @@ export function PersonaDetailDrawer({
                                 type="number"
                                 value={editedPersona.age}
                                 onChange={(e) => updateField('age', parseInt(e.target.value) || 0)}
+                                onBlur={handleFieldBlur}
                                 placeholder="Enter age"
                             />
                         </div>
@@ -147,6 +179,7 @@ export function PersonaDetailDrawer({
                                 id="gender"
                                 value={editedPersona.gender}
                                 onChange={(e) => updateField('gender', e.target.value)}
+                                onBlur={handleFieldBlur}
                                 placeholder="Enter gender"
                             />
                         </div>
@@ -156,6 +189,7 @@ export function PersonaDetailDrawer({
                                 id="segment"
                                 value={editedPersona.segment.name}
                                 onChange={(e) => updateField('segment', { ...editedPersona.segment, name: e.target.value })}
+                                onBlur={handleFieldBlur}
                                 placeholder="Enter segment"
                             />
                         </div>
@@ -176,6 +210,7 @@ export function PersonaDetailDrawer({
                                 id="location"
                                 value={editedPersona.location}
                                 onChange={(e) => updateField('location', e.target.value)}
+                                onBlur={handleFieldBlur}
                                 placeholder="Enter location"
                             />
                         </div>
@@ -185,6 +220,7 @@ export function PersonaDetailDrawer({
                                 id="education"
                                 value={editedPersona.education}
                                 onChange={(e) => updateField('education', e.target.value)}
+                                onBlur={handleFieldBlur}
                                 placeholder="Enter education"
                             />
                         </div>
@@ -194,6 +230,7 @@ export function PersonaDetailDrawer({
                                 id="income"
                                 value={editedPersona.incomePerMonth}
                                 onChange={(e) => updateField('incomePerMonth', e.target.value)}
+                                onBlur={handleFieldBlur}
                                 placeholder="Enter income level"
                             />
                         </div>
@@ -214,6 +251,7 @@ export function PersonaDetailDrawer({
                                 id="quote"
                                 value={editedPersona.quote || ''}
                                 onChange={(e) => updateField('quote', e.target.value)}
+                                onBlur={handleFieldBlur}
                                 rows={2}
                                 placeholder="Enter a representative quote"
                             />
@@ -225,6 +263,7 @@ export function PersonaDetailDrawer({
                                 id="description"
                                 value={editedPersona.description || ''}
                                 onChange={(e) => updateField('description', e.target.value)}
+                                onBlur={handleFieldBlur}
                                 rows={4}
                                 placeholder="Enter persona description"
                             />
@@ -266,7 +305,7 @@ export function PersonaDetailDrawer({
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
-                Changes are automatically saved
+                Changes save when you move to the next field
             </div>
         </div>
     );
@@ -275,7 +314,7 @@ export function PersonaDetailDrawer({
         <ViewDetailDrawer
             item={persona}
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={handleClose}
             title={(persona) => persona.name}
             subtitle={(persona) => `${persona.age} years old • ${persona.segment.name}`}
             description={persona?.location}

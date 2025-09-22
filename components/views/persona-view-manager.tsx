@@ -4,7 +4,7 @@ import React from 'react';
 import { GenericViewManager, LayoutComponentProps, ViewManagerConfig } from '../view-manager/generic-view-manager';
 import { PersonaDetailDrawer } from './persona-detail-drawer';
 import { ViewLayout, ViewSource } from '@/lib/api/views';
-import { Persona } from '@/lib/api/customer-segment';
+import { Persona, personasApi } from '@/lib/api/customer-segment';
 import { PersonaKanban } from './customer-segment/kanban';
 import PersonaCards from './customer-segment/card';
 import { PersonaTable } from './customer-segment/table';
@@ -261,6 +261,7 @@ export interface PersonaViewManagerProps {
     personas: Persona[];
     onPersonaClick?: (persona: Persona) => void;
     onPersonaMove?: (personaId: string, newSegmentId: string) => void;
+    onPersonaUpdate?: (updatedPersona: Persona) => void;
 }
 
 // Persona ViewManager component
@@ -268,6 +269,7 @@ export function PersonaViewManager({
     personas,
     onPersonaClick,
     onPersonaMove,
+    onPersonaUpdate,
 }: PersonaViewManagerProps) {
     // Drawer renderer function - provides persona-specific drawer
     const renderPersonaDrawer = (persona: Persona | null, isOpen: boolean, onClose: () => void) => (
@@ -275,17 +277,39 @@ export function PersonaViewManager({
             persona={persona}
             isOpen={isOpen}
             onClose={onClose}
+            onRealtimeUpdate={onPersonaUpdate}
             onSave={async (updatedPersona) => {
-                console.log('Persona updated:', updatedPersona);
-                // TODO: Implement persona update API call
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 500));
-                console.log('Persona saved successfully');
+                try {
+                    console.log('Saving persona:', updatedPersona);
+                    
+                    const result = await personasApi.update(updatedPersona);
+                    console.log('Persona saved successfully:', result);
+                    
+                    // Optionally update local state or trigger a refresh
+                    // You could call a callback here to update the personas list
+                    
+                } catch (error) {
+                    console.error('Failed to save persona:', error);
+                    throw error; // Re-throw to let the drawer handle the error
+                }
             }}
-            onDelete={(personaToDelete) => {
-                console.log('Persona deleted:', personaToDelete);
-                // TODO: Implement persona delete API call
-                onClose();
+            onDelete={async (personaToDelete) => {
+                try {
+                    console.log('Deleting persona:', personaToDelete);
+                    
+                    await personasApi.delete(personaToDelete.id);
+                    console.log('Persona deleted successfully');
+                    
+                    // Close the drawer after successful deletion
+                    onClose();
+                    
+                    // Optionally trigger a refresh of the personas list
+                    // You could call a callback here to update the personas list
+                    
+                } catch (error) {
+                    console.error('Failed to delete persona:', error);
+                    // You might want to show an error message to the user
+                }
             }}
         />
     );
