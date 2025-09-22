@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import * as Promise from 'bluebird';
+import Bluebird from 'bluebird';
 
 const prisma = new PrismaClient();
 
@@ -245,31 +245,40 @@ export async function seedCustomerSegments() {
         console.log('👥 Generating 10,000 personas...');
         const personas = generatePersonas(10000);
 
-        console.log('💾 Creating personas in batches...');
-        const batchSize = 100; // Process in batches to avoid memory issues
+        // Transform personas to include segmentId
+        console.log('🔄 Preparing persona data...');
+        const personasWithSegmentId = personas.map(persona => {
+            const segment = createdSegments.find(s => s.name === persona.segmentName);
+            if (!segment) {
+                throw new Error(`Could not find segment: ${persona.segmentName}`);
+            }
+            
+            const { segmentName, ...personaData } = persona;
+            return {
+                ...personaData,
+                segmentId: segment.id,
+            };
+        });
 
-        for (let i = 0; i < personas.length; i += batchSize) {
-            const batch = personas.slice(i, i + batchSize);
-            const personaPromises = batch.map(async (persona) => {
-                // Find the segment ID by name
-                const segment = createdSegments.find(s => s.name === persona.segmentName);
-                if (!segment) {
-                    console.error(`❌ Could not find segment: ${persona.segmentName}`);
-                    return null;
-                }
+        console.log('💾 Creating personas with Bluebird concurrency control...');
+        const concurrency = 10; // Process 10 personas concurrently
+        let completed = 0;
 
-                const { segmentName, ...personaData } = persona;
-                return prisma.persona.create({
-                    data: {
-                        ...personaData,
-                        segmentId: segment.id,
-                    },
-                });
+        await Bluebird.map(personasWithSegmentId, async (personaData: any) => {
+            const result = await prisma.persona.create({
+                data: personaData,
             });
+            completed++;
+            
+            // Log progress every 500 personas
+            if (completed % 500 === 0) {
+                console.log(`✅ Created ${completed}/${personasWithSegmentId.length} personas`);
+            }
+            
+            return result;
+        }, { concurrency });
 
-            await Promise.all(personaPromises);
-            console.log(`✅ Created batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(personas.length / batchSize)} (${Math.min(i + batchSize, personas.length)}/${personas.length} personas)`);
-        }
+        console.log(`✅ All ${completed} personas created successfully!`);
 
         console.log('🎉 Data seeding completed successfully!');
 
