@@ -5,6 +5,7 @@ import { api, ApiError } from '@/lib/api';
 import { Persona } from '@/lib/api/customer-segment';
 import { ViewManager } from '@/components/views/view-manager';
 import { ViewSource } from '@/lib/api/views';
+import { PersonaViewManager } from '@/components/views/persona-view-manager';
 
 export default function CustomerSegmentsPage() {
     const [personas, setPersonas] = useState<Persona[]>([]);
@@ -22,8 +23,8 @@ export default function CustomerSegmentsPage() {
             const data = await api.personas.getAll();
             setPersonas(data);
         } catch (err) {
-            const errorMessage = err instanceof ApiError 
-                ? err.message 
+            const errorMessage = err instanceof ApiError
+                ? err.message
                 : 'Failed to fetch personas';
             setError(errorMessage);
             console.error('Error fetching personas:', err);
@@ -42,10 +43,10 @@ export default function CustomerSegmentsPage() {
 
     const handlePersonaUpdate = (updatedPersona: Persona) => {
         console.log('Persona updated in real-time:', updatedPersona);
-        
+
         // Update the personas state with the new data
-        setPersonas(prevPersonas => 
-            prevPersonas.map(persona => 
+        setPersonas(prevPersonas =>
+            prevPersonas.map(persona =>
                 persona.id === updatedPersona.id ? updatedPersona : persona
             )
         );
@@ -100,9 +101,8 @@ export default function CustomerSegmentsPage() {
                     </p>
                 </div>
             ) : (
-                <ViewManager
+                <PersonaViewManager
                     personas={personas}
-                    source={ViewSource.PERSONAS}
                     onPersonaClick={handlePersonaClick}
                     onPersonaMove={(personaId, newSegmentId) => {
                         console.log('Move persona:', personaId, 'to segment:', newSegmentId);

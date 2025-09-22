@@ -281,13 +281,13 @@ export function PersonaViewManager({
             onSave={async (updatedPersona) => {
                 try {
                     console.log('Saving persona:', updatedPersona);
-                    
+
                     const result = await personasApi.update(updatedPersona);
                     console.log('Persona saved successfully:', result);
-                    
+
                     // Optionally update local state or trigger a refresh
                     // You could call a callback here to update the personas list
-                    
+
                 } catch (error) {
                     console.error('Failed to save persona:', error);
                     throw error; // Re-throw to let the drawer handle the error
@@ -296,16 +296,16 @@ export function PersonaViewManager({
             onDelete={async (personaToDelete) => {
                 try {
                     console.log('Deleting persona:', personaToDelete);
-                    
+
                     await personasApi.delete(personaToDelete.id);
                     console.log('Persona deleted successfully');
-                    
+
                     // Close the drawer after successful deletion
                     onClose();
-                    
+
                     // Optionally trigger a refresh of the personas list
                     // You could call a callback here to update the personas list
-                    
+
                 } catch (error) {
                     console.error('Failed to delete persona:', error);
                     // You might want to show an error message to the user
