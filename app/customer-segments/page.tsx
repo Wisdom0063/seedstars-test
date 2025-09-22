@@ -3,9 +3,7 @@
 import { useState, useEffect } from 'react';
 import { api, ApiError } from '@/lib/api';
 import { Persona } from '@/lib/api/customer-segment';
-import { ViewManager } from '@/components/views/view-manager';
-import { ViewSource } from '@/lib/api/views';
-import { PersonaViewManager } from '@/components/views/persona-view-manager';
+import { PersonaViewManager } from '@/components/views/customer-segment/persona-view-manager';
 
 export default function CustomerSegmentsPage() {
     const [personas, setPersonas] = useState<Persona[]>([]);

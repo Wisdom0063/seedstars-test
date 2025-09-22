@@ -20,6 +20,7 @@ interface ViewSettingsModalProps {
   onLayoutChange: (layout: ViewLayout) => void;
   onEditView: (view: View) => void;
   onViewUpdate?: (updatedView: View) => void;
+  availableProperties: { id: string; label: string }[];
 }
 
 const LayoutIcons = {
@@ -28,7 +29,7 @@ const LayoutIcons = {
   [ViewLayout.KANBAN]: Kanban,
 };
 
-export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, onViewUpdate }: ViewSettingsModalProps) {
+export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, onViewUpdate, availableProperties }: ViewSettingsModalProps) {
   const [selectedLayout, setSelectedLayout] = useState(view.layout);
   const [viewName, setViewName] = useState(view.name);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -37,22 +38,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
   );
   const [showPropertyVisibility, setShowPropertyVisibility] = useState(false);
 
-  // Available properties for personas
-  const availableProperties = [
-    { id: 'name', label: 'Name' },
-    { id: 'age', label: 'Age' },
-    { id: 'gender', label: 'Gender' },
-    { id: 'location', label: 'Location' },
-    { id: 'education', label: 'Education' },
-    { id: 'incomePerMonth', label: 'Income Level' },
-    { id: 'painPoints', label: 'Pain Points' },
-    { id: 'channels', label: 'Channels' },
-    { id: 'quote', label: 'Quote' },
-    { id: 'description', label: 'Description' },
-    { id: 'segment', label: 'Customer Segment' },
-    { id: 'createdAt', label: 'Created At' },
-    { id: 'updatedAt', label: 'Updated At' },
-  ];
 
   const handleLayoutChange = async (layout: ViewLayout) => {
     setSelectedLayout(layout);
@@ -123,7 +108,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl w-96 max-h-[80vh] overflow-hidden">
-        {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold text-gray-900">View settings</h2>
           <button
@@ -134,9 +118,7 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
           </button>
         </div>
 
-        {/* Content */}
         <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
-          {/* View Name */}
           <div className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg">
             <Star className="h-5 w-5 text-gray-400" />
             <div className="flex-1">
@@ -173,7 +155,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
             </button>
           </div>
 
-          {/* Layout */}
           <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
             <div className="flex items-center gap-3">
               <Grid3X3 className="h-5 w-5 text-gray-400" />
@@ -185,7 +166,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
             </div>
           </div>
 
-          {/* Layout Options */}
           <div className="pl-8 space-y-2">
             <div className="grid grid-cols-3 gap-2">
               {Object.entries(LayoutIcons).map(([layout, Icon]) => (
@@ -206,7 +186,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
             </div>
           </div>
 
-          {/* Property Visibility */}
           <div>
             <div
               className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer"
@@ -222,7 +201,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
               </div>
             </div>
 
-            {/* Property List */}
             {showPropertyVisibility && (
               <div className="pl-8 space-y-2 mt-2">
                 {availableProperties.map((property) => {

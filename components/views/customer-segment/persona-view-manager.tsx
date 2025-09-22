@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { GenericViewManager, LayoutComponentProps, ViewManagerConfig } from '../view-manager/generic-view-manager';
+import { GenericViewManager, LayoutComponentProps, ViewManagerConfig } from '../../view-manager/generic-view-manager';
 import { PersonaDetailDrawer } from './persona-detail-drawer';
 import { ViewLayout, ViewSource } from '@/lib/api/views';
 import { Persona, personasApi } from '@/lib/api/customer-segment';
-import { PersonaKanban } from './customer-segment/virtusso-kanban';
-import PersonaCards from './customer-segment/virtusso-card';
-import { PersonaTable } from './customer-segment/virtusso-table';
+import { PersonaKanban } from './virtusso-kanban';
+import PersonaCards from './virtusso-card';
+import { PersonaTable } from './virtusso-table';
 
 // Persona-specific filter configuration
 const personaFilterConfig = {
@@ -100,35 +100,30 @@ const personaFilterConfig = {
     applyFilters: (personas: Persona[], filters: Record<string, any>): Persona[] => {
         let result = [...personas];
 
-        // Apply segment filter
         if (filters.segments && filters.segments.length > 0) {
             result = result.filter(persona =>
                 filters.segments.includes(persona.segment?.name)
             );
         }
 
-        // Apply location filter
         if (filters.locations && filters.locations.length > 0) {
             result = result.filter(persona =>
                 persona.location && filters.locations.includes(persona.location)
             );
         }
 
-        // Apply education filter
         if (filters.education && filters.education.length > 0) {
             result = result.filter(persona =>
                 persona.education && filters.education.includes(persona.education)
             );
         }
 
-        // Apply income filter
         if (filters.income && filters.income.length > 0) {
             result = result.filter(persona =>
                 persona.incomePerMonth && filters.income.includes(persona.incomePerMonth)
             );
         }
 
-        // Apply pain points filter
         if (filters.painPoints && filters.painPoints.length > 0) {
             result = result.filter(persona =>
                 persona.painPoints && persona.painPoints.some(point =>
@@ -137,7 +132,6 @@ const personaFilterConfig = {
             );
         }
 
-        // Apply channels filter
         if (filters.channels && filters.channels.length > 0) {
             result = result.filter(persona =>
                 persona.channels && persona.channels.some(channel =>
@@ -146,7 +140,6 @@ const personaFilterConfig = {
             );
         }
 
-        // Apply age filter
         if (filters.age) {
             result = result.filter(persona => {
                 if (!persona.age) return false;
@@ -157,14 +150,12 @@ const personaFilterConfig = {
             });
         }
 
-        // Apply gender filter
         if (filters.gender && filters.gender.length > 0) {
             result = result.filter(persona =>
                 persona.gender && filters.gender.includes(persona.gender)
             );
         }
 
-        // Apply search filter
         if (filters.search) {
             const searchTerm = filters.search.toLowerCase();
             result = result.filter(persona =>
@@ -190,18 +181,20 @@ const personaSortConfig = {
         const { User, Calendar, MapPin, GraduationCap, DollarSign, Users } = require('lucide-react');
 
         return [
-            { id: 'name', label: 'Name', icon: User, field: 'name', type: 'text' as const },
-            { id: 'age', label: 'Age', icon: Calendar, field: 'age', type: 'number' as const },
-            { id: 'segment', label: 'Customer Segment', icon: Users, field: 'segment.name', type: 'text' as const },
-            { id: 'location', label: 'Location', icon: MapPin, field: 'location', type: 'text' as const },
-            { id: 'education', label: 'Education', icon: GraduationCap, field: 'education', type: 'text' as const },
-            { id: 'income', label: 'Income Level', icon: DollarSign, field: 'incomePerMonth', type: 'number' as const },
-            { id: 'gender', label: 'Gender', icon: User, field: 'gender', type: 'text' as const },
-            { id: 'createdAt', label: 'Created Date', icon: Calendar, field: 'createdAt', type: 'date' as const },
-            { id: 'updatedAt', label: 'Updated Date', icon: Calendar, field: 'updatedAt', type: 'date' as const }
+            { id: 'name', label: 'Name', icon: User, field: 'name', type: 'text' as const, description: 'Sort by persona name' },
+            { id: 'age', label: 'Age', icon: Calendar, field: 'age', type: 'number' as const, description: 'Sort by persona age' },
+            { id: 'segment', label: 'Customer Segment', icon: Users, field: 'segment.name', type: 'text' as const, description: 'Sort by customer segment' },
+            { id: 'location', label: 'Location', icon: MapPin, field: 'location', type: 'text' as const, description: 'Sort by location' },
+            { id: 'education', label: 'Education', icon: GraduationCap, field: 'education', type: 'text' as const, description: 'Sort by education level' },
+            { id: 'income', label: 'Income Level', icon: DollarSign, field: 'incomePerMonth', type: 'number' as const, description: 'Sort by income level' },
+            { id: 'gender', label: 'Gender', icon: User, field: 'gender', type: 'text' as const, description: 'Sort by gender' },
+            { id: 'createdAt', label: 'Created Date', icon: Calendar, field: 'createdAt', type: 'date' as const, description: 'Sort by creation date' },
+            { id: 'updatedAt', label: 'Updated Date', icon: Calendar, field: 'updatedAt', type: 'date' as const, description: 'Sort by update date' }
         ];
     }
 };
+
+
 
 const personaAvailableProperties = [
     { id: 'name', label: 'Name' },
@@ -271,7 +264,6 @@ export function PersonaViewManager({
     onPersonaMove,
     onPersonaUpdate,
 }: PersonaViewManagerProps) {
-    // Drawer renderer function - provides persona-specific drawer
     const renderPersonaDrawer = (persona: Persona | null, isOpen: boolean, onClose: () => void) => (
         <PersonaDetailDrawer
             persona={persona}
@@ -285,12 +277,9 @@ export function PersonaViewManager({
                     const result = await personasApi.update(updatedPersona);
                     console.log('Persona saved successfully:', result);
 
-                    // Optionally update local state or trigger a refresh
-                    // You could call a callback here to update the personas list
-
                 } catch (error) {
                     console.error('Failed to save persona:', error);
-                    throw error; // Re-throw to let the drawer handle the error
+                    throw error;
                 }
             }}
             onDelete={async (personaToDelete) => {
@@ -300,15 +289,10 @@ export function PersonaViewManager({
                     await personasApi.delete(personaToDelete.id);
                     console.log('Persona deleted successfully');
 
-                    // Close the drawer after successful deletion
                     onClose();
-
-                    // Optionally trigger a refresh of the personas list
-                    // You could call a callback here to update the personas list
 
                 } catch (error) {
                     console.error('Failed to delete persona:', error);
-                    // You might want to show an error message to the user
                 }
             }}
         />

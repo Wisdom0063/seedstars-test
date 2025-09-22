@@ -20,7 +20,6 @@ interface PersonaKanbanProps {
   visibleFields?: string[];
 }
 
-// Transform Persona to KanbanItem format
 interface PersonaKanbanItem extends Record<string, unknown> {
   id: string;
   name: string;
@@ -28,13 +27,10 @@ interface PersonaKanbanItem extends Record<string, unknown> {
   persona: Persona;
 }
 
-// Transform CustomerSegment to KanbanColumn format
 interface SegmentKanbanColumn extends Record<string, unknown> {
   id: string;
   name: string;
 }
-
-// Persona Card Component for Kanban
 function PersonaKanbanCard({
   persona,
   onPersonaClick,
@@ -44,7 +40,6 @@ function PersonaKanbanCard({
   onPersonaClick?: (persona: Persona) => void;
   visibleFields?: string[];
 }) {
-  // Helper function to check if a field should be visible
   const isFieldVisible = (fieldName: string) => {
     return visibleFields.length === 0 || visibleFields.includes(fieldName);
   };
@@ -53,7 +48,6 @@ function PersonaKanbanCard({
       className="space-y-3 cursor-pointer"
       onClick={() => onPersonaClick?.(persona)}
     >
-      {/* Header */}
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
           {persona.name.charAt(0).toUpperCase()}
@@ -68,7 +62,6 @@ function PersonaKanbanCard({
         </div>
       </div>
 
-      {/* Quote */}
       {isFieldVisible('quote') && persona.quote && (
         <div className="bg-gray-50 p-2 rounded border-l-2 border-l-gray-300">
           <div className="flex items-start gap-2">
@@ -80,7 +73,6 @@ function PersonaKanbanCard({
         </div>
       )}
 
-      {/* Demographics */}
       <div className="space-y-1 text-xs">
         {isFieldVisible('location') && persona.location && (
           <div className="flex items-center gap-2">
@@ -130,7 +122,6 @@ function PersonaKanbanCard({
         </div>
       )}
 
-      {/* Channels Preview */}
       {isFieldVisible('channels') && persona.channels && persona.channels.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
@@ -160,11 +151,9 @@ function PersonaKanbanCard({
 }
 
 export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visibleFields }: PersonaKanbanProps) {
-  // Transform personas to kanban items and extract unique segments
   const { kanbanData, columns } = useMemo(() => {
     const segmentMap = new Map<string, SegmentKanbanColumn>();
 
-    // Create kanban items and collect unique segments
     const kanbanItems: PersonaKanbanItem[] = personas.map(persona => {
       const segmentId = persona.segment.id;
       const segmentName = persona.segment.name;
@@ -193,7 +182,6 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
 
   const [data, setData] = useState<PersonaKanbanItem[]>(kanbanData);
 
-  // Update data when personas prop changes
   React.useEffect(() => {
     setData(kanbanData);
   }, [kanbanData]);
@@ -201,7 +189,6 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
   const handleDataChange = (newData: PersonaKanbanItem[]) => {
     setData(newData);
 
-    // Find moved personas and notify parent
     newData.forEach((item, index) => {
       const originalItem = kanbanData.find(orig => orig.id === item.id);
       if (originalItem && originalItem.column !== item.column) {
@@ -211,7 +198,6 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
-    // Additional drag end logic if needed
   };
 
   return (

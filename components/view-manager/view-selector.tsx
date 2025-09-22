@@ -1,17 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
-  ChevronDown,
   Plus,
   Settings,
   Star,
@@ -64,7 +55,6 @@ export function ViewSelector({
 
   return (
     <>
-      {/* View Switcher - Layout Switcher Style */}
       <div className="flex items-center bg-gray-100 rounded-lg p-1">
         {filteredViews.map((view) => {
           const LayoutIcon = LayoutIcons[view.layout];
@@ -86,7 +76,6 @@ export function ViewSelector({
                 )}
               </button>
 
-              {/* Settings Button */}
               <button
                 onClick={(e) => handleViewSettingsClick(view, e)}
                 className="absolute -top-1 -right-1 h-5 w-5 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
@@ -97,7 +86,6 @@ export function ViewSelector({
           );
         })}
 
-        {/* New View Button */}
         <button
           onClick={onCreateView}
           className="flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-white/50 transition-colors"
@@ -107,7 +95,6 @@ export function ViewSelector({
         </button>
       </div>
 
-      {/* View Settings Modal */}
       {showViewSettings && settingsView && (
         <ViewSettingsModal
           view={settingsView}
@@ -124,7 +111,6 @@ export function ViewSelector({
   );
 }
 
-// View Settings Modal Component
 interface ViewSettingsModalProps {
   view: View;
   onClose: () => void;
@@ -304,7 +290,6 @@ function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, availabl
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex justify-end gap-2 p-4 border-t bg-gray-50">
           <Button variant="outline" onClick={onClose}>
             Cancel

@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
-import { 
+import {
   SortAsc,
   Search,
   User,
@@ -45,91 +45,21 @@ interface SortPopupProps {
   source: ViewSource;
   activeSorts: SortCriteria[];
   onAddSort: (field: SortField) => void;
+  getSortFields: (source: ViewSource) => SortField[];
 }
 
-// Define available sort fields based on source
-const getSortFields = (source: ViewSource): SortField[] => {
-  const commonFields: SortField[] = [
-    {
-      id: 'name',
-      label: 'Name',
-      icon: Type,
-      field: 'name',
-      type: 'text',
-      description: 'Sort by persona name'
-    },
-    {
-      id: 'segment',
-      label: 'Customer Segment',
-      icon: Users,
-      field: 'segment.name',
-      type: 'text',
-      description: 'Sort by customer segment'
-    },
-    {
-      id: 'location',
-      label: 'Location',
-      icon: MapPin,
-      field: 'location',
-      type: 'text',
-      description: 'Sort by location'
-    },
-    {
-      id: 'education',
-      label: 'Education',
-      icon: GraduationCap,
-      field: 'education',
-      type: 'text',
-      description: 'Sort by education level'
-    },
-    {
-      id: 'income',
-      label: 'Income Level',
-      icon: DollarSign,
-      field: 'incomePerMonth',
-      type: 'number',
-      description: 'Sort by income level'
-    },
-    {
-      id: 'age',
-      label: 'Age',
-      icon: User,
-      field: 'age',
-      type: 'number',
-      description: 'Sort by age'
-    },
-    {
-      id: 'createdAt',
-      label: 'Created Date',
-      icon: Calendar,
-      field: 'createdAt',
-      type: 'date',
-      description: 'Sort by creation date'
-    },
-    {
-      id: 'id',
-      label: 'ID',
-      icon: Hash,
-      field: 'id',
-      type: 'text',
-      description: 'Sort by ID'
-    }
-  ];
 
-  return commonFields;
-};
 
-export function SortPopup({ source, activeSorts, onAddSort }: SortPopupProps) {
+export function SortPopup({ source, activeSorts, onAddSort, getSortFields }: SortPopupProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
   const sortFields = getSortFields(source);
-  
-  // Filter out already active sorts and apply search
+
   const availableFields = sortFields.filter(field => {
     const isActive = activeSorts.some(sort => sort.field === field.field);
     const matchesSearch = field.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         field.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      field.description?.toLowerCase().includes(searchQuery.toLowerCase());
     return !isActive && matchesSearch;
   });
 
@@ -144,9 +74,9 @@ export function SortPopup({ source, activeSorts, onAddSort }: SortPopupProps) {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           className={`h-8 ${activeSortCount > 0 ? 'bg-blue-50 border-blue-200 text-blue-700' : ''}`}
         >
           <SortAsc className="h-4 w-4 mr-1.5" />
@@ -158,7 +88,7 @@ export function SortPopup({ source, activeSorts, onAddSort }: SortPopupProps) {
           )}
         </Button>
       </PopoverTrigger>
-      
+
       <PopoverContent align="start" className="w-80 p-0">
         <div className="p-4 border-b">
           <div className="relative">

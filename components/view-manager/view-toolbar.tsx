@@ -5,8 +5,6 @@ import { ViewSelector } from './view-selector';
 import { ViewSettingsModal } from './view-settings-modal';
 import { Button } from '@/components/ui/button';
 import {
-    Filter,
-    SortAsc,
     Search,
     MoreHorizontal,
     X,
@@ -63,7 +61,6 @@ export function ViewToolbar({
     return (
         <div>
             <div className="flex items-center justify-between py-3 border-b bg-white">
-                {/* Left side - View selector */}
                 <div className="flex items-center gap-4">
                     <ViewSelector
                         views={views}
@@ -77,9 +74,7 @@ export function ViewToolbar({
                     />
                 </div>
 
-                {/* Right side - Search and actions */}
                 <div className="flex items-center gap-2">
-                    {/* Animated Search */}
                     {onSearchChange && (
                         <AnimatedSearch
                             searchValue={searchValue}
@@ -87,7 +82,6 @@ export function ViewToolbar({
                         />
                     )}
 
-                    {/* Filter popup */}
                     {onFiltersChange && (
                         <FilterPopup
                             source={source}
@@ -95,7 +89,6 @@ export function ViewToolbar({
                             getFilterFields={filterConfig?.getFilterFields}
                             onAddFilter={(filterId) => {
                                 const newFilters = { ...filters };
-                                // Initialize with empty value based on filter type
                                 if (['segments', 'locations', 'education', 'income', 'painPoints', 'channels', 'gender'].includes(filterId)) {
                                     newFilters[filterId] = [];
                                 } else if (['age', 'ageRange'].includes(filterId)) {
@@ -108,7 +101,6 @@ export function ViewToolbar({
                         />
                     )}
 
-                    {/* Sort dropdown */}
                     {onSortsChange && (
                         <SortDropdown
                             sorts={sorts}
@@ -135,7 +127,6 @@ export function ViewToolbar({
                         />
                     )}
 
-                    {/* More options */}
                     <Button
                         variant="outline"
                         size="sm"
@@ -145,7 +136,6 @@ export function ViewToolbar({
                         <MoreHorizontal className="h-4 w-4" />
                     </Button>
 
-                    {/* Item count */}
                     {itemCount !== undefined && (
                         <div className="text-sm text-gray-500 ml-2">
                             {itemCount} {itemCount === 1 ? 'record' : 'records'}
@@ -154,7 +144,6 @@ export function ViewToolbar({
                 </div>
             </div>
 
-            {/* Active Filters Bar */}
             {onFiltersChange && (
                 <ActiveFiltersBar
                     filters={filters}
@@ -168,7 +157,6 @@ export function ViewToolbar({
                 />
             )}
 
-            {/* View Settings Modal */}
             {showViewSettings && (
                 <ViewSettingsModal
                     view={currentView}
@@ -176,16 +164,15 @@ export function ViewToolbar({
                     onLayoutChange={onLayoutChange}
                     onEditView={onEditView}
                     onViewUpdate={(updatedView) => {
-                        // Update the current view in the parent component
                         onViewChange(updatedView);
                     }}
+                    availableProperties={availableProperties}
                 />
             )}
         </div>
     );
 }
 
-// Animated Search Component
 interface AnimatedSearchProps {
     searchValue?: string;
     onSearchChange: (value: string) => void;
@@ -204,14 +191,12 @@ function AnimatedSearch({ searchValue, onSearchChange }: AnimatedSearchProps) {
         onSearchChange('');
     };
 
-    // Focus input when expanded
     useEffect(() => {
         if (isExpanded && inputRef.current) {
             inputRef.current.focus();
         }
     }, [isExpanded]);
 
-    // Close when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
@@ -229,7 +214,6 @@ function AnimatedSearch({ searchValue, onSearchChange }: AnimatedSearchProps) {
 
     return (
         <div className="relative flex items-center">
-            {/* Search Icon Button */}
             {!isExpanded && (
                 <Button
                     variant="outline"
@@ -241,7 +225,6 @@ function AnimatedSearch({ searchValue, onSearchChange }: AnimatedSearchProps) {
                 </Button>
             )}
 
-            {/* Expanded Search Input */}
             {isExpanded && (
                 <div className="relative animate-in slide-in-from-right-2 duration-200">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />

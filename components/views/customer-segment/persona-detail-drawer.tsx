@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ViewDetailDrawer } from '../view-manager/view-detail-drawer';
+import { ViewDetailDrawer } from '../../view-manager/view-detail-drawer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -50,7 +50,6 @@ export function PersonaDetailDrawer({
         }
     }, [persona]);
 
-    // Autosave functionality - triggers on blur events
     const handleSave = React.useCallback(async () => {
         if (!editedPersona || !hasUnsavedChanges || !onSave) return;
 
@@ -75,7 +74,6 @@ export function PersonaDetailDrawer({
     };
 
     const handleClose = () => {
-        // Save any unsaved changes before closing
         if (hasUnsavedChanges) {
             handleSave();
         }
@@ -88,19 +86,17 @@ export function PersonaDetailDrawer({
                 ...editedPersona,
                 [field]: value,
             };
-            
+
             setEditedPersona(updatedPersona);
             setHasUnsavedChanges(true);
-            setSaveError(null); // Clear any previous save errors
-            
-            // Trigger real-time UI update immediately
+            setSaveError(null);
+
             if (onRealtimeUpdate) {
                 onRealtimeUpdate(updatedPersona);
             }
         }
     };
 
-    // Handle blur events to trigger save
     const handleFieldBlur = () => {
         if (hasUnsavedChanges) {
             handleSave();
@@ -112,7 +108,6 @@ export function PersonaDetailDrawer({
 
         return (
             <div className="p-6 space-y-6">
-                {/* Save Status Indicator */}
                 <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold">Edit Persona</h3>
                     <div className="flex items-center gap-2">

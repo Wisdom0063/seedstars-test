@@ -194,7 +194,6 @@ export default function PersonaCards({
 }: PersonaCardsProps) {
     const [items, setItems] = useState(personas);
 
-    // Update items when personas prop changes
     React.useEffect(() => {
         setItems(personas);
     }, [personas]);

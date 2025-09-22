@@ -13,13 +13,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 
-// Base interface for any item that can be displayed in the drawer
 export interface BaseDrawerItem {
     id: string;
     [key: string]: any;
 }
-
-// Main drawer props - Generic container
 export interface ViewDetailDrawerProps<T extends BaseDrawerItem> {
     item: T | null;
     isOpen: boolean;
@@ -71,7 +68,6 @@ export function ViewDetailDrawer<T extends BaseDrawerItem>({
     return (
         <Drawer open={isOpen} onOpenChange={onClose} direction={direction}>
             <DrawerContent className={`h-full ${className || ''}`}>
-                {/* Header */}
                 <DrawerHeader className="border-b">
                     <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
@@ -98,12 +94,9 @@ export function ViewDetailDrawer<T extends BaseDrawerItem>({
                     </div>
                 </DrawerHeader>
 
-                {/* Content - Custom content passed as children */}
                 <div className="flex-1 overflow-y-auto">
                     {children}
                 </div>
-
-                {/* Footer - Custom footer if provided */}
                 {footer && (
                     <DrawerFooter className="border-t">
                         {footer}

@@ -33,6 +33,7 @@ import tunnel from 'tunnel-rat';
 import { Card } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { Virtuoso } from 'react-virtuoso';
 
 const t = tunnel();
 
@@ -163,17 +164,25 @@ export const KanbanCards = <T extends KanbanItemProps = KanbanItemProps>({
   const items = filteredData.map((item) => item.id);
 
   return (
-    <ScrollArea className="overflow-hidden">
-      <SortableContext items={items}>
-        <div
-          className={cn('flex flex-grow flex-col gap-2 p-2', className)}
-          {...props}
-        >
-          {filteredData.map(children)}
-        </div>
-      </SortableContext>
-      <ScrollBar orientation="vertical" />
-    </ScrollArea>
+    // <ScrollArea className="overflow-hidden">
+    <SortableContext items={items}>
+      <div
+        className={cn('flex flex-grow flex-col gap-2 p-2', className)}
+        {...props}
+      >
+        <Virtuoso
+          className="flex flex-grow flex-col gap-2 p-2"
+          style={{ height: 700 }}
+          data={filteredData}
+          itemContent={(_, item) => children(item)}
+        />
+
+
+        {/* {filteredData.map(children)} */}
+      </div>
+    </SortableContext>
+    // <ScrollBar orientation="vertical" />
+    // </ScrollArea>
   );
 };
 
@@ -330,7 +339,17 @@ export const KanbanProvider = <
             className
           )}
         >
-          {columns.map((column) => children(column))}
+
+          <Virtuoso
+            style={{ height: 700 }}
+            data={columns}
+            horizontalDirection
+            itemContent={(_, column) => children(column)}
+          />
+
+
+
+
         </div>
         {typeof window !== 'undefined' &&
           createPortal(

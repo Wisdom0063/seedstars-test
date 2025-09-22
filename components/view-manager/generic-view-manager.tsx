@@ -6,13 +6,10 @@ import { LayoutSelectionPopup } from './layout-selection-popup';
 import { ViewToolbar } from './view-toolbar';
 import { View, ViewLayout, ViewSource, ViewSortCriteria, viewsApi } from '@/lib/api/views';
 
-// Generic interfaces for data items
 export interface BaseDataItem {
     id: string;
     [key: string]: any;
 }
-
-// Layout component props interface
 export interface LayoutComponentProps<T extends BaseDataItem> {
     data: T[];
     onItemClick?: (item: T) => void;
@@ -21,24 +18,20 @@ export interface LayoutComponentProps<T extends BaseDataItem> {
     visibleFields?: string[];
 }
 
-// Layout component type
 export type LayoutComponent<T extends BaseDataItem> = React.ComponentType<LayoutComponentProps<T>>;
 
-// Layout configuration
 export interface LayoutConfig<T extends BaseDataItem> {
     [ViewLayout.CARD]: LayoutComponent<T>;
     [ViewLayout.TABLE]: LayoutComponent<T>;
     [ViewLayout.KANBAN]: LayoutComponent<T>;
 }
 
-// Filter configuration
 export interface FilterConfig {
     getFilterFields: (source: ViewSource) => any[];
     getFilterValue: (item: any, field: string) => any;
     applyFilters: (items: any[], filters: Record<string, any>) => any[];
 }
 
-// Sort field interface
 export interface SortField {
     id: string;
     label: string;
@@ -47,13 +40,10 @@ export interface SortField {
     type: 'text' | 'number' | 'date';
 }
 
-// Sort configuration
 export interface SortConfig {
     getNestedValue: (item: any, field: string) => any;
     getSortableFields: () => SortField[];
 }
-
-// View manager configuration
 export interface ViewManagerConfig<T extends BaseDataItem> {
     source: ViewSource;
     layouts: LayoutConfig<T>;
@@ -63,7 +53,6 @@ export interface ViewManagerConfig<T extends BaseDataItem> {
     availableProperties: Array<{ id: string; label: string }>;
 }
 
-// Generic ViewManager props
 export interface GenericViewManagerProps<T extends BaseDataItem> {
     data: T[];
     config: ViewManagerConfig<T>;
@@ -87,13 +76,11 @@ export function GenericViewManager<T extends BaseDataItem>({
     const [showLayoutSelection, setShowLayoutSelection] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // Drawer state management
     const [selectedItem, setSelectedItem] = useState<T | null>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [showViewSettings, setShowViewSettings] = useState(false);
     const [viewToEdit, setViewToEdit] = useState<View | null>(null);
 
-    // Load views on mount
     useEffect(() => {
         loadViews();
     }, [config.source]);
@@ -116,30 +103,23 @@ export function GenericViewManager<T extends BaseDataItem>({
         }
     };
 
-    // Helper function to get nested values for sorting
     const getNestedValue = (obj: any, path: string): any => {
         return config.sortConfig.getNestedValue(obj, path);
     };
-
-    // Filter and sort data
     const filteredData = useMemo(() => {
         let result = [...data];
 
-        // Apply search
         if (searchValue.trim()) {
             result = result.filter(item =>
                 JSON.stringify(item).toLowerCase().includes(searchValue.toLowerCase())
             );
         }
 
-        // Apply filters using config
         result = config.filterConfig.applyFilters(result, filters);
 
-        // Apply sorting (multiple criteria)
         if (sorts.length > 0) {
             result.sort((a, b) => {
                 for (const sort of sorts) {
-                    // Skip sorts with invalid fields
                     if (!sort || !sort.field) {
                         continue;
                     }
@@ -147,12 +127,9 @@ export function GenericViewManager<T extends BaseDataItem>({
                     let aValue = getNestedValue(a, sort.field);
                     let bValue = getNestedValue(b, sort.field);
 
-                    // Handle null/undefined values
                     if (aValue == null && bValue == null) continue;
                     if (aValue == null) return sort.order === 'ASC' ? 1 : -1;
                     if (bValue == null) return sort.order === 'ASC' ? -1 : 1;
-
-                    // Convert to strings for comparison if needed
                     if (typeof aValue === 'string') aValue = aValue.toLowerCase();
                     if (typeof bValue === 'string') bValue = bValue.toLowerCase();
 
@@ -169,12 +146,10 @@ export function GenericViewManager<T extends BaseDataItem>({
     const handleViewChange = (view: View) => {
         setCurrentView(view);
 
-        // Update views list if this is an updated view (not just a switch)
         if (currentView && view.id === currentView.id && view.updatedAt !== currentView.updatedAt) {
             setViews(prev => prev.map(v => v.id === view.id ? view : v));
         }
 
-        // Load active filters and sorts from the selected view
         const newFilters = view.activeFilters ? { ...view.activeFilters } : {};
         const newSorts = view.activeSorts
             ? view.activeSorts.filter(sort => sort && sort.field && typeof sort.field === 'string')
@@ -196,18 +171,15 @@ export function GenericViewManager<T extends BaseDataItem>({
 
     const handleLayoutSelect = async (layout: ViewLayout) => {
         try {
-            // Create view with just layout and source
             const newView = await viewsApi.create({
                 name: 'Untitled View',
                 source: config.source,
                 layout,
             });
 
-            // Add to views list and set as current
             setViews(prev => [...prev, newView]);
             setCurrentView(newView);
 
-            // Close layout selection and open view settings
             setShowLayoutSelection(false);
             setViewToEdit(newView);
             setShowViewSettings(true);
@@ -227,21 +199,15 @@ export function GenericViewManager<T extends BaseDataItem>({
     };
 
     const handleViewUpdate = (updatedView: View) => {
-        // Update views list
         setViews(prev => prev.map(v => v.id === updatedView.id ? updatedView : v));
 
-        // Update current view if it's the one being edited
         if (currentView?.id === updatedView.id) {
             setCurrentView(updatedView);
         }
     };
 
-    // Smart item click handler - manages both external callbacks and drawer state
     const handleItemClick = (item: T) => {
-        // Always call external callback if provided (for backward compatibility)
         onItemClick?.(item);
-
-        // If drawer renderer is provided, manage drawer state
         if (renderDetailDrawer) {
             setSelectedItem(item);
             setIsDrawerOpen(true);
@@ -259,7 +225,6 @@ export function GenericViewManager<T extends BaseDataItem>({
 
         setFilters(newFilters);
 
-        // Persist active filters to the current view
         try {
             const updatedView = await viewsApi.update({
                 id: currentView.id,
@@ -277,7 +242,6 @@ export function GenericViewManager<T extends BaseDataItem>({
 
         setSorts(newSorts);
 
-        // Persist active sorts to the current view
         try {
             const updatedView = await viewsApi.update({
                 id: currentView.id,
@@ -303,7 +267,6 @@ export function GenericViewManager<T extends BaseDataItem>({
             },
         };
 
-        // Add onItemMove for kanban layout
         if (currentView.layout === ViewLayout.KANBAN) {
             (commonProps as any).onItemMove = onItemMove;
         }
@@ -346,7 +309,6 @@ export function GenericViewManager<T extends BaseDataItem>({
                 {renderContent()}
             </div>
 
-            {/* Layout Selection Popup */}
             {showLayoutSelection && (
                 <LayoutSelectionPopup
                     onClose={() => setShowLayoutSelection(false)}
@@ -354,7 +316,6 @@ export function GenericViewManager<T extends BaseDataItem>({
                 />
             )}
 
-            {/* View Settings Modal */}
             {showViewSettings && viewToEdit && (
                 <ViewSettingsModal
                     view={viewToEdit}
@@ -362,10 +323,10 @@ export function GenericViewManager<T extends BaseDataItem>({
                     onLayoutChange={handleLayoutChange}
                     onEditView={handleEditView}
                     onViewUpdate={handleViewUpdate}
+                    availableProperties={config.availableProperties}
                 />
             )}
 
-            {/* Detail Drawer - Rendered by data source specific component */}
             {renderDetailDrawer && renderDetailDrawer(selectedItem, isDrawerOpen, handleDrawerClose)}
         </div>
     );

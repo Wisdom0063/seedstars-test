@@ -236,7 +236,7 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
             </KanbanHeader>
 
 
-            <Virtuoso
+            {/* <Virtuoso
               className="flex flex-grow flex-col gap-2 p-2"
               style={{ height: 700 }}
               data={data.filter(item => item.column === column.id)}
@@ -249,12 +249,12 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
                   />
                 </KanbanCard>
               )}
-            />
+            /> */}
 
 
 
 
-            {/* <KanbanCards id={column.id}>
+            <KanbanCards id={column.id}>
               {(item) => (
                 <KanbanCard key={item.id} {...item}>
                   <PersonaKanbanCard
@@ -264,7 +264,7 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
                   />
                 </KanbanCard>
               )}
-            </KanbanCards> */}
+            </KanbanCards>
           </KanbanBoard>
         )}
       </KanbanProvider>
