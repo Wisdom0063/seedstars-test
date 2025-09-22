@@ -130,95 +130,111 @@ const quotesPool = [
     "I value credentials and certifications for career advancement."
 ];
 
-// Function to generate random personas
-function generatePersonas(count: number) {
-    const personas = [];
+// Helper function to generate unique random items from a pool
+function getRandomUniqueItems<T>(pool: T[], min: number, max: number): T[] {
+    const count = Math.floor(Math.random() * (max - min + 1)) + min;
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(count, pool.length));
+}
+
+// Helper function to get random item from array
+function getRandomItem<T>(array: T[]): T {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+// Ultimate optimized function with batching for memory efficiency
+function generatePersonas(count: number, batchSize: number = 1000) {
+    console.log(`🎯 Generating ${count} personas in batches of ${batchSize}...`);
+    
+    const batches = Math.ceil(count / batchSize);
+    let totalGenerated = 0;
     const segmentNames = customerSegments.map(s => s.name);
-
-    for (let i = 0; i < count; i++) {
-        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-        const name = `${firstName} ${lastName}`;
-
-        // Generate random but realistic data
-        const age = Math.floor(Math.random() * 50) + 18; // 18-67 years old
-        const gender = genders[Math.floor(Math.random() * genders.length)];
-        const location = locations[Math.floor(Math.random() * locations.length)];
-        const education = educationLevels[Math.floor(Math.random() * educationLevels.length)];
-        const incomePerMonth = incomeRanges[Math.floor(Math.random() * incomeRanges.length)];
-        const segmentName = segmentNames[Math.floor(Math.random() * segmentNames.length)];
-
-        // Generate 2-5 pain points
-        const numPainPoints = Math.floor(Math.random() * 4) + 2;
-        const painPoints: string[] = [];
-        for (let j = 0; j < numPainPoints; j++) {
-            const painPoint = painPointsPool[Math.floor(Math.random() * painPointsPool.length)];
-            if (!painPoints.includes(painPoint)) {
-                painPoints.push(painPoint);
-            }
+    
+    // Pre-define descriptions and purchasing behaviors outside the loop
+    const descriptions = {
+        "Early Career Professionals": (age: number, location: string) => 
+            `An ambitious ${age}-year-old professional from ${location} focused on career advancement and skill development.`,
+        "Working Parents": (age: number, location: string) => 
+            `A dedicated ${age}-year-old parent from ${location} balancing family responsibilities with professional growth.`,
+        "Career Changers": (age: number, location: string) => 
+            `A motivated ${age}-year-old from ${location} seeking to transition to a new career path with structured support.`,
+        "Students & Recent Graduates": (age: number, location: string) => 
+            `An enthusiastic ${age}-year-old from ${location} beginning their professional journey with a focus on practical skills.`,
+        "Lifelong Learners": (age: number, location: string) => 
+            `A curious ${age}-year-old from ${location} passionate about continuous learning and personal development.`
+    };
+    
+    const purchasingBehaviors = {
+        "Early Career Professionals": {
+            description: "Values ROI and career impact in educational investments",
+            preferences: "Prefers flexible, career-focused learning with industry recognition"
+        },
+        "Working Parents": {
+            description: "Careful spender who needs family-friendly and time-efficient solutions",
+            preferences: "Values flexible scheduling and family-oriented learning options"
+        },
+        "Career Changers": {
+            description: "Cautious buyer seeking comprehensive support and proven results",
+            preferences: "Prefers structured programs with mentorship and community support"
+        },
+        "Students & Recent Graduates": {
+            description: "Budget-conscious but willing to invest in future career prospects",
+            preferences: "Seeks affordable, practical learning with job market relevance"
+        },
+        "Lifelong Learners": {
+            description: "Values quality content and personal enrichment over credentials",
+            preferences: "Prefers diverse learning formats and community engagement"
         }
+    };
 
-        // Generate 2-6 channels
-        const numChannels = Math.floor(Math.random() * 5) + 2;
-        const channels: string[] = [];
-        for (let j = 0; j < numChannels; j++) {
-            const channel = channelsPool[Math.floor(Math.random() * channelsPool.length)];
-            if (!channels.includes(channel)) {
-                channels.push(channel);
-            }
-        }
-
-        const quote = quotesPool[Math.floor(Math.random() * quotesPool.length)];
-
-        // Generate description based on segment
-        const descriptions = {
-            "Early Career Professionals": `An ambitious ${age}-year-old professional from ${location} focused on career advancement and skill development.`,
-            "Working Parents": `A dedicated ${age}-year-old parent from ${location} balancing family responsibilities with professional growth.`,
-            "Career Changers": `A motivated ${age}-year-old from ${location} seeking to transition to a new career path with structured support.`,
-            "Students & Recent Graduates": `An enthusiastic ${age}-year-old from ${location} beginning their professional journey with a focus on practical skills.`,
-            "Lifelong Learners": `A curious ${age}-year-old from ${location} passionate about continuous learning and personal development.`
-        };
-
-        const purchasingBehaviors = {
-            "Early Career Professionals": {
-                description: "Values ROI and career impact in educational investments",
-                preferences: "Prefers flexible, career-focused learning with industry recognition"
-            },
-            "Working Parents": {
-                description: "Careful spender who needs family-friendly and time-efficient solutions",
-                preferences: "Values flexible scheduling and family-oriented learning options"
-            },
-            "Career Changers": {
-                description: "Cautious buyer seeking comprehensive support and proven results",
-                preferences: "Prefers structured programs with mentorship and community support"
-            },
-            "Students & Recent Graduates": {
-                description: "Budget-conscious but willing to invest in future career prospects",
-                preferences: "Seeks affordable, practical learning with job market relevance"
-            },
-            "Lifelong Learners": {
-                description: "Values quality content and personal enrichment over credentials",
-                preferences: "Prefers diverse learning formats and community engagement"
-            }
-        };
-
-        personas.push({
-            name,
-            age,
-            gender,
-            location,
-            education,
-            incomePerMonth,
-            painPoints: JSON.stringify(painPoints),
-            purchasingBehavior: JSON.stringify(purchasingBehaviors[segmentName as keyof typeof purchasingBehaviors]),
-            channels: JSON.stringify(channels),
-            quote,
-            description: descriptions[segmentName as keyof typeof descriptions],
-            segmentName
+    // Generate personas in batches for optimal memory usage
+    const allPersonas = Array.from({ length: batches }, (_, batchIndex) => {
+        const startIndex = batchIndex * batchSize;
+        const endIndex = Math.min(startIndex + batchSize, count);
+        const currentBatchSize = endIndex - startIndex;
+        
+        // Generate current batch
+        const batch = Array.from({ length: currentBatchSize }, (_, index) => {
+            // Generate basic info
+            const firstName = getRandomItem(firstNames);
+            const lastName = getRandomItem(lastNames);
+            const name = `${firstName} ${lastName}`;
+            const age = Math.floor(Math.random() * 50) + 18; // 18-67 years old
+            const gender = getRandomItem(genders);
+            const location = getRandomItem(locations);
+            const education = getRandomItem(educationLevels);
+            const incomePerMonth = getRandomItem(incomeRanges);
+            const segmentName = getRandomItem(segmentNames);
+            const quote = getRandomItem(quotesPool);
+            
+            // Generate arrays efficiently
+            const painPoints = getRandomUniqueItems(painPointsPool, 2, 5);
+            const channels = getRandomUniqueItems(channelsPool, 2, 6);
+            
+            return {
+                name,
+                age,
+                gender,
+                location,
+                education,
+                incomePerMonth,
+                painPoints: JSON.stringify(painPoints),
+                purchasingBehavior: JSON.stringify(purchasingBehaviors[segmentName as keyof typeof purchasingBehaviors]),
+                channels: JSON.stringify(channels),
+                quote,
+                description: descriptions[segmentName as keyof typeof descriptions](age, location),
+                segmentName
+            };
         });
-    }
-
-    return personas;
+        
+        totalGenerated += currentBatchSize;
+        console.log(`✅ Generated batch ${batchIndex + 1}/${batches} (${totalGenerated}/${count} personas)`);
+        
+        return batch;
+    }).flat();
+    
+    console.log(`🎉 Generated ${allPersonas.length} personas successfully!`);
+    return allPersonas;
 }
 
 export async function seedCustomerSegments() {
