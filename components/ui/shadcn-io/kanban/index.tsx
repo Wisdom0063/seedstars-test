@@ -13,6 +13,7 @@ import {
   DragOverlay,
   KeyboardSensor,
   MouseSensor,
+  PointerSensor,
   TouchSensor,
   useDroppable,
   useSensor,
@@ -215,7 +216,12 @@ export const KanbanProvider = <
   const sensors = useSensors(
     useSensor(MouseSensor),
     useSensor(TouchSensor),
-    useSensor(KeyboardSensor)
+    useSensor(KeyboardSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // A small distance in pixels
+      },
+    })
   );
 
   const handleDragStart = (event: DragStartEvent) => {
