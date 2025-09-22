@@ -202,6 +202,18 @@ const personaSortConfig = {
     }
 };
 
+const personaAvailableProperties = [
+    { id: 'name', label: 'Name' },
+    { id: 'age', label: 'Age' },
+    { id: 'segment', label: 'Customer Segment' },
+    { id: 'location', label: 'Location' },
+    { id: 'education', label: 'Education' },
+    { id: 'income', label: 'Income Level' },
+    { id: 'gender', label: 'Gender' },
+    { id: 'createdAt', label: 'Created Date' },
+    { id: 'updatedAt', label: 'Updated Date' }
+];
+
 // Wrapper components to match the generic interface
 const PersonaCardLayout: React.FC<LayoutComponentProps<Persona>> = (props) => (
     <PersonaCards
@@ -239,6 +251,7 @@ const personaViewConfig: ViewManagerConfig<Persona> = {
     },
     filterConfig: personaFilterConfig,
     sortConfig: personaSortConfig,
+    availableProperties: personaAvailableProperties,
     defaultVisibleFields: ['name', 'age', 'segment', 'location', 'education']
 };
 

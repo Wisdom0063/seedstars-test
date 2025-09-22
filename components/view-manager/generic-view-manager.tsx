@@ -60,6 +60,7 @@ export interface ViewManagerConfig<T extends BaseDataItem> {
     filterConfig: FilterConfig;
     sortConfig: SortConfig;
     defaultVisibleFields?: string[];
+    availableProperties: Array<{ id: string; label: string }>;
 }
 
 // Generic ViewManager props
@@ -75,6 +76,7 @@ export function GenericViewManager<T extends BaseDataItem>({
     config,
     onItemClick,
     onItemMove,
+
 }: GenericViewManagerProps<T>) {
     const [views, setViews] = useState<View[]>([]);
     const [currentView, setCurrentView] = useState<View | null>(null);
@@ -315,6 +317,7 @@ export function GenericViewManager<T extends BaseDataItem>({
                 onSortsChange={handleSortsChange}
                 data={data}
                 filterConfig={config.filterConfig}
+                availableProperties={config.availableProperties}
             />
 
             <div className="min-h-[400px]">

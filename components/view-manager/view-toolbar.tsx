@@ -35,6 +35,7 @@ interface ViewToolbarProps {
     data?: any[];
     filterConfig?: FilterConfig;
     sortConfig?: SortConfig;
+    availableProperties: Array<{ id: string; label: string }>;
 }
 
 export function ViewToolbar({
@@ -55,6 +56,7 @@ export function ViewToolbar({
     data = [],
     filterConfig,
     sortConfig,
+    availableProperties,
 }: ViewToolbarProps) {
     const [showViewSettings, setShowViewSettings] = useState(false);
 
@@ -71,6 +73,7 @@ export function ViewToolbar({
                         onEditView={onEditView}
                         onLayoutChange={onLayoutChange}
                         source={source}
+                        availableProperties={availableProperties}
                     />
                 </div>
 

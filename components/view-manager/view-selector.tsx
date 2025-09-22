@@ -32,6 +32,7 @@ interface ViewSelectorProps {
   onEditView: (view: View) => void;
   onLayoutChange: (layout: ViewLayout) => void;
   source: ViewSource;
+  availableProperties: Array<{ id: string; label: string }>;
 }
 
 const LayoutIcons = {
@@ -48,6 +49,7 @@ export function ViewSelector({
   onEditView,
   onLayoutChange,
   source,
+  availableProperties,
 }: ViewSelectorProps) {
   const [showViewSettings, setShowViewSettings] = useState(false);
   const [settingsView, setSettingsView] = useState<View | null>(null);
@@ -73,8 +75,8 @@ export function ViewSelector({
               <button
                 onClick={() => onViewChange(view)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${isActive
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                   }`}
               >
                 <LayoutIcon className="h-4 w-4" />
@@ -109,6 +111,7 @@ export function ViewSelector({
       {showViewSettings && settingsView && (
         <ViewSettingsModal
           view={settingsView}
+          availableProperties={availableProperties}
           onClose={() => {
             setShowViewSettings(false);
             setSettingsView(null);
@@ -127,9 +130,10 @@ interface ViewSettingsModalProps {
   onClose: () => void;
   onLayoutChange: (layout: ViewLayout) => void;
   onEditView: (view: View) => void;
+  availableProperties: Array<{ id: string; label: string }>;
 }
 
-function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSettingsModalProps) {
+function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, availableProperties }: ViewSettingsModalProps) {
   const [selectedLayout, setSelectedLayout] = useState(view.layout);
   const [viewName, setViewName] = useState(view.name);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -138,22 +142,8 @@ function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSe
   );
   const [showPropertyVisibility, setShowPropertyVisibility] = useState(false);
 
-  // Available properties for personas
-  const availableProperties = [
-    { id: 'name', label: 'Name' },
-    { id: 'age', label: 'Age' },
-    { id: 'gender', label: 'Gender' },
-    { id: 'location', label: 'Location' },
-    { id: 'education', label: 'Education' },
-    { id: 'incomePerMonth', label: 'Income Level' },
-    { id: 'painPoints', label: 'Pain Points' },
-    { id: 'channels', label: 'Channels' },
-    { id: 'quote', label: 'Quote' },
-    { id: 'description', label: 'Description' },
-    { id: 'segment', label: 'Customer Segment' },
-    { id: 'createdAt', label: 'Created At' },
-    { id: 'updatedAt', label: 'Updated At' },
-  ];
+
+  const properties = availableProperties;
 
   const handleLayoutChange = (layout: ViewLayout) => {
     setSelectedLayout(layout);
@@ -257,8 +247,8 @@ function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSe
                   key={layout}
                   onClick={() => handleLayoutChange(layout as ViewLayout)}
                   className={`flex flex-col items-center gap-2 p-3 rounded-lg border-2 transition-colors ${selectedLayout === layout
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
                     }`}
                 >
                   <Icon className="h-6 w-6 text-gray-600" />
@@ -289,7 +279,7 @@ function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSe
             {/* Property List */}
             {showPropertyVisibility && (
               <div className="pl-8 space-y-2 mt-2">
-                {availableProperties.map((property) => {
+                {properties.map((property) => {
                   const isVisible = visibleFields.includes(property.id);
                   return (
                     <div
@@ -300,8 +290,8 @@ function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView }: ViewSe
                       <span className="text-sm text-gray-700">{property.label}</span>
                       <button
                         className={`p-1 rounded transition-colors ${isVisible
-                            ? 'text-blue-600 hover:bg-blue-50'
-                            : 'text-gray-400 hover:bg-gray-100'
+                          ? 'text-blue-600 hover:bg-blue-50'
+                          : 'text-gray-400 hover:bg-gray-100'
                           }`}
                       >
                         <Eye className={`h-4 w-4 ${isVisible ? '' : 'opacity-50'}`} />
