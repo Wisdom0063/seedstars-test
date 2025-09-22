@@ -7,14 +7,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { 
+import {
   X,
   ChevronDown,
   ArrowUp,
   ArrowDown,
 } from 'lucide-react';
 import { ViewSource } from '@/lib/api/views';
-import { SortCriteria } from './sort-popup';
+import { SortCriteria } from './generic-view-manager';
 
 interface ActiveSortBarProps {
   sorts: SortCriteria[];
@@ -29,7 +29,7 @@ export function ActiveSortBar({ sorts, onSortsChange, source }: ActiveSortBarPro
   };
 
   const updateSortOrder = (sortId: string, order: 'ASC' | 'DESC') => {
-    const newSorts = sorts.map(sort => 
+    const newSorts = sorts.map(sort =>
       sort.id === sortId ? { ...sort, order } : sort
     );
     onSortsChange(newSorts);
@@ -117,9 +117,8 @@ function SortChip({ sort, index, onOrderChange, onRemove }: SortChipProps) {
                 onOrderChange('ASC');
                 setIsOpen(false);
               }}
-              className={`w-full flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition-colors ${
-                sort.order === 'ASC' ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-              }`}
+              className={`w-full flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition-colors ${sort.order === 'ASC' ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                }`}
             >
               <ArrowUp className="h-4 w-4" />
               <span className="text-sm">Ascending</span>
@@ -127,15 +126,14 @@ function SortChip({ sort, index, onOrderChange, onRemove }: SortChipProps) {
                 <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
               )}
             </button>
-            
+
             <button
               onClick={() => {
                 onOrderChange('DESC');
                 setIsOpen(false);
               }}
-              className={`w-full flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition-colors ${
-                sort.order === 'DESC' ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
-              }`}
+              className={`w-full flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition-colors ${sort.order === 'DESC' ? 'bg-blue-50 text-blue-700' : 'text-gray-700'
+                }`}
             >
               <ArrowDown className="h-4 w-4" />
               <span className="text-sm">Descending</span>

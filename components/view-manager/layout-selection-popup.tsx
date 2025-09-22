@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -9,35 +9,20 @@ import {
   X,
 } from 'lucide-react';
 import { ViewLayout } from '@/lib/api/views';
+import { AllowedLayoutOptions, BaseDataItem, LayoutConfig } from './generic-view-manager';
 
-interface LayoutSelectionPopupProps {
+interface LayoutSelectionPopupProps<T extends BaseDataItem> {
   onClose: () => void;
   onLayoutSelect: (layout: ViewLayout) => void;
+  layouts: LayoutConfig<T>
 }
 
-const LayoutOptions = [
-  {
-    layout: ViewLayout.CARD,
-    icon: Grid3X3,
-    title: 'Card View',
-    description: 'Visual cards with persona details'
-  },
-  {
-    layout: ViewLayout.TABLE,
-    icon: Table,
-    title: 'Table View',
-    description: 'Structured data in columns'
-  },
-  {
-    layout: ViewLayout.KANBAN,
-    icon: Kanban,
-    title: 'Kanban View',
-    description: 'Organize by customer segments'
-  },
-];
 
-export function LayoutSelectionPopup({ onClose, onLayoutSelect }: LayoutSelectionPopupProps) {
+
+export function LayoutSelectionPopup<T extends BaseDataItem>({ onClose, onLayoutSelect, layouts }: LayoutSelectionPopupProps<T>) {
   const [selectedLayout, setSelectedLayout] = useState<ViewLayout | null>(null);
+
+  const layoutOptions = useMemo(() => AllowedLayoutOptions.filter(option => layouts[option.layout]), [layouts]);
 
   const handleCreate = () => {
     if (selectedLayout) {
@@ -63,7 +48,7 @@ export function LayoutSelectionPopup({ onClose, onLayoutSelect }: LayoutSelectio
             Select a layout for your new view. You can customize other settings after creation.
           </p>
 
-          {LayoutOptions.map((option) => {
+          {layoutOptions.map((option) => {
             const Icon = option.icon;
             const isSelected = selectedLayout === option.layout;
 
@@ -72,13 +57,13 @@ export function LayoutSelectionPopup({ onClose, onLayoutSelect }: LayoutSelectio
                 key={option.layout}
                 onClick={() => setSelectedLayout(option.layout)}
                 className={`w-full flex items-center gap-4 p-4 rounded-lg border-2 transition-colors text-left ${isSelected
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                   }`}
               >
                 <Icon className="h-8 w-8 text-gray-600" />
                 <div className="flex-1">
-                  <div className="font-medium text-gray-900">{option.title}</div>
+                  <div className="font-medium text-gray-900">{option.label} View</div>
                   <div className="text-sm text-gray-500">{option.description}</div>
                 </div>
               </button>

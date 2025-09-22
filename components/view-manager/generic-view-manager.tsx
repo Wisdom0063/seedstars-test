@@ -5,6 +5,7 @@ import { ViewSettingsModal } from './view-settings-modal';
 import { LayoutSelectionPopup } from './layout-selection-popup';
 import { ViewToolbar } from './view-toolbar';
 import { View, ViewLayout, ViewSource, ViewSortCriteria, viewsApi } from '@/lib/api/views';
+import { Grid3X3, Kanban, Table } from 'lucide-react';
 
 export interface BaseDataItem {
     id: string;
@@ -60,6 +61,43 @@ export interface GenericViewManagerProps<T extends BaseDataItem> {
     onItemMove?: (itemId: string, newSegmentId: string) => void;
     renderDetailDrawer?: (item: T | null, isOpen: boolean, onClose: () => void) => React.ReactNode;
 }
+
+export interface SortCriteria {
+    id: string;
+    field: string;
+    label: string;
+    order: 'ASC' | 'DESC';
+    icon: React.ComponentType<{ className?: string }>;
+}
+
+
+export const AllowedLayoutOptions = [
+    {
+        layout: ViewLayout.CARD,
+        icon: Grid3X3,
+        label: 'Card',
+        description: 'Visual cards with persona details',
+        tooltip: 'Card view',
+
+    },
+    {
+        layout: ViewLayout.TABLE,
+        icon: Table,
+        label: 'Table',
+        description: 'Structured data in columns',
+        tooltip: 'Table view',
+    },
+    {
+        layout: ViewLayout.KANBAN,
+        icon: Kanban,
+        label: 'Kanban',
+        description: 'Organize by customer segments',
+        tooltip: 'Kanban view',
+    },
+];
+
+
+
 
 export function GenericViewManager<T extends BaseDataItem>({
     data,
@@ -313,6 +351,7 @@ export function GenericViewManager<T extends BaseDataItem>({
                 <LayoutSelectionPopup
                     onClose={() => setShowLayoutSelection(false)}
                     onLayoutSelect={handleLayoutSelect}
+                    layouts={config.layouts}
                 />
             )}
 
