@@ -69,6 +69,7 @@ export interface GenericViewManagerProps<T extends BaseDataItem> {
     config: ViewManagerConfig<T>;
     onItemClick?: (item: T) => void;
     onItemMove?: (itemId: string, newSegmentId: string) => void;
+    renderDetailDrawer?: (item: T | null, isOpen: boolean, onClose: () => void) => React.ReactNode;
 }
 
 export function GenericViewManager<T extends BaseDataItem>({
@@ -76,15 +77,19 @@ export function GenericViewManager<T extends BaseDataItem>({
     config,
     onItemClick,
     onItemMove,
-
+    renderDetailDrawer,
 }: GenericViewManagerProps<T>) {
     const [views, setViews] = useState<View[]>([]);
     const [currentView, setCurrentView] = useState<View | null>(null);
-    const [loading, setLoading] = useState(true);
     const [searchValue, setSearchValue] = useState('');
     const [filters, setFilters] = useState<Record<string, any>>({});
     const [sorts, setSorts] = useState<ViewSortCriteria[]>([]);
     const [showLayoutSelection, setShowLayoutSelection] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    // Drawer state management
+    const [selectedItem, setSelectedItem] = useState<T | null>(null);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [showViewSettings, setShowViewSettings] = useState(false);
     const [viewToEdit, setViewToEdit] = useState<View | null>(null);
 
@@ -226,9 +231,26 @@ export function GenericViewManager<T extends BaseDataItem>({
         setViews(prev => prev.map(v => v.id === updatedView.id ? updatedView : v));
 
         // Update current view if it's the one being edited
-        if (currentView && currentView.id === updatedView.id) {
+        if (currentView?.id === updatedView.id) {
             setCurrentView(updatedView);
         }
+    };
+
+    // Smart item click handler - manages both external callbacks and drawer state
+    const handleItemClick = (item: T) => {
+        // Always call external callback if provided (for backward compatibility)
+        onItemClick?.(item);
+
+        // If drawer renderer is provided, manage drawer state
+        if (renderDetailDrawer) {
+            setSelectedItem(item);
+            setIsDrawerOpen(true);
+        }
+    };
+
+    const handleDrawerClose = () => {
+        setIsDrawerOpen(false);
+        setSelectedItem(null);
     };
 
     const handleFiltersChange = async (newFilters: Record<string, any>) => {
@@ -273,7 +295,7 @@ export function GenericViewManager<T extends BaseDataItem>({
 
         const commonProps: LayoutComponentProps<T> = {
             data: filteredData,
-            onItemClick,
+            onItemClick: handleItemClick, // Use smart click handler
             visibleFields: currentView.visibleFields || config.defaultVisibleFields || [],
             onItemReorder: (reorderedItems: T[]) => {
                 console.log('Items reordered:', reorderedItems.map(item => item.id));
@@ -342,6 +364,9 @@ export function GenericViewManager<T extends BaseDataItem>({
                     onViewUpdate={handleViewUpdate}
                 />
             )}
+
+            {/* Detail Drawer - Rendered by data source specific component */}
+            {renderDetailDrawer && renderDetailDrawer(selectedItem, isDrawerOpen, handleDrawerClose)}
         </div>
     );
 }

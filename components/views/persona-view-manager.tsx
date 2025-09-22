@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
-import { GenericViewManager, ViewManagerConfig, LayoutComponentProps } from '../view-manager/generic-view-manager';
-import PersonaCards from './customer-segment/card';
-import { PersonaTable } from './customer-segment/table';
-import { PersonaKanban } from './customer-segment/kanban';
+import { GenericViewManager, LayoutComponentProps, ViewManagerConfig } from '../view-manager/generic-view-manager';
+import { PersonaDetailDrawer } from './persona-detail-drawer';
 import { ViewLayout, ViewSource } from '@/lib/api/views';
 import { Persona } from '@/lib/api/customer-segment';
+import { PersonaKanban } from './customer-segment/kanban';
+import PersonaCards from './customer-segment/card';
+import { PersonaTable } from './customer-segment/table';
 
 // Persona-specific filter configuration
 const personaFilterConfig = {
@@ -268,12 +269,32 @@ export function PersonaViewManager({
     onPersonaClick,
     onPersonaMove,
 }: PersonaViewManagerProps) {
+    // Drawer renderer function - provides persona-specific drawer
+    const renderPersonaDrawer = (persona: Persona | null, isOpen: boolean, onClose: () => void) => (
+        <PersonaDetailDrawer
+            persona={persona}
+            isOpen={isOpen}
+            onClose={onClose}
+            onSave={(updatedPersona) => {
+                console.log('Persona updated:', updatedPersona);
+                // TODO: Implement persona update API call
+                onClose();
+            }}
+            onDelete={(personaToDelete) => {
+                console.log('Persona deleted:', personaToDelete);
+                // TODO: Implement persona delete API call
+                onClose();
+            }}
+        />
+    );
+
     return (
         <GenericViewManager
             data={personas}
             config={personaViewConfig}
-            onItemClick={onPersonaClick}
+            onItemClick={onPersonaClick} // Still called for backward compatibility
             onItemMove={onPersonaMove}
+            renderDetailDrawer={renderPersonaDrawer} // Smart drawer integration
         />
     );
 }

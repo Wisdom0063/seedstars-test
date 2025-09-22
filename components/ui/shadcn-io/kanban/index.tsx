@@ -315,6 +315,7 @@ export const KanbanProvider = <
         onDragOver={handleDragOver}
         onDragStart={handleDragStart}
         sensors={sensors}
+
         {...props}
       >
         <div

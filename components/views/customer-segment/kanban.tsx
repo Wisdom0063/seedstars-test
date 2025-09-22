@@ -35,12 +35,12 @@ interface SegmentKanbanColumn extends Record<string, unknown> {
 }
 
 // Persona Card Component for Kanban
-function PersonaKanbanCard({ 
-  persona, 
-  onPersonaClick, 
-  visibleFields = [] 
-}: { 
-  persona: Persona; 
+function PersonaKanbanCard({
+  persona,
+  onPersonaClick,
+  visibleFields = []
+}: {
+  persona: Persona;
   onPersonaClick?: (persona: Persona) => void;
   visibleFields?: string[];
 }) {
@@ -49,7 +49,7 @@ function PersonaKanbanCard({
     return visibleFields.length === 0 || visibleFields.includes(fieldName);
   };
   return (
-    <div 
+    <div
       className="space-y-3 cursor-pointer"
       onClick={() => onPersonaClick?.(persona)}
     >
@@ -88,14 +88,14 @@ function PersonaKanbanCard({
             <span className="text-gray-700 truncate">{persona.location}</span>
           </div>
         )}
-        
+
         {isFieldVisible('education') && persona.education && (
           <div className="flex items-center gap-2">
             <GraduationCap className="h-3 w-3 text-gray-500" />
             <span className="text-gray-700 truncate">{persona.education}</span>
           </div>
         )}
-        
+
         {isFieldVisible('incomePerMonth') && persona.incomePerMonth && (
           <div className="flex items-center gap-2">
             <DollarSign className="h-3 w-3 text-gray-500" />
@@ -163,12 +163,12 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
   // Transform personas to kanban items and extract unique segments
   const { kanbanData, columns } = useMemo(() => {
     const segmentMap = new Map<string, SegmentKanbanColumn>();
-    
+
     // Create kanban items and collect unique segments
     const kanbanItems: PersonaKanbanItem[] = personas.map(persona => {
       const segmentId = persona.segment.id;
       const segmentName = persona.segment.name;
-      
+
       // Add segment to map if not exists
       if (!segmentMap.has(segmentId)) {
         segmentMap.set(segmentId, {
@@ -176,7 +176,7 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
           name: segmentName,
         });
       }
-      
+
       return {
         id: persona.id,
         name: persona.name,
@@ -200,7 +200,7 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
 
   const handleDataChange = (newData: PersonaKanbanItem[]) => {
     setData(newData);
-    
+
     // Find moved personas and notify parent
     newData.forEach((item, index) => {
       const originalItem = kanbanData.find(orig => orig.id === item.id);
@@ -224,7 +224,7 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
         className="min-h-[600px]"
       >
         {(column) => (
-          <KanbanBoard id={column.id} className="w-80">
+          <KanbanBoard id={column.id} className="w-80" key={column.id}>
             <KanbanHeader className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4 text-gray-600" />
@@ -234,12 +234,12 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
                 {data.filter(item => item.column === column.id).length}
               </Badge>
             </KanbanHeader>
-            
+
             <KanbanCards id={column.id}>
               {(item) => (
                 <KanbanCard key={item.id} {...item}>
-                  <PersonaKanbanCard 
-                    persona={(item as PersonaKanbanItem).persona} 
+                  <PersonaKanbanCard
+                    persona={(item as PersonaKanbanItem).persona}
                     onPersonaClick={onPersonaClick}
                     visibleFields={visibleFields}
                   />
