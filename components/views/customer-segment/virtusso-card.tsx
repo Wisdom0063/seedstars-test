@@ -260,9 +260,6 @@ export default function PersonaCards({
             onPersonaReorder?.(newItems);
         }
     }
-
-    // Use virtualization only for large datasets to avoid drag/drop conflicts
-
     return (
         <div className="space-y-4">
             <DndContext
