@@ -7,7 +7,7 @@ import { ViewLayout, ViewSource } from '@/lib/api/views';
 import { Persona, personasApi } from '@/lib/api/customer-segment';
 import { PersonaKanban } from './customer-segment/kanban';
 import PersonaCards from './customer-segment/card';
-import { PersonaTable } from './customer-segment/table';
+import { PersonaTable } from './customer-segment/virtusso-table';
 
 // Persona-specific filter configuration
 const personaFilterConfig = {

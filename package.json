@@ -22,6 +22,7 @@
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "jotai": "^2.14.0",
@@ -30,6 +31,7 @@
     "prisma": "^6.16.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-virtuoso": "^4.14.0",
     "tailwind-merge": "^3.3.1",
     "tunnel-rat": "^0.1.2",
     "vaul": "^1.1.2"
