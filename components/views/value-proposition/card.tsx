@@ -44,7 +44,7 @@ export function ValuePropositionCard({
             id={valueProposition.id}
             className={`
         cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] 
-        border-l-4 ${getStatusColor(valueProposition.status)} h-full
+        border-l-4  h-full
         ${className}
       `}
             onClick={() => onClick?.(valueProposition)}
@@ -61,14 +61,7 @@ export function ValuePropositionCard({
                                     {valueProposition.persona ? `VP for ${valueProposition.persona.name}` : `VP for ${valueProposition.segment.name}`}
                                 </CardTitle>
                             )}
-                            {isFieldVisible('status') && (
-                                <Badge
-                                    variant={valueProposition.status === 'ACTIVE' ? 'default' : 'secondary'}
-                                    className="text-xs mt-1"
-                                >
-                                    {valueProposition.status}
-                                </Badge>
-                            )}
+
                         </div>
                     </div>
                     {isFieldVisible('segment') && (
@@ -80,14 +73,7 @@ export function ValuePropositionCard({
             </CardHeader>
 
             <CardContent className="pt-0 space-y-4">
-                {/* Description */}
-                {isFieldVisible('description') && valueProposition.description && (
-                    <div className="bg-gray-50 p-3 rounded-lg border-l-2 border-l-gray-300">
-                        <p className="text-sm text-gray-700 line-clamp-2">
-                            {valueProposition.description}
-                        </p>
-                    </div>
-                )}
+
 
                 {/* Persona */}
                 {isFieldVisible('persona') && valueProposition.persona && (
@@ -234,7 +220,6 @@ export default function ValuePropositionCards({
 
         if (containerWidth < 640) return 1;
         if (containerWidth < 1024) return 2;
-        if (containerWidth < 1400) return 3;
         return 3;
     }, [containerWidth]);
 

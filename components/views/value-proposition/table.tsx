@@ -76,37 +76,10 @@ export function ValuePropositionTable({ valuePropositions, onValuePropositionCli
                                 <div className="font-medium">
                                     {valueProposition.persona ? `VP for ${valueProposition.persona.name}` : `VP for ${valueProposition.segment.name}`}
                                 </div>
-                                {isFieldVisible('status') && (
-                                    <Badge 
-                                        variant={getStatusBadgeVariant(valueProposition.status)}
-                                        className="text-xs mt-1"
-                                    >
-                                        {valueProposition.status}
-                                    </Badge>
-                                )}
                             </div>
                         </div>
                     );
                 },
-            },
-            {
-                id: 'status',
-                accessorKey: 'status',
-                header: ({ column }) => (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                        className="h-8 p-0 hover:bg-transparent"
-                    >
-                        Status
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                ),
-                cell: ({ row }) => (
-                    <Badge variant={getStatusBadgeVariant(row.original.status)} className="font-normal">
-                        {row.original.status}
-                    </Badge>
-                ),
             },
             {
                 id: 'segment',
@@ -138,16 +111,6 @@ export function ValuePropositionTable({ valuePropositions, onValuePropositionCli
                 ),
             },
             {
-                id: 'description',
-                accessorKey: 'description',
-                header: 'Description',
-                cell: ({ row }) => (
-                    <span className="text-gray-700 max-w-xs truncate">
-                        {row.original.description || '-'}
-                    </span>
-                ),
-            },
-            {
                 id: 'valuePropositionStatements',
                 accessorKey: 'valuePropositionStatements',
                 header: 'Value Propositions',
@@ -168,8 +131,8 @@ export function ValuePropositionTable({ valuePropositions, onValuePropositionCli
                                 </Badge>
                             ))}
                             {statements.length > 2 && (
-                                <Badge 
-                                    variant="outline" 
+                                <Badge
+                                    variant="outline"
                                     className="text-xs"
                                     title={statements.slice(2).map(s => `${s.offering}: ${s.description}`).join('\n')}
                                 >

@@ -78,24 +78,11 @@ function ValuePropositionKanbanCard({
               {valueProposition.persona ? `VP for ${valueProposition.persona.name}` : `VP for ${valueProposition.segment.name}`}
             </div>
           )}
-          {isFieldVisible('status') && (
-            <Badge 
-              className={`text-xs mt-1 ${getStatusColor(valueProposition.status)}`}
-            >
-              {valueProposition.status}
-            </Badge>
-          )}
+
         </div>
       </div>
 
-      {/* Description */}
-      {isFieldVisible('description') && valueProposition.description && (
-        <div className="bg-gray-50 p-2 rounded border-l-2 border-l-gray-300">
-          <p className="text-xs text-gray-700 line-clamp-2">
-            {valueProposition.description}
-          </p>
-        </div>
-      )}
+
 
       {/* Persona */}
       {isFieldVisible('persona') && valueProposition.persona && (
@@ -124,8 +111,8 @@ function ValuePropositionKanbanCard({
               </Badge>
             ))}
             {valueProposition.valuePropositionStatements.length > 2 && (
-              <Badge 
-                variant="outline" 
+              <Badge
+                variant="outline"
                 className="text-xs"
                 title={valueProposition.valuePropositionStatements.slice(2).map(s => `${s.offering}: ${s.description}`).join('\n')}
               >
@@ -220,11 +207,11 @@ function ValuePropositionKanbanCard({
   );
 }
 
-export function ValuePropositionKanban({ 
-  valuePropositions, 
-  onValuePropositionClick, 
-  onValuePropositionMove, 
-  visibleFields 
+export function ValuePropositionKanban({
+  valuePropositions,
+  onValuePropositionClick,
+  onValuePropositionMove,
+  visibleFields
 }: ValuePropositionKanbanProps) {
   // Transform value propositions to kanban items and extract unique segments
   const { kanbanData, columns } = useMemo(() => {

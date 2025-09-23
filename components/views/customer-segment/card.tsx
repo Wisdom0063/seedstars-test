@@ -192,7 +192,6 @@ export default function PersonaCards({
 
         if (containerWidth < 640) return 1;
         if (containerWidth < 1024) return 2;
-        if (containerWidth < 1400) return 3;
         return 3;
     }, [containerWidth]);
 

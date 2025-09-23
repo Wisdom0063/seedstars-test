@@ -84,14 +84,6 @@ const valuePropositionFilterConfig = {
                 getOptions: (data: any[]) => getUniqueOptions(data, 'persona.name', 'persona.id')
             },
             {
-                id: 'status',
-                label: 'Status',
-                icon: Lightbulb,
-                type: 'multiselect',
-                description: 'Filter by status',
-                getOptions: (data: any[]) => getUniqueOptions(data, 'status')
-            },
-            {
                 id: 'valuePropositionStatements',
                 label: 'Value Propositions',
                 icon: Target,
@@ -162,8 +154,6 @@ const valuePropositionFilterConfig = {
                 return valueProposition.segment?.name;
             case 'personas':
                 return valueProposition.persona?.name;
-            case 'status':
-                return valueProposition.status;
             case 'valuePropositionStatements':
                 return valueProposition.valuePropositionStatements?.map(s => s.offering);
             case 'customerJobs':
@@ -197,12 +187,6 @@ const valuePropositionFilterConfig = {
         if (filters.personas && filters.personas.length > 0) {
             result = result.filter(vp =>
                 vp.persona && filters.personas.includes(vp.persona.name)
-            );
-        }
-
-        if (filters.status && filters.status.length > 0) {
-            result = result.filter(vp =>
-                filters.status.includes(vp.status)
             );
         }
 

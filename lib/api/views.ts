@@ -2,7 +2,7 @@
 export enum ViewSource {
   PERSONAS = 'PERSONAS',
   VALUE_PROPOSITIONS = 'VALUE_PROPOSITIONS',
-  BUSINESS_MODEL_CANVAS = 'BUSINESS_MODEL_CANVAS'
+  BUSINESS_MODEL = 'BUSINESS_MODEL'
 }
 
 export enum ViewLayout {
@@ -198,7 +198,7 @@ export type GroupableField = typeof GROUPABLE_FIELDS[number];
 export const VIEW_SOURCE_LABELS = {
   [ViewSource.PERSONAS]: 'Personas',
   [ViewSource.VALUE_PROPOSITIONS]: 'Value Propositions',
-  [ViewSource.BUSINESS_MODEL_CANVAS]: 'Business Model Canvas',
+  [ViewSource.BUSINESS_MODEL]: 'Business Model',
 } as const;
 
 // Views API implementation
