@@ -170,11 +170,8 @@ const gridComponents = {
             <div
                 ref={ref}
                 {...props}
-                style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    ...style,
-                }}
+                className="flex flex-wrap gap-4 p-4"
+                style={style}
             >
                 {children}
             </div>
@@ -183,14 +180,13 @@ const gridComponents = {
     Item: ({ children, ...props }: { children?: React.ReactNode;[key: string]: any }) => (
         <div
             {...props}
-            style={{
-                padding: "0.75rem",
-                width: "33.333333%", // 3 columns
-                display: "flex",
-                flex: "none",
-                alignContent: "stretch",
-                boxSizing: "border-box",
-            }}
+            className="
+                w-full 
+                sm:w-[calc(50%-0.5rem)] 
+                lg:w-[calc(33.333%-0.67rem)] 
+                xl:w-[calc(25%-0.75rem)]
+                flex-none
+            "
         >
             {children}
         </div>
@@ -267,7 +263,7 @@ export default function PersonaCards({
                 itemHeight="auto"
                 itemWidth={itemWidth}
                 columns={columns}
-                gap={16}
+                gap={8}
                 height={700}
                 width="100%"
                 overscan={3}
