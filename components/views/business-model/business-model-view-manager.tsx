@@ -293,7 +293,6 @@ const businessModelAvailableProperties = [
     { id: 'keyResources', label: 'Key Resources' },
     { id: 'customerRelationships', label: 'Customer Relationships' },
     { id: 'channels', label: 'Channels' },
-    { id: 'customerSegments', label: 'Customer Segments' },
     { id: 'costStructure', label: 'Cost Structure' },
     { id: 'revenueStreams', label: 'Revenue Streams' },
     { id: 'tags', label: 'Tags' },

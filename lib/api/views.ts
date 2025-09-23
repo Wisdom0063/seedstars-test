@@ -161,7 +161,7 @@ export const DEFAULT_VIEWS: Omit<View, 'id' | 'createdAt' | 'updatedAt'>[] = [
     layout: ViewLayout.CARD,
     sortBy: 'name',
     sortOrder: SortOrder.ASC,
-    visibleFields: ['name', 'description', 'segment', 'painPoints', 'channels'],
+    visibleFields: ['name', 'persona', 'segment', 'valuePropositionStatements', 'channels'],
   },
   {
     name: 'Value Propositions by Segment',
@@ -172,7 +172,7 @@ export const DEFAULT_VIEWS: Omit<View, 'id' | 'createdAt' | 'updatedAt'>[] = [
     groupBy: 'segment',
     sortBy: 'name',
     sortOrder: SortOrder.ASC,
-    visibleFields: ['name', 'description', 'segment', 'painPoints', 'channels'],
+    visibleFields: ['name', 'persona', 'segment', 'valuePropositionStatements', 'channels'],
   },
   {
     name: 'Detailed Table',
@@ -182,7 +182,7 @@ export const DEFAULT_VIEWS: Omit<View, 'id' | 'createdAt' | 'updatedAt'>[] = [
     layout: ViewLayout.TABLE,
     sortBy: 'createdAt',
     sortOrder: SortOrder.DESC,
-    visibleFields: Object.keys(PERSONA_FIELDS),
+    visibleFields: ["name", "segment", "persona", "valuePropositionStatements", "customerJobs", "customerPains", "gainCreators", "painRelievers", "productsServices", "createdAt", "updatedAt"],
   },
   {
     name: 'All Business Models',
@@ -192,7 +192,7 @@ export const DEFAULT_VIEWS: Omit<View, 'id' | 'createdAt' | 'updatedAt'>[] = [
     layout: ViewLayout.CARD,
     sortBy: 'name',
     sortOrder: SortOrder.ASC,
-    visibleFields: ['name', 'description', 'segment', 'painPoints', 'channels'],
+    visibleFields: ['valuePropositionStatement', 'persona', 'channels', "segment"],
   },
   {
     name: 'Business Models by Segment',
@@ -203,7 +203,7 @@ export const DEFAULT_VIEWS: Omit<View, 'id' | 'createdAt' | 'updatedAt'>[] = [
     groupBy: 'segment',
     sortBy: 'name',
     sortOrder: SortOrder.ASC,
-    visibleFields: ['name', 'description', 'segment', 'painPoints', 'channels'],
+    visibleFields: ['valuePropositionStatement', 'persona', 'channels', "segment"],
   },
   {
     name: 'Detailed Table',
@@ -213,7 +213,7 @@ export const DEFAULT_VIEWS: Omit<View, 'id' | 'createdAt' | 'updatedAt'>[] = [
     layout: ViewLayout.TABLE,
     sortBy: 'createdAt',
     sortOrder: SortOrder.DESC,
-    visibleFields: Object.keys(PERSONA_FIELDS),
+    visibleFields: ["valuePropositionStatement", "persona", "segment", "keyPartners", "keyActivities", "keyResources", "customerRelationships"],
   },
 
 ];

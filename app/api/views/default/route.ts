@@ -18,7 +18,8 @@ export async function GET() {
         defaultView = await prisma.view.create({
           data: {
             ...firstDefaultView,
-            filters: firstDefaultView.filters ? JSON.stringify(firstDefaultView.filters) : null,
+            activeFilters: firstDefaultView.activeFilters ? JSON.stringify(firstDefaultView.activeFilters) : null,
+            activeSorts: firstDefaultView.activeSorts ? JSON.stringify(firstDefaultView.activeSorts) : null,
             visibleFields: firstDefaultView.visibleFields ? JSON.stringify(firstDefaultView.visibleFields) : null,
           },
         });

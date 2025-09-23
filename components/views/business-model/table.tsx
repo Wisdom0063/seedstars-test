@@ -298,45 +298,25 @@ export function BusinessModelTable({ businessModels, onBusinessModelClick, visib
         getSortedRowModel: getSortedRowModel(),
     });
 
+    const { rows } = table.getRowModel();
+
     // Virtuoso components
     const TableComponents = useMemo(
         () => ({
             Scroller: forwardRef<HTMLDivElement>((props, ref) => (
-                <div {...props} ref={ref} className="overflow-auto" />
+                <div {...props} ref={ref} className="rounded-md border bg-white" />
             )),
             Table: (props: any) => (
-                <Table {...props} className="grid" />
+                <Table {...props} className="w-full caption-bottom text-sm" />
             ),
             TableHead: forwardRef<HTMLTableSectionElement>((props, ref) => (
-                <TableHeader {...props} ref={ref} className="grid sticky top-0 z-10 bg-white" />
+                <TableHeader {...props} ref={ref} className="bg-gray-50/50 sticky top-0 z-10" />
             )),
-            TableRow: forwardRef<HTMLTableRowElement, { item?: BusinessModelWithRelations; index?: number }>(
-                ({ item, index, ...props }, ref) => {
-                    const row = table.getRowModel().rows[index!];
-                    return (
-                        <TableRow
-                            {...props}
-                            ref={ref}
-                            className="grid cursor-pointer hover:bg-gray-50 transition-colors"
-                            onClick={() => onBusinessModelClick?.(item!)}
-                            style={{
-                                gridTemplateColumns: `repeat(${columns.length}, minmax(150px, 1fr))`,
-                            }}
-                        >
-                            {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id} className="flex items-center p-4">
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    );
-                }
-            ),
             TableBody: forwardRef<HTMLTableSectionElement>((props, ref) => (
-                <TableBody {...props} ref={ref} className="grid" />
+                <TableBody {...props} ref={ref} />
             )),
         }),
-        [table, columns, onBusinessModelClick]
+        []
     );
 
     if (businessModels.length === 0) {
@@ -350,30 +330,43 @@ export function BusinessModelTable({ businessModels, onBusinessModelClick, visib
     }
 
     return (
-        <div className="w-full h-full">
-            <div className="h-full border rounded-md">
-                <TableVirtuoso
-                    style={{ height: '100%' }}
-                    data={businessModels}
-                    components={TableComponents}
-                    fixedHeaderContent={() => (
-                        <TableRow
-                            className="grid border-b"
-                            style={{
-                                gridTemplateColumns: `repeat(${columns.length}, minmax(150px, 1fr))`,
-                            }}
-                        >
-                            {table.getHeaderGroups()[0]?.headers.map((header) => (
-                                <TableHead key={header.id} className="flex items-center p-4 font-medium">
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(header.column.columnDef.header, header.getContext())}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    )}
-                />
-            </div>
+        <div className="space-y-4">
+            <TableVirtuoso
+                style={{ height: 600, width: '100%' }}
+                data={rows}
+                components={TableComponents}
+                fixedHeaderContent={() => (
+                    <>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id} className="font-semibold py-3 px-4 border-b">
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </>
+                )}
+                itemContent={(index, row) => (
+                    <>
+                        {row.getVisibleCells().map((cell) => (
+                            <TableCell
+                                key={cell.id}
+                                className="py-3 px-4 border-b cursor-pointer hover:bg-gray-50 transition-colors"
+                                onClick={() => onBusinessModelClick?.(row.original)}
+                            >
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </TableCell>
+                        ))}
+                    </>
+                )}
+            />
         </div>
     );
 }
