@@ -145,9 +145,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         const businessModel = await prisma.businessModel.update({
             where: { id },
             data: {
-                name: data.name !== undefined ? data.name : existing.name,
-                description: data.description !== undefined ? data.description : existing.description,
-                status: data.status !== undefined ? data.status : existing.status,
                 keyPartners: data.keyPartners !== undefined ?
                     (data.keyPartners ? JSON.stringify(data.keyPartners) : null) : existing.keyPartners,
                 keyActivities: data.keyActivities !== undefined ?

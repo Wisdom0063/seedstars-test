@@ -200,11 +200,6 @@ model BusinessModel {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Basic Information
-  name        String
-  description String?
-  status      String @default("draft") // draft, active, archived
-
   // Link to Value Proposition Statement
   valuePropositionStatementId String
   valuePropositionStatement   ValuePropositionStatement @relation(fields: [valuePropositionStatementId], references: [id], onDelete: Cascade)

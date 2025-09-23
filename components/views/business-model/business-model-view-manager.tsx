@@ -84,14 +84,6 @@ const businessModelFilterConfig: FilterConfig = {
                 getOptions: (data: any[]) => getUniqueOptions(data, 'valuePropositionStatement.valueProposition.persona.name', 'valuePropositionStatement.valueProposition.persona.id')
             },
             {
-                id: 'status',
-                label: 'Status',
-                icon: Target,
-                type: 'multiselect',
-                description: 'Filter by status',
-                getOptions: (data: any[]) => getUniqueOptions(data, 'status')
-            },
-            {
                 id: 'keyPartners',
                 label: 'Key Partners',
                 icon: Building2,
@@ -154,8 +146,6 @@ const businessModelFilterConfig: FilterConfig = {
                 return businessModel.valuePropositionStatement?.valueProposition?.segment?.name;
             case 'personas':
                 return businessModel.valuePropositionStatement?.valueProposition?.persona?.name;
-            case 'status':
-                return businessModel.status;
             case 'keyPartners':
                 return businessModel.keyPartners;
             case 'keyActivities':
@@ -189,10 +179,6 @@ const businessModelFilterConfig: FilterConfig = {
                 bm.valuePropositionStatement?.valueProposition?.persona &&
                 filters.personas.includes(bm.valuePropositionStatement.valueProposition.persona.name)
             );
-        }
-
-        if (filters.status && filters.status.length > 0) {
-            result = result.filter(bm => filters.status.includes(bm.status));
         }
 
         if (filters.keyPartners && filters.keyPartners.length > 0) {
@@ -253,23 +239,16 @@ const businessModelSortConfig: SortConfig = {
     getNestedValue: (obj: any, path: string) => {
         return path.split('.').reduce((current, key) => current?.[key], obj);
     },
-    
+
     getSortableFields: () => {
         const { Building2, Users, User, Target, Calendar, Hash } = require('lucide-react');
-        
+
         return [
             {
                 id: 'name',
                 label: 'Name',
                 icon: Building2,
-                field: 'name',
-                type: 'text'
-            },
-            {
-                id: 'status',
-                label: 'Status',
-                icon: Target,
-                field: 'status',
+                field: 'valuePropositionStatement.offering',
                 type: 'text'
             },
             {
@@ -306,12 +285,9 @@ const businessModelSortConfig: SortConfig = {
 
 // Available properties for field selection
 const businessModelAvailableProperties = [
-    { id: 'name', label: 'Name' },
-    { id: 'description', label: 'Description' },
-    { id: 'status', label: 'Status' },
+    { id: 'valuePropositionStatement', label: 'Value Proposition' },
     { id: 'segment', label: 'Customer Segment' },
     { id: 'persona', label: 'Persona' },
-    { id: 'valuePropositionStatement', label: 'Value Proposition' },
     { id: 'keyPartners', label: 'Key Partners' },
     { id: 'keyActivities', label: 'Key Activities' },
     { id: 'keyResources', label: 'Key Resources' },
@@ -355,7 +331,7 @@ const BusinessModelKanbanLayout: React.FC<LayoutComponentProps<BusinessModelWith
 
 // Business Model ViewManager configuration
 const businessModelViewConfig: ViewManagerConfig<BusinessModelWithRelations> = {
-    source: ViewSource.BUSINESS_MODEL,
+    source: ViewSource.BUSINESS_MODELS,
     layouts: {
         [ViewLayout.CARD]: BusinessModelCardLayout,
         [ViewLayout.TABLE]: BusinessModelTableLayout,
@@ -364,7 +340,7 @@ const businessModelViewConfig: ViewManagerConfig<BusinessModelWithRelations> = {
     filterConfig: businessModelFilterConfig,
     sortConfig: businessModelSortConfig,
     availableProperties: businessModelAvailableProperties,
-    defaultVisibleFields: ['name', 'status', 'segment', 'persona', 'valuePropositionStatement']
+    defaultVisibleFields: ['valuePropositionStatement', 'segment', 'persona', 'keyPartners', 'keyActivities']
 };
 
 // Business Model-specific ViewManager props

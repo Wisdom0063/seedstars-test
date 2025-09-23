@@ -44,7 +44,7 @@ export function BusinessModelCard({
             id={businessModel.id}
             className={`
                 cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] 
-                border-l-4 ${getStatusColor(businessModel.status)} h-full
+                border-l-4  h-full
                 ${className}
             `}
             onClick={() => onClick?.(businessModel)}
@@ -58,18 +58,8 @@ export function BusinessModelCard({
                         <div>
                             {isFieldVisible('name') && (
                                 <CardTitle className="text-lg font-semibold text-gray-900">
-                                    {businessModel.name}
+                                    {businessModel.valuePropositionStatement?.offering}
                                 </CardTitle>
-                            )}
-                            {isFieldVisible('status') && (
-                                <div className="flex items-center gap-2 mt-1">
-                                    <Badge
-                                        variant={businessModel.status === 'active' ? 'default' : 'secondary'}
-                                        className="text-xs"
-                                    >
-                                        {businessModel.status}
-                                    </Badge>
-                                </div>
                             )}
                         </div>
                     </div>
@@ -83,9 +73,9 @@ export function BusinessModelCard({
 
             <CardContent className="pt-0 space-y-4">
                 {/* Description */}
-                {isFieldVisible('description') && businessModel.description && (
+                {isFieldVisible('description') && businessModel.valuePropositionStatement?.description && (
                     <p className="text-sm text-gray-600 line-clamp-2">
-                        {businessModel.description}
+                        {businessModel.valuePropositionStatement.description}
                     </p>
                 )}
 

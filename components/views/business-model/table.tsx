@@ -74,11 +74,11 @@ export function BusinessModelTable({ businessModels, onBusinessModelClick, visib
                             </div>
                             <div>
                                 <div className="font-medium">
-                                    {businessModel.name}
+                                    {businessModel.valuePropositionStatement?.offering}
                                 </div>
-                                {businessModel.description && (
+                                {businessModel.valuePropositionStatement?.description && (
                                     <div className="text-sm text-gray-500 truncate max-w-xs">
-                                        {businessModel.description}
+                                        {businessModel.valuePropositionStatement?.description}
                                     </div>
                                 )}
                             </div>
@@ -86,25 +86,8 @@ export function BusinessModelTable({ businessModels, onBusinessModelClick, visib
                     );
                 },
             },
-            {
-                id: 'status',
-                accessorKey: 'status',
-                header: ({ column }) => (
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-                        className="h-8 p-0 hover:bg-transparent"
-                    >
-                        Status
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
-                ),
-                cell: ({ row }) => (
-                    <Badge variant={getStatusBadgeVariant(row.original.status)} className="font-normal">
-                        {row.original.status}
-                    </Badge>
-                ),
-            },
+
+
             {
                 id: 'segment',
                 accessorFn: (row) => row.valuePropositionStatement?.valueProposition?.segment?.name || '',

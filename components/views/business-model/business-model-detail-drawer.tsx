@@ -9,10 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import {
-    Building2,
     Users,
-    Target,
-    Calendar,
     Plus,
     X,
     Handshake,
@@ -64,9 +61,8 @@ export function BusinessModelDetailDrawer({
         try {
             const updateRequest: UpdateBusinessModelRequest = {
                 id: editedBM.id,
-                name: editedBM.name,
-                description: editedBM.description || undefined,
-                status: editedBM.status,
+                name: editedBM.valuePropositionStatement?.offering,
+                description: editedBM.valuePropositionStatement?.description || undefined,
                 keyPartners: editedBM.keyPartners,
                 keyActivities: editedBM.keyActivities,
                 keyResources: editedBM.keyResources,
@@ -239,48 +235,6 @@ export function BusinessModelDetailDrawer({
 
         return (
             <div className="space-y-6">
-                {/* Basic Information */}
-                <div className="space-y-4">
-                    <div>
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                            id="name"
-                            value={editedBM.name}
-                            onChange={(e) => updateField('name', e.target.value)}
-                            onBlur={handleFieldBlur}
-                            placeholder="Business model name"
-                        />
-                    </div>
-
-                    <div>
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
-                            value={editedBM.description || ''}
-                            onChange={(e) => updateField('description', e.target.value)}
-                            onBlur={handleFieldBlur}
-                            placeholder="Describe your business model"
-                            rows={3}
-                        />
-                    </div>
-
-                    <div>
-                        <Label htmlFor="status">Status</Label>
-                        <select
-                            id="status"
-                            value={editedBM.status}
-                            onChange={(e) => updateField('status', e.target.value)}
-                            onBlur={handleFieldBlur}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value="draft">Draft</option>
-                            <option value="active">Active</option>
-                            <option value="archived">Archived</option>
-                        </select>
-                    </div>
-                </div>
-
-                <Separator />
 
                 {/* Business Model Canvas Sections */}
                 <div className="space-y-6">
@@ -417,11 +371,11 @@ export function BusinessModelDetailDrawer({
             item={businessModel}
             isOpen={isOpen}
             onClose={handleClose}
-            title={(bm) => bm.name}
-            subtitle={(bm) => bm.valuePropositionStatement?.valueProposition?.segment ? 
-                `${bm.valuePropositionStatement.valueProposition.segment.name}${bm.valuePropositionStatement.valueProposition.persona ? ` • ${bm.valuePropositionStatement.valueProposition.persona.name}` : ''}` : 
-                bm.status}
-            description={(bm) => bm.description || ''}
+            title={(bm) => bm.valuePropositionStatement?.offering}
+            subtitle={(bm) => bm.valuePropositionStatement?.valueProposition?.segment ?
+                `${bm.valuePropositionStatement.valueProposition.segment.name}${bm.valuePropositionStatement.valueProposition.persona ? ` • ${bm.valuePropositionStatement.valueProposition.persona.name}` : ''}` :
+                ''}
+            description={(bm) => bm.valuePropositionStatement?.description || ''}
             footer={footer}
         >
             {renderEditMode()}

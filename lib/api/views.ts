@@ -1,9 +1,6 @@
-// Define enums locally since they're not generated yet
-export enum ViewSource {
-  PERSONAS = 'PERSONAS',
-  VALUE_PROPOSITIONS = 'VALUE_PROPOSITIONS',
-  BUSINESS_MODEL = 'BUSINESS_MODEL'
-}
+import { ViewSource } from "@prisma/client";
+export { ViewSource } from "@prisma/client";
+
 
 export enum ViewLayout {
   CARD = 'CARD',
@@ -187,6 +184,37 @@ export const DEFAULT_VIEWS: Omit<View, 'id' | 'createdAt' | 'updatedAt'>[] = [
     sortOrder: SortOrder.DESC,
     visibleFields: Object.keys(PERSONA_FIELDS),
   },
+  {
+    name: 'All Business Models',
+    description: 'View all business models across all segments',
+    isDefault: true,
+    source: ViewSource.BUSINESS_MODELS,
+    layout: ViewLayout.CARD,
+    sortBy: 'name',
+    sortOrder: SortOrder.ASC,
+    visibleFields: ['name', 'description', 'segment', 'painPoints', 'channels'],
+  },
+  {
+    name: 'Business Models by Segment',
+    description: 'Kanban view organized by customer segments',
+    isDefault: false,
+    source: ViewSource.BUSINESS_MODELS,
+    layout: ViewLayout.KANBAN,
+    groupBy: 'segment',
+    sortBy: 'name',
+    sortOrder: SortOrder.ASC,
+    visibleFields: ['name', 'description', 'segment', 'painPoints', 'channels'],
+  },
+  {
+    name: 'Detailed Table',
+    description: 'Comprehensive table view with all business model details',
+    isDefault: false,
+    source: ViewSource.BUSINESS_MODELS,
+    layout: ViewLayout.TABLE,
+    sortBy: 'createdAt',
+    sortOrder: SortOrder.DESC,
+    visibleFields: Object.keys(PERSONA_FIELDS),
+  },
 
 ];
 
@@ -198,7 +226,7 @@ export type GroupableField = typeof GROUPABLE_FIELDS[number];
 export const VIEW_SOURCE_LABELS = {
   [ViewSource.PERSONAS]: 'Personas',
   [ViewSource.VALUE_PROPOSITIONS]: 'Value Propositions',
-  [ViewSource.BUSINESS_MODEL]: 'Business Model',
+  [ViewSource.BUSINESS_MODELS]: 'Business Model',
 } as const;
 
 // Views API implementation

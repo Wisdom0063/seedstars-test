@@ -16,7 +16,7 @@ import {
 interface BusinessModelKanbanProps {
   businessModels: BusinessModelWithRelations[];
   onBusinessModelClick?: (businessModel: BusinessModelWithRelations) => void;
-  onBusinessModelMove?: (businessModelId: string, newStatus: string) => void;
+  onBusinessModelMove?: (businessModelId: string, newSegmentId: string) => void;
   visibleFields?: string[];
 }
 
@@ -28,8 +28,8 @@ interface BusinessModelKanbanItem extends Record<string, unknown> {
   businessModel: BusinessModelWithRelations;
 }
 
-// Transform Status to KanbanColumn format
-interface StatusKanbanColumn extends Record<string, unknown> {
+// Transform Segment to KanbanColumn format
+interface SegmentKanbanColumn extends Record<string, unknown> {
   id: string;
   name: string;
 }
@@ -49,18 +49,6 @@ function BusinessModelKanbanCard({
     return visibleFields.length === 0 || visibleFields.includes(fieldName);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'archived':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-      default:
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-    }
-  };
 
   return (
     <div
@@ -73,26 +61,18 @@ function BusinessModelKanbanCard({
           <Building2 className="h-4 w-4" />
         </div>
         <div className="flex-1">
-          {isFieldVisible('name') && (
+          {isFieldVisible('valuePropositionStatement') && (
             <div className="font-medium text-sm">
-              {businessModel.name}
+              {businessModel.valuePropositionStatement?.offering || 'Untitled Business Model'}
             </div>
-          )}
-          {isFieldVisible('status') && (
-            <Badge 
-              className={`text-xs mt-1 ${getStatusColor(businessModel.status)}`}
-              variant="outline"
-            >
-              {businessModel.status}
-            </Badge>
           )}
         </div>
       </div>
 
       {/* Description */}
-      {isFieldVisible('description') && businessModel.description && (
+      {isFieldVisible('description') && businessModel.valuePropositionStatement?.description && (
         <p className="text-xs text-gray-600 line-clamp-2">
-          {businessModel.description}
+          {businessModel.valuePropositionStatement.description}
         </p>
       )}
 
@@ -245,45 +225,35 @@ export function BusinessModelKanban({
   onBusinessModelMove,
   visibleFields = []
 }: BusinessModelKanbanProps) {
-  // Transform business models to kanban items and extract status columns
+  // Transform business models to kanban items and extract segment columns
   const { kanbanData, columns } = useMemo(() => {
-    const statusMap = new Map<string, StatusKanbanColumn>();
+    const segmentMap = new Map<string, SegmentKanbanColumn>();
 
-    // Define default status columns
-    const defaultStatuses = [
-      { id: 'draft', name: 'Draft' },
-      { id: 'active', name: 'Active' },
-      { id: 'archived', name: 'Archived' },
-    ];
-
-    // Add default statuses to map
-    defaultStatuses.forEach(status => {
-      statusMap.set(status.id, status);
-    });
-
-    // Create kanban items and collect any additional statuses
+    // Create kanban items and collect segments
     const kanbanItems: BusinessModelKanbanItem[] = businessModels.map(businessModel => {
-      const status = businessModel.status || 'draft';
+      const segment = businessModel.valuePropositionStatement?.valueProposition?.segment;
+      const segmentId = segment?.id || 'unknown';
+      const segmentName = segment?.name || 'Unknown Segment';
 
-      // Add status to map if not exists
-      if (!statusMap.has(status)) {
-        statusMap.set(status, {
-          id: status,
-          name: status.charAt(0).toUpperCase() + status.slice(1),
+      // Add segment to map if not exists
+      if (!segmentMap.has(segmentId)) {
+        segmentMap.set(segmentId, {
+          id: segmentId,
+          name: segmentName,
         });
       }
 
       return {
         id: businessModel.id,
-        name: businessModel.name,
-        column: status,
+        name: businessModel.valuePropositionStatement?.offering || 'Untitled Business Model',
+        column: segmentId,
         businessModel,
       };
     });
 
     return {
       kanbanData: kanbanItems,
-      columns: Array.from(statusMap.values()),
+      columns: Array.from(segmentMap.values()),
     };
   }, [businessModels]);
 
