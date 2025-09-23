@@ -189,7 +189,51 @@ model ValuePropositionStatement {
   valuePropositionId String
   valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
 
+  // Business models linked to this value proposition statement
+  businessModels BusinessModel[]
+
   @@map("value_proposition_statements")
+}
+
+model BusinessModel {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Basic Information
+  name        String
+  description String?
+  status      String @default("draft") // draft, active, archived
+
+  // Link to Value Proposition Statement
+  valuePropositionStatementId String
+  valuePropositionStatement   ValuePropositionStatement @relation(fields: [valuePropositionStatementId], references: [id], onDelete: Cascade)
+
+  // Business Model Canvas Sections (stored as JSON arrays)
+  
+  // Left Side of Canvas
+  keyPartners   String? // JSON array - Key Partners - who are our key partners and suppliers
+  keyActivities String? // JSON array - Key Activities - what key activities does our value proposition require
+  keyResources  String? // JSON array - Key Resources - what key resources does our value proposition require
+  
+  // Right Side of Canvas
+  customerRelationships String? // JSON array - Customer Relationships - what type of relationship does each customer segment expect
+  channels              String? // JSON array - Channels - through which channels do we want to reach our customer segments
+  customerSegments      String? // JSON array - Customer Segments - for whom are we creating value (derived from value proposition)
+  
+  // Bottom of Canvas
+  costStructure    String? // JSON array - Cost Structure - what are the most important costs inherent in our business model
+  revenueStreams   String? // JSON array - Revenue Streams - for what value are our customers really willing to pay
+
+  // Metadata
+  tags        String? // JSON array - Tags for categorization
+  notes       String?  // Additional notes
+  
+  // Audit fields
+  createdBy String?
+  updatedBy String?
+
+  @@map("business_models")
 }
 
 model View {
@@ -230,7 +274,7 @@ model View {
 enum ViewSource {
   PERSONAS
   VALUE_PROPOSITIONS
-  BUSINESS_MODEL_CANVAS
+  BUSINESS_MODELS
 }
 
 enum ViewLayout {
