@@ -60,6 +60,9 @@ export function VirtualGridDnd<T>({
     // Calculate total width including gaps
     const totalItemWidth = itemWidth + gap;
     const totalGridWidth = columns * totalItemWidth - gap;
+    
+    // Calculate item width accounting for horizontal gaps
+    const actualItemWidth = itemWidth - gap;
 
     // Ensure grid width matches container width when specified as percentage
     const gridWidth = width === '100%' ? '100%' : totalGridWidth;
@@ -197,10 +200,9 @@ export function VirtualGridDnd<T>({
                             position: 'absolute',
                             top: 0,
                             left: colIndex * totalItemWidth,
-                            width: itemWidth,
-                            height: 'calc(100% - 16px)'
-                            // height: isDynamicHeight ? currentRowHeight : staticItemHeight,
-                            // minHeight: isDynamicHeight ? currentRowHeight : staticItemHeight,
+                            width: actualItemWidth,
+                            height: 'calc(100% - 16px)',
+                            marginRight: colIndex < columns - 1 ? gap : 0, // Add horizontal gap except for last column
                         }}
                         className="flex-shrink-0"
                         onClick={() => onItemClick?.(item, itemIndex)}
@@ -210,7 +212,6 @@ export function VirtualGridDnd<T>({
                             width: '100%',
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: gap,
                         }}>
                             {renderItem(item, itemIndex)}
                         </div>
@@ -232,7 +233,7 @@ export function VirtualGridDnd<T>({
                         height: isDynamicHeight ? currentRowHeight : staticItemHeight,
                         minHeight: isDynamicHeight ? currentRowHeight : staticItemHeight,
                         transform: `translateY(${virtualRow.start}px)`,
-                        // marginBottom: gap * 3,
+                        marginBottom: gap, // Add vertical gap between rows
                     }}
                     className="relative"
                 >
@@ -245,6 +246,7 @@ export function VirtualGridDnd<T>({
         data,
         columns,
         itemWidth,
+        actualItemWidth,
         totalItemWidth,
         totalGridWidth,
         renderItem,
