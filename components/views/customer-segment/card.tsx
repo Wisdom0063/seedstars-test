@@ -228,7 +228,7 @@ export default function PersonaCards({
                 itemHeight="auto"
                 itemWidth={itemWidth}
                 columns={columns}
-                gap={8}
+                gap={32}
                 height={700}
                 width="100%"
                 overscan={3}
