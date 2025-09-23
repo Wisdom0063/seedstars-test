@@ -16,7 +16,8 @@ model CustomerSegment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  personas  Persona[]
+  personas          Persona[]
+  valuePropositions ValueProposition[]
 
   @@map("customer_segments")
 }
@@ -50,7 +51,148 @@ model Persona {
   segmentId   String
   segment     CustomerSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
 
+  // Value propositions linked to this persona
+  valuePropositions ValueProposition[]
+
   @@map("personas")
+}
+
+model ValueProposition {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  status      ValuePropositionStatus @default(DRAFT)
+  tags        String?  // JSON array of tags
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String?
+
+  // Link to Customer Segment/Persona
+  segmentId   String
+  segment     CustomerSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  
+  // Link to specific Persona (optional - can be segment-wide or persona-specific)
+  personaId   String?
+  persona     Persona? @relation(fields: [personaId], references: [id], onDelete: Cascade)
+
+  // Value Proposition Canvas Components
+  customerJobs      CustomerJob[]
+  customerPains     CustomerPain[]
+  gainCreators      GainCreator[]
+  painRelievers     PainReliever[]
+  productsServices  ProductService[]
+  
+  // Value Proposition Statements
+  valuePropositionStatements ValuePropositionStatement[]
+
+  @@map("value_propositions")
+}
+
+model CustomerJob {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  importance  JobImportance
+  category    JobCategory?
+  order       Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Link to Value Proposition
+  valuePropositionId String
+  valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
+
+  @@map("customer_jobs")
+}
+
+model CustomerPain {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  severity    PainSeverity
+  category    PainCategory?
+  order       Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Link to Value Proposition
+  valuePropositionId String
+  valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
+
+  @@map("customer_pains")
+}
+
+model GainCreator {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  priority    GainPriority
+  category    GainCategory?
+  order       Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Link to Value Proposition
+  valuePropositionId String
+  valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
+
+  @@map("gain_creators")
+}
+
+model PainReliever {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  priority    RelieverPriority
+  category    RelieverCategory?
+  order       Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Link to Value Proposition
+  valuePropositionId String
+  valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
+
+  @@map("pain_relievers")
+}
+
+model ProductService {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  type        ProductType
+  category    String?
+  features    String?  // JSON array of features
+  order       Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Link to Value Proposition
+  valuePropositionId String
+  valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
+
+  @@map("products_services")
+}
+
+model ValuePropositionStatement {
+  id          String   @id @default(cuid())
+  offering    String   // What we offer (e.g., "Provide toys", "Providing children milk")
+  description String   // How we deliver value (e.g., "Provide toys", "Providing children milk")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Link to Value Proposition
+  valuePropositionId String
+  valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
+
+  @@map("value_proposition_statements")
 }
 
 model View {
@@ -103,4 +245,67 @@ enum ViewLayout {
 enum SortOrder {
   ASC
   DESC
+}
+
+// Value Proposition Enums
+enum ValuePropositionStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum JobImportance {
+  VERY_IMPORTANT
+  FAIRLY_IMPORTANT
+  NOT_IMPORTANT
+}
+
+enum JobCategory {
+  FUNCTIONAL
+  EMOTIONAL
+  SOCIAL
+}
+
+enum PainSeverity {
+  EXTREME_PAIN
+  MODERATE_PAIN
+  LOW_PAIN
+}
+
+enum PainCategory {
+  UNDESIRED_OUTCOMES
+  OBSTACLES
+  RISKS
+}
+
+enum GainPriority {
+  VERY_ESSENTIAL
+  FAIRLY_ESSENTIAL
+  NOT_ESSENTIAL
+}
+
+enum GainCategory {
+  REQUIRED_GAINS
+  EXPECTED_GAINS
+  DESIRED_GAINS
+  UNEXPECTED_GAINS
+}
+
+enum RelieverPriority {
+  VERY_ESSENTIAL
+  FAIRLY_ESSENTIAL
+  NOT_ESSENTIAL
+}
+
+enum RelieverCategory {
+  PAIN_KILLER
+  GAIN_CREATOR
+  VITAMIN
+}
+
+enum ProductType {
+  PRODUCT
+  SERVICE
+  DIGITAL
+  PHYSICAL
 }

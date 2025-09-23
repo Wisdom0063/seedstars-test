@@ -367,11 +367,7 @@ export function PersonaViewManager({
             }}
             onDelete={async (personaToDelete) => {
                 try {
-                    console.log('Deleting persona:', personaToDelete);
-
                     await personasApi.delete(personaToDelete.id);
-                    console.log('Persona deleted successfully');
-
                     onClose();
 
                 } catch (error) {
