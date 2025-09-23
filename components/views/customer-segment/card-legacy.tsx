@@ -1,14 +1,11 @@
 'use client';
 
-import React, { useState, forwardRef, useMemo } from 'react';
+import React, { useState } from 'react';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DraggableCard } from '@/components/ui/draggable-card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { User, MapPin, GraduationCap, DollarSign, Quote, Tag, Search } from 'lucide-react';
+import { User, MapPin, GraduationCap, DollarSign, Quote, Tag } from 'lucide-react';
 import { Persona } from '@/lib/api/customer-segment';
-import { VirtuosoGrid } from 'react-virtuoso';
 import {
     DndContext,
     closestCenter,
@@ -48,7 +45,7 @@ export function PersonaCard({
             id={persona.id}
             className={`
         cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] 
-        border-l-4 border-l-green-500 bg-white h-full
+        border-l-4 border-l-green-500 bg-white
         ${className}
       `}
             onClick={() => onClick?.(persona)}
@@ -180,39 +177,7 @@ export function PersonaCard({
     );
 }
 
-// Grid components for VirtuosoGrid - keep outside component to prevent remounting
-const gridComponents = {
-    List: forwardRef<HTMLDivElement, { style?: React.CSSProperties; children?: React.ReactNode }>(
-        ({ style, children, ...props }, ref) => (
-            <div
-                ref={ref}
-                {...props}
-                style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    ...style,
-                }}
-            >
-                {children}
-            </div>
-        )
-    ),
-    Item: ({ children, ...props }: { children?: React.ReactNode;[key: string]: any }) => (
-        <div
-            {...props}
-            style={{
-                padding: "0.75rem",
-                width: "33.333333%", // 3 columns
-                display: "flex",
-                flex: "none",
-                alignContent: "stretch",
-                boxSizing: "border-box",
-            }}
-        >
-            {children}
-        </div>
-    )
-};
+
 
 interface PersonaCardsProps {
     personas: Persona[];
@@ -228,14 +193,10 @@ export default function PersonaCards({
     onPersonaReorder
 }: PersonaCardsProps) {
     const [items, setItems] = useState(personas);
-    const [globalFilter, setGlobalFilter] = useState('');
 
-    // Update items when personas prop changes
     React.useEffect(() => {
         setItems(personas);
     }, [personas]);
-
-
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -260,29 +221,25 @@ export default function PersonaCards({
             onPersonaReorder?.(newItems);
         }
     }
-    return (
-        <div className="space-y-4">
-            <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-            >
-                <SortableContext items={items.map(p => p.id)} strategy={rectSortingStrategy}>
-                    <VirtuosoGrid
-                        style={{ height: 700, width: '100%' }}
-                        totalCount={items.length}
-                        components={gridComponents}
-                        itemContent={(index) => (
-                            <PersonaCard
-                                persona={items[index]}
-                                onClick={onPersonaClick}
-                                visibleFields={visibleFields}
-                            />
-                        )}
-                    />
 
-                </SortableContext>
-            </DndContext>
-        </div>
+    return (
+        <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+        >
+            <SortableContext items={items.map(p => p.id)} strategy={rectSortingStrategy}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {items.map((persona) => (
+                        <PersonaCard
+                            key={persona.id}
+                            persona={persona}
+                            onClick={onPersonaClick}
+                            visibleFields={visibleFields}
+                        />
+                    ))}
+                </div>
+            </SortableContext>
+        </DndContext>
     );
 }

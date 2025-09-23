@@ -5,9 +5,9 @@ import { GenericViewManager, LayoutComponentProps, ViewManagerConfig } from '../
 import { PersonaDetailDrawer } from './persona-detail-drawer';
 import { ViewLayout, ViewSource } from '@/lib/api/views';
 import { Persona, personasApi } from '@/lib/api/customer-segment';
-import { PersonaKanban } from './virtusso-kanban';
-import PersonaCards from './virtusso-card';
-import { PersonaTable } from './virtusso-table';
+import { PersonaKanban } from './kanban';
+import PersonaCards from './card';
+import { PersonaTable } from './table';
 
 
 

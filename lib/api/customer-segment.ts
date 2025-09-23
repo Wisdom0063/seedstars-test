@@ -1,6 +1,40 @@
 import { fetcher } from ".";
-import { Persona, CustomerSegment } from "@prisma/client";
 
+
+
+// Customer Segment Types
+export interface CustomerSegment {
+    id: string;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+    personas?: Persona[];
+}
+
+// Persona Types
+export interface Persona {
+    id: string;
+    name: string;
+    age?: number;
+    gender?: string;
+    location?: string;
+    education?: string;
+    incomePerMonth?: string;
+    painPoints?: string[];
+    purchasingBehavior?: {
+        description?: string;
+        preferences?: string;
+    };
+    channels?: string[];
+    quote?: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+    segment: {
+        id: string;
+        name: string;
+    };
+}
 export const customerSegmentsApi = {
     getAll: (): Promise<CustomerSegment[]> => {
         return fetcher<CustomerSegment[]>('/api/customer-segments');
