@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef, useMemo, useCallback } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import React, { useMemo, useCallback, useRef } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 import {
     DndContext,
     closestCenter,
@@ -51,25 +51,34 @@ export function VirtualGridDnd<T>({
     onReorder,
     enableDragAndDrop = false,
 }: VirtualGridDndProps<T>) {
-    const parentRef = useRef<HTMLDivElement>(null);
-    const [rowHeights, setRowHeights] = React.useState<Map<number, number>>(new Map());
+    const containerRef = useRef<HTMLDivElement>(null);
 
-    // Calculate rows based on data length and columns
-    const rowCount = Math.ceil(data.length / columns);
+    // Group data into rows
+    const groupedData = useMemo(() => {
+        const rows: T[][] = [];
+        for (let i = 0; i < data.length; i += columns) {
+            rows.push(data.slice(i, i + columns));
+        }
+        return rows;
+    }, [data, columns]);
 
-    // Calculate total width including gaps
-    const totalItemWidth = itemWidth + gap;
-    const totalGridWidth = columns * totalItemWidth - gap;
-    
     // Calculate item width accounting for horizontal gaps
-    const actualItemWidth = itemWidth - gap;
-
-    // Ensure grid width matches container width when specified as percentage
-    const gridWidth = width === '100%' ? '100%' : totalGridWidth;
+    const actualItemWidth = useMemo(() => {
+        if (typeof width === 'string' && width.includes('%')) {
+            return `calc((100% - ${(columns - 1) * gap}px) / ${columns})`;
+        }
+        return itemWidth;
+    }, [width, itemWidth, gap, columns]);
 
     // Determine if we're using dynamic heights
     const isDynamicHeight = itemHeight === 'auto';
-    const staticItemHeight = typeof itemHeight === 'number' ? itemHeight : 370;
+    const staticItemHeight = typeof itemHeight === 'number' ? itemHeight : 300;
+
+    // Memoized item keys for SortableContext
+    const itemKeys = useMemo(() =>
+        data.map((item, index) => getItemKey(item, index).toString()),
+        [data, getItemKey]
+    );
 
     // Drag and drop sensors
     const sensors = useSensors(
@@ -102,183 +111,80 @@ export function VirtualGridDnd<T>({
         }
     }, [data, getItemKey, onReorder]);
 
-    // Function to get row height
-    const getRowHeight = useCallback((rowIndex: number) => {
-        if (!isDynamicHeight) return staticItemHeight + gap;
-        const measuredHeight = rowHeights.get(rowIndex);
-        return measuredHeight ? measuredHeight + gap : staticItemHeight + gap;
-    }, [isDynamicHeight, staticItemHeight, gap, rowHeights]);
-
-    // Row virtualizer
-    const rowVirtualizer = useVirtualizer({
-        count: rowCount,
-        getScrollElement: () => parentRef.current,
-        estimateSize: getRowHeight,
-        overscan,
-    });
-
-    // Get visible rows
-    const virtualRows = rowVirtualizer.getVirtualItems();
-
-    // Memoized item keys for SortableContext
-    const itemKeys = useMemo(() =>
-        data.map((item, index) => getItemKey(item, index).toString()),
-        [data, getItemKey]
-    );
-
-    // Effect to trigger virtualizer recalculation when row heights change
-    React.useEffect(() => {
-        if (isDynamicHeight && rowHeights.size > 0) {
-            rowVirtualizer.measure();
-        }
-    }, [rowHeights, isDynamicHeight, rowVirtualizer]);
-
-    // Callback to measure row height
-    const measureRowHeight = useCallback((rowIndex: number, element: HTMLElement | null) => {
-        if (!isDynamicHeight || !element) return;
-
-        // Measure immediately for initial height
-        const initialHeight = element.getBoundingClientRect().height;
-        if (initialHeight > 0) {
-            setRowHeights(prev => {
-                const newMap = new Map(prev);
-                if (newMap.get(rowIndex) !== initialHeight) {
-                    newMap.set(rowIndex, initialHeight);
-                    return newMap;
-                }
-                return prev;
-            });
-        }
-
-        // Use ResizeObserver for ongoing measurement
-        const resizeObserver = new ResizeObserver((entries) => {
-            for (const entry of entries) {
-                const height = entry.contentRect.height
-                if (height > 0) {
-                    setRowHeights(prev => {
-                        const newMap = new Map(prev);
-                        if (newMap.get(rowIndex) !== height) {
-                            newMap.set(rowIndex, height);
-                            return newMap;
-                        }
-                        return prev;
-                    });
-                }
-            }
-        });
-
-        resizeObserver.observe(element);
-
-        // Cleanup function
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, [isDynamicHeight]);
-
-    // Memoized render function for performance
-    const renderGridItems = useMemo(() => {
-        return virtualRows.map((virtualRow) => {
-            const rowIndex = virtualRow.index;
-            const rowItems = [];
-            const measuredRowHeight = rowHeights.get(rowIndex);
-            const currentRowHeight = measuredRowHeight || staticItemHeight;
-
-            // Render items for this row
-            for (let colIndex = 0; colIndex < columns; colIndex++) {
-                const itemIndex = rowIndex * columns + colIndex;
-
-                // Skip if we've exceeded the data length
-                if (itemIndex >= data.length) break;
-
-                const item = data[itemIndex];
-                const itemKey = getItemKey(item, itemIndex);
-
-                rowItems.push(
-                    <div
-                        key={`${virtualRow.key}-${colIndex}`}
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: colIndex * totalItemWidth,
-                            width: actualItemWidth,
-                            height: 'calc(100% - 16px)',
-                            marginRight: colIndex < columns - 1 ? gap : 0, // Add horizontal gap except for last column
-                        }}
-                        className="flex-shrink-0"
-                        onClick={() => onItemClick?.(item, itemIndex)}
-                    >
-                        <div style={{
-                            height: '100%',
-                            width: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                        }}>
-                            {renderItem(item, itemIndex)}
-                        </div>
-                    </div>
-                );
-            }
-
-
-            return (
-                <div
-                    key={virtualRow.key}
-                    data-index={virtualRow.index}
-                    ref={(el) => measureRowHeight(rowIndex, el)}
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: totalGridWidth,
-                        height: isDynamicHeight ? currentRowHeight : staticItemHeight,
-                        minHeight: isDynamicHeight ? currentRowHeight : staticItemHeight,
-                        transform: `translateY(${virtualRow.start}px)`,
-                        marginBottom: gap, // Add vertical gap between rows
-                    }}
-                    className="relative"
-                >
-                    {rowItems}
-                </div>
-            );
-        });
-    }, [
-        virtualRows,
-        data,
-        columns,
-        itemWidth,
-        actualItemWidth,
-        totalItemWidth,
-        totalGridWidth,
-        renderItem,
-        getItemKey,
-        onItemClick,
-        isDynamicHeight,
-        staticItemHeight,
-        gap,
-        rowHeights,
-        measureRowHeight,
-    ]);
-
-    const gridContent = (
-        <div className={`relative ${className}`}>
-            <div
-                ref={parentRef}
-                className="overflow-auto"
-                style={{
-                    height,
-                    width,
+    // Render row content - each row contains multiple items
+    const renderRowContent = useCallback((rowIndex: number, rowData: T[]) => {
+        return (
+            <div 
+                className="flex"
+                style={{ 
+                    gap: `${gap}px`,
+                    padding: `${gap / 2}px`,
+                    height: isDynamicHeight ? 'auto' : staticItemHeight,
+                    minHeight: isDynamicHeight ? 'auto' : staticItemHeight,
                 }}
             >
+                {rowData.map((item, colIndex) => {
+                    const itemIndex = rowIndex * columns + colIndex;
+                    return (
+                        <div
+                            key={getItemKey(item, itemIndex)}
+                            style={{
+                                width: actualItemWidth,
+                                flex: '0 0 auto'
+                            }}
+                            onClick={() => onItemClick?.(item, itemIndex)}
+                        >
+                            {renderItem(item, itemIndex)}
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    }, [actualItemWidth, gap, isDynamicHeight, staticItemHeight, columns, renderItem, getItemKey, onItemClick]);
+
+    // Virtuoso item content renderer
+    const itemContent = useCallback((index: number) => {
+        const rowData = groupedData[index];
+        if (!rowData) return null;
+        return renderRowContent(index, rowData);
+    }, [groupedData, renderRowContent]);
+
+    // Virtuoso components for custom styling
+    const virtuosoComponents = useMemo(() => ({
+        List: React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>(
+            ({ style, children, ...props }, ref) => (
                 <div
+                    ref={ref}
+                    {...props}
                     style={{
-                        height: rowVirtualizer.getTotalSize(),
-                        width: gridWidth,
-                        position: 'relative',
+                        ...style,
+                        width: '100%',
                     }}
                 >
-                    {renderGridItems}
+                    {children}
                 </div>
+            )
+        ),
+        Item: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
+            <div {...props} style={{ width: '100%' }}>
+                {children}
             </div>
+        )
+    }), []);
+
+    const gridContent = (
+        <div className={`relative ${className}`} ref={containerRef}>
+            <Virtuoso
+                style={{ 
+                    height: typeof height === 'number' ? `${height}px` : height,
+                    width: typeof width === 'number' ? `${width}px` : width,
+                }}
+                totalCount={groupedData.length}
+                itemContent={itemContent}
+                components={virtuosoComponents}
+                overscan={overscan}
+                fixedItemHeight={isDynamicHeight ? undefined : staticItemHeight + gap}
+            />
         </div>
     );
 

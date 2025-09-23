@@ -6,7 +6,7 @@ import { DraggableCard } from '@/components/ui/draggable-card';
 import { Badge } from '@/components/ui/badge';
 import { User, MapPin, GraduationCap, DollarSign, Quote, Tag, Search } from 'lucide-react';
 import { Persona } from '@/lib/api/customer-segment';
-import { VirtualGridDnd, useContainerWidth, useResponsiveColumns } from '@/components/ui/virtual-grid-dnd';
+import { VirtualGridDnd, useContainerWidth } from '@/components/ui/virtual-grid-dnd';
 
 
 interface PersonaCardProps {
@@ -163,35 +163,7 @@ export function PersonaCard({
     );
 }
 
-// Grid components for VirtuosoGrid - keep outside component to prevent remounting
-const gridComponents = {
-    List: forwardRef<HTMLDivElement, { style?: React.CSSProperties; children?: React.ReactNode }>(
-        ({ style, children, ...props }, ref) => (
-            <div
-                ref={ref}
-                {...props}
-                className="flex flex-wrap gap-4 p-4"
-                style={style}
-            >
-                {children}
-            </div>
-        )
-    ),
-    Item: ({ children, ...props }: { children?: React.ReactNode;[key: string]: any }) => (
-        <div
-            {...props}
-            className="
-                w-full 
-                sm:w-[calc(50%-0.5rem)] 
-                lg:w-[calc(33.333%-0.67rem)] 
-                xl:w-[calc(25%-0.75rem)]
-                flex-none
-            "
-        >
-            {children}
-        </div>
-    )
-};
+
 
 interface PersonaCardsProps {
     personas: Persona[];
@@ -208,7 +180,6 @@ export default function PersonaCards({
 }: PersonaCardsProps) {
     const [items, setItems] = useState(personas);
 
-    // Update items when personas prop changes
     React.useEffect(() => {
         setItems(personas);
     }, [personas]);
@@ -216,18 +187,15 @@ export default function PersonaCards({
     const containerRef = useRef<HTMLDivElement>(null);
     const containerWidth = useContainerWidth(containerRef);
 
-    // Calculate responsive columns that always fit the container
     const columns = useMemo(() => {
         if (containerWidth <= 0) return 1;
 
-        // Define breakpoints for responsive columns
-        if (containerWidth < 640) return 1;      // Mobile: 1 column
-        if (containerWidth < 1024) return 2;     // Tablet: 2 columns  
-        if (containerWidth < 1400) return 3;     // Desktop: 3 columns
-        return 3;                                // Large desktop: 4 columns
+        if (containerWidth < 640) return 1;
+        if (containerWidth < 1024) return 2;
+        if (containerWidth < 1400) return 3;
+        return 3;
     }, [containerWidth]);
 
-    // Calculate item width to fit exactly in the container
     const itemWidth = useMemo(() => {
         if (containerWidth <= 0) return 350;
 
@@ -237,7 +205,6 @@ export default function PersonaCards({
         return Math.floor(availableWidth / columns);
     }, [containerWidth, columns]);
 
-    // Render function for each item
     const renderItem = useCallback((persona: Persona, index: number) => (
         <PersonaCard
             persona={persona}
@@ -246,11 +213,9 @@ export default function PersonaCards({
         />
     ), [onPersonaClick, visibleFields]);
 
-    // Get item key function
     const getItemKey = useCallback((persona: Persona, index: number) =>
         persona.id, []);
 
-    // Handle reorder
     const handleReorder = useCallback((reorderedData: Persona[]) => {
         setItems(reorderedData);
         onPersonaReorder?.(reorderedData);
