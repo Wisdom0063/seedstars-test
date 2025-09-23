@@ -156,6 +156,38 @@ export const DEFAULT_VIEWS: Omit<View, 'id' | 'createdAt' | 'updatedAt'>[] = [
     sortOrder: SortOrder.DESC,
     visibleFields: Object.keys(PERSONA_FIELDS),
   },
+  {
+    name: 'All Value Propositions',
+    description: 'View all value propositions across all segments',
+    isDefault: true,
+    source: ViewSource.VALUE_PROPOSITIONS,
+    layout: ViewLayout.CARD,
+    sortBy: 'name',
+    sortOrder: SortOrder.ASC,
+    visibleFields: ['name', 'description', 'segment', 'painPoints', 'channels'],
+  },
+  {
+    name: 'Value Propositions by Segment',
+    description: 'Kanban view organized by customer segments',
+    isDefault: false,
+    source: ViewSource.VALUE_PROPOSITIONS,
+    layout: ViewLayout.KANBAN,
+    groupBy: 'segment',
+    sortBy: 'name',
+    sortOrder: SortOrder.ASC,
+    visibleFields: ['name', 'description', 'segment', 'painPoints', 'channels'],
+  },
+  {
+    name: 'Detailed Table',
+    description: 'Comprehensive table view with all value proposition details',
+    isDefault: false,
+    source: ViewSource.VALUE_PROPOSITIONS,
+    layout: ViewLayout.TABLE,
+    sortBy: 'createdAt',
+    sortOrder: SortOrder.DESC,
+    visibleFields: Object.keys(PERSONA_FIELDS),
+  },
+
 ];
 
 export type PersonaField = keyof typeof PERSONA_FIELDS;

@@ -31,9 +31,6 @@ export interface ValuePropositionWithRelations extends ValueProposition {
 // Update request type
 export interface UpdateValuePropositionRequest {
   id: string;
-  name?: string;
-  description?: string;
-  status?: ValuePropositionStatus;
   tags?: string[];
 
   // Complete replacement of canvas components

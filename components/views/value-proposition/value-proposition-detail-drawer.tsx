@@ -61,9 +61,7 @@ export function ValuePropositionDetailDrawer({
         try {
             const updateRequest: UpdateValuePropositionRequest = {
                 id: editedVP.id,
-                name: editedVP.name,
-                description: editedVP.description || undefined,
-                status: editedVP.status,
+                tags: editedVP.tags ? JSON.parse(editedVP.tags) : undefined,
                 customerJobs: editedVP.customerJobs.map(job => ({
                     title: job.title,
                     description: job.description,
@@ -220,43 +218,29 @@ export function ValuePropositionDetailDrawer({
                         <h4 className="font-semibold">Basic Information</h4>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <Label htmlFor="name">Name</Label>
-                            <Input
-                                id="name"
-                                value={editedVP.name}
-                                onChange={(e) => updateField('name', e.target.value)}
-                                onBlur={handleFieldBlur}
-                                placeholder="Enter value proposition name"
-                            />
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="space-y-2">
+                            <div>
+                                <Label className="text-sm font-medium text-gray-700">Persona</Label>
+                                <p className="text-gray-900">{editedVP.persona?.name || 'No specific persona'}</p>
+                            </div>
+                            <div>
+                                <Label className="text-sm font-medium text-gray-700">Customer Segment</Label>
+                                <p className="text-gray-900">{editedVP.segment.name}</p>
+                            </div>
+                            {editedVP.tags && (
+                                <div>
+                                    <Label className="text-sm font-medium text-gray-700">Tags</Label>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                        {JSON.parse(editedVP.tags).map((tag: string, index: number) => (
+                                            <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                        <div>
-                            <Label htmlFor="status">Status</Label>
-                            <select
-                                id="status"
-                                value={editedVP.status}
-                                onChange={(e) => updateField('status', e.target.value)}
-                                onBlur={handleFieldBlur}
-                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
-                            >
-                                <option value="DRAFT">Draft</option>
-                                <option value="ACTIVE">Active</option>
-                                <option value="ARCHIVED">Archived</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
-                            value={editedVP.description || ''}
-                            onChange={(e) => updateField('description', e.target.value)}
-                            onBlur={handleFieldBlur}
-                            rows={3}
-                            placeholder="Enter value proposition description"
-                        />
                     </div>
                 </div>
 
@@ -676,9 +660,9 @@ export function ValuePropositionDetailDrawer({
             item={valueProposition}
             isOpen={isOpen}
             onClose={handleClose}
-            title={(vp) => vp.name}
-            subtitle={(vp) => `${vp.status} • ${vp.segment.name}${vp.persona ? ` • ${vp.persona.name}` : ''}`}
-            description={valueProposition?.description || undefined}
+            title={(vp) => vp.persona ? `Value Proposition for ${vp.persona.name}` : `Value Proposition for ${vp.segment.name}`}
+            subtitle={(vp) => `${vp.segment.name}${vp.persona ? ` • ${vp.persona.name}` : ''}`}
+            description={undefined}
             footer={footer}
         >
             {renderEditMode()}

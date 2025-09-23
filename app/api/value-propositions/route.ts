@@ -51,7 +51,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      ...result
+      data: result,
+      count: result.length
     });
 
   } catch (error) {

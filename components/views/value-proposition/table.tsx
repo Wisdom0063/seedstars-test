@@ -73,7 +73,9 @@ export function ValuePropositionTable({ valuePropositions, onValuePropositionCli
                                 <Lightbulb className="h-4 w-4" />
                             </div>
                             <div>
-                                <div className="font-medium">{valueProposition.name}</div>
+                                <div className="font-medium">
+                                    {valueProposition.persona ? `VP for ${valueProposition.persona.name}` : `VP for ${valueProposition.segment.name}`}
+                                </div>
                                 {isFieldVisible('status') && (
                                     <Badge 
                                         variant={getStatusBadgeVariant(valueProposition.status)}

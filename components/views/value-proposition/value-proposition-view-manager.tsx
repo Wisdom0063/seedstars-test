@@ -75,14 +75,14 @@ const valuePropositionFilterConfig = {
                 description: 'Filter by customer segment',
                 getOptions: (data: any[]) => getUniqueOptions(data, 'segment.name', 'segment.id')
             },
-            {
-                id: 'personas',
-                label: 'Persona',
-                icon: User,
-                type: 'multiselect',
-                description: 'Filter by persona',
-                getOptions: (data: any[]) => getUniqueOptions(data, 'persona.name', 'persona.id')
-            },
+            // {
+            //     id: 'personas',
+            //     label: 'Persona',
+            //     icon: User,
+            //     type: 'multiselect',
+            //     description: 'Filter by persona',
+            //     getOptions: (data: any[]) => getUniqueOptions(data, 'persona.name', 'persona.id')
+            // },
             {
                 id: 'status',
                 label: 'Status',
@@ -91,54 +91,54 @@ const valuePropositionFilterConfig = {
                 description: 'Filter by status',
                 getOptions: (data: any[]) => getUniqueOptions(data, 'status')
             },
-            {
-                id: 'valuePropositionStatements',
-                label: 'Value Propositions',
-                icon: Target,
-                type: 'multiselect',
-                description: 'Filter by value proposition statements',
-                getOptions: (data: any[]) => getFlattenedOptions(data, 'valuePropositionStatements.offering')
-            },
-            {
-                id: 'customerJobs',
-                label: 'Customer Jobs',
-                icon: Tag,
-                type: 'multiselect',
-                description: 'Filter by customer jobs',
-                getOptions: (data: any[]) => getFlattenedOptions(data, 'customerJobs.title')
-            },
-            {
-                id: 'customerPains',
-                label: 'Customer Pains',
-                icon: AlertTriangle,
-                type: 'multiselect',
-                description: 'Filter by customer pains',
-                getOptions: (data: any[]) => getFlattenedOptions(data, 'customerPains.title')
-            },
-            {
-                id: 'gainCreators',
-                label: 'Gain Creators',
-                icon: TrendingUp,
-                type: 'multiselect',
-                description: 'Filter by gain creators',
-                getOptions: (data: any[]) => getFlattenedOptions(data, 'gainCreators.title')
-            },
-            {
-                id: 'painRelievers',
-                label: 'Pain Relievers',
-                icon: Shield,
-                type: 'multiselect',
-                description: 'Filter by pain relievers',
-                getOptions: (data: any[]) => getFlattenedOptions(data, 'painRelievers.title')
-            },
-            {
-                id: 'productsServices',
-                label: 'Products & Services',
-                icon: Package,
-                type: 'multiselect',
-                description: 'Filter by products and services',
-                getOptions: (data: any[]) => getFlattenedOptions(data, 'productsServices.name')
-            },
+            // {
+            //     id: 'valuePropositionStatements',
+            //     label: 'Value Propositions',
+            //     icon: Target,
+            //     type: 'multiselect',
+            //     description: 'Filter by value proposition statements',
+            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'valuePropositionStatements.offering')
+            // },
+            // {
+            //     id: 'customerJobs',
+            //     label: 'Customer Jobs',
+            //     icon: Tag,
+            //     type: 'multiselect',
+            //     description: 'Filter by customer jobs',
+            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'customerJobs.title')
+            // },
+            // {
+            //     id: 'customerPains',
+            //     label: 'Customer Pains',
+            //     icon: AlertTriangle,
+            //     type: 'multiselect',
+            //     description: 'Filter by customer pains',
+            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'customerPains.title')
+            // },
+            // {
+            //     id: 'gainCreators',
+            //     label: 'Gain Creators',
+            //     icon: TrendingUp,
+            //     type: 'multiselect',
+            //     description: 'Filter by gain creators',
+            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'gainCreators.title')
+            // },
+            // {
+            //     id: 'painRelievers',
+            //     label: 'Pain Relievers',
+            //     icon: Shield,
+            //     type: 'multiselect',
+            //     description: 'Filter by pain relievers',
+            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'painRelievers.title')
+            // },
+            // {
+            //     id: 'productsServices',
+            //     label: 'Products & Services',
+            //     icon: Package,
+            //     type: 'multiselect',
+            //     description: 'Filter by products and services',
+            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'productsServices.name')
+            // },
             {
                 id: 'createdAt',
                 label: 'Created Date',
@@ -257,29 +257,29 @@ const valuePropositionFilterConfig = {
         if (filters.search) {
             const searchTerm = filters.search.toLowerCase();
             result = result.filter(vp =>
-                vp.name.toLowerCase().includes(searchTerm) ||
-                vp.description?.toLowerCase().includes(searchTerm) ||
-                vp.valuePropositionStatements?.some(s => 
+                vp.persona?.name.toLowerCase().includes(searchTerm) ||
+                vp.segment.name.toLowerCase().includes(searchTerm) ||
+                vp.valuePropositionStatements?.some(s =>
                     s.offering.toLowerCase().includes(searchTerm) ||
                     s.description.toLowerCase().includes(searchTerm)
                 ) ||
-                vp.customerJobs?.some(j => 
+                vp.customerJobs?.some(j =>
                     j.title.toLowerCase().includes(searchTerm) ||
                     j.description.toLowerCase().includes(searchTerm)
                 ) ||
-                vp.customerPains?.some(p => 
+                vp.customerPains?.some(p =>
                     p.title.toLowerCase().includes(searchTerm) ||
                     p.description.toLowerCase().includes(searchTerm)
                 ) ||
-                vp.gainCreators?.some(g => 
+                vp.gainCreators?.some(g =>
                     g.title.toLowerCase().includes(searchTerm) ||
                     g.description.toLowerCase().includes(searchTerm)
                 ) ||
-                vp.painRelievers?.some(r => 
+                vp.painRelievers?.some(r =>
                     r.title.toLowerCase().includes(searchTerm) ||
                     r.description.toLowerCase().includes(searchTerm)
                 ) ||
-                vp.productsServices?.some(p => 
+                vp.productsServices?.some(p =>
                     p.name.toLowerCase().includes(searchTerm) ||
                     p.description.toLowerCase().includes(searchTerm)
                 )
@@ -300,10 +300,8 @@ const valuePropositionSortConfig = {
         const { Lightbulb, Calendar, Users, User, Target } = require('lucide-react');
 
         return [
-            { id: 'name', label: 'Name', icon: Lightbulb, field: 'name', type: 'text' as const, description: 'Sort by value proposition name' },
-            { id: 'status', label: 'Status', icon: Target, field: 'status', type: 'text' as const, description: 'Sort by status' },
+            { id: 'persona', label: 'Persona', icon: User, field: 'persona.name', type: 'text' as const, description: 'Sort by persona name' },
             { id: 'segment', label: 'Customer Segment', icon: Users, field: 'segment.name', type: 'text' as const, description: 'Sort by customer segment' },
-            { id: 'persona', label: 'Persona', icon: User, field: 'persona.name', type: 'text' as const, description: 'Sort by persona' },
             { id: 'createdAt', label: 'Created Date', icon: Calendar, field: 'createdAt', type: 'date' as const, description: 'Sort by creation date' },
             { id: 'updatedAt', label: 'Updated Date', icon: Calendar, field: 'updatedAt', type: 'date' as const, description: 'Sort by update date' }
         ];
@@ -311,9 +309,7 @@ const valuePropositionSortConfig = {
 };
 
 const valuePropositionAvailableProperties = [
-    { id: 'name', label: 'Name' },
-    { id: 'status', label: 'Status' },
-    { id: 'description', label: 'Description' },
+    { id: 'name', label: 'Name' }, // This will show persona name
     { id: 'segment', label: 'Customer Segment' },
     { id: 'persona', label: 'Persona' },
     { id: 'valuePropositionStatements', label: 'Value Propositions' },
@@ -364,7 +360,7 @@ const valuePropositionViewConfig: ViewManagerConfig<ValuePropositionWithRelation
     filterConfig: valuePropositionFilterConfig,
     sortConfig: valuePropositionSortConfig,
     availableProperties: valuePropositionAvailableProperties,
-    defaultVisibleFields: ['name', 'status', 'segment', 'persona', 'valuePropositionStatements']
+    defaultVisibleFields: ['name', 'segment', 'persona', 'valuePropositionStatements']
 };
 
 // Value Proposition-specific ViewManager props

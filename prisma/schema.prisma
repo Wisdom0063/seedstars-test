@@ -59,9 +59,6 @@ model Persona {
 
 model ValueProposition {
   id          String   @id @default(cuid())
-  name        String
-  description String?
-  status      ValuePropositionStatus @default(DRAFT)
   tags        String?  // JSON array of tags
   
   createdAt   DateTime @default(now())

@@ -19,13 +19,14 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { arrayMove, SortableContext, useSortable } from '@dnd-kit/sortable';
+import { arrayMove, rectSortingStrategy, SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {
   createContext,
   type HTMLAttributes,
   type ReactNode,
   useContext,
+  useMemo,
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
@@ -321,6 +322,8 @@ export const KanbanProvider = <
     },
   };
 
+  const columnsStr = useMemo(() => columns.map(col => col.id), [columns]);
+
   return (
     <KanbanContext.Provider value={{ columns, data, activeCardId }}>
       <DndContext
@@ -339,14 +342,16 @@ export const KanbanProvider = <
             className
           )}
         >
+          <SortableContext items={columnsStr} strategy={rectSortingStrategy}>
 
-          <Virtuoso
-            style={{ height: 700 }}
-            data={columns}
-            horizontalDirection
-            itemContent={(_, column) => children(column)}
-          />
+            <Virtuoso
+              style={{ height: 700 }}
+              data={columns}
+              horizontalDirection
+              itemContent={(_, column) => children(column)}
+            />
 
+          </SortableContext>
 
 
 

@@ -75,11 +75,11 @@ export function ValuePropositionCard({
                         <div>
                             {isFieldVisible('name') && (
                                 <CardTitle className="text-lg font-semibold text-gray-900">
-                                    {valueProposition.name}
+                                    {valueProposition.persona ? `VP for ${valueProposition.persona.name}` : `VP for ${valueProposition.segment.name}`}
                                 </CardTitle>
                             )}
                             {isFieldVisible('status') && (
-                                <Badge 
+                                <Badge
                                     variant={valueProposition.status === 'ACTIVE' ? 'default' : 'secondary'}
                                     className="text-xs mt-1"
                                 >
@@ -133,8 +133,8 @@ export function ValuePropositionCard({
                                 </Badge>
                             ))}
                             {valueProposition.valuePropositionStatements.length > 2 && (
-                                <Badge 
-                                    variant="outline" 
+                                <Badge
+                                    variant="outline"
                                     className="text-xs"
                                     title={valueProposition.valuePropositionStatements.slice(2).map(s => s.offering).join(', ')}
                                 >
@@ -244,7 +244,7 @@ const gridComponents = {
             </div>
         )
     ),
-    Item: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
+    Item: ({ children, ...props }: { children?: React.ReactNode;[key: string]: any }) => (
         <div
             {...props}
             style={{
@@ -306,6 +306,8 @@ export default function ValuePropositionCards({
         }
     }
 
+    const itemsStr = useMemo(() => items.map(vp => vp.id), [items]);
+
     return (
         <div className="space-y-4">
             <DndContext
@@ -313,13 +315,14 @@ export default function ValuePropositionCards({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
             >
-                <SortableContext items={items.map(vp => vp.id)} strategy={rectSortingStrategy}>
+                <SortableContext items={itemsStr} strategy={rectSortingStrategy}>
                     <VirtuosoGrid
                         style={{ height: 700, width: '100%' }}
                         totalCount={items.length}
                         components={gridComponents}
                         itemContent={(index) => (
                             <ValuePropositionCard
+                                key={items[index].id}
                                 valueProposition={items[index]}
                                 onClick={onValuePropositionClick}
                                 visibleFields={visibleFields}

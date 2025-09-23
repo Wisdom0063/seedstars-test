@@ -74,7 +74,9 @@ function ValuePropositionKanbanCard({
         </div>
         <div className="flex-1">
           {isFieldVisible('name') && (
-            <div className="font-medium text-sm">{valueProposition.name}</div>
+            <div className="font-medium text-sm">
+              {valueProposition.persona ? `VP for ${valueProposition.persona.name}` : `VP for ${valueProposition.segment.name}`}
+            </div>
           )}
           {isFieldVisible('status') && (
             <Badge 
@@ -243,7 +245,7 @@ export function ValuePropositionKanban({
 
       return {
         id: valueProposition.id,
-        name: valueProposition.name,
+        name: valueProposition.persona ? `VP for ${valueProposition.persona.name}` : `VP for ${valueProposition.segment.name}`,
         column: segmentId,
         valueProposition,
       };

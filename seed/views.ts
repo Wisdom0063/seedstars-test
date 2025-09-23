@@ -8,12 +8,9 @@ export async function seedViews() {
 
     try {
         // Check if views already exist
-        const existingViews = await prisma.view.findMany();
+        await prisma.view.deleteMany();
 
-        if (existingViews.length > 0) {
-            console.log('📋 Views already exist, skipping seed');
-            return;
-        }
+
 
         // Create default views
         const createdViews = await Promise.all(

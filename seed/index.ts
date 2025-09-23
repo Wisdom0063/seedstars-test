@@ -1,10 +1,12 @@
 import { seedCustomerSegments } from "./customer-segments";
 import { seedViews } from "./views";
+import { seedValuePropositions } from "./value-proposition";
 
 async function main() {
     try {
         console.log('🌱 Starting to seed data...');
         await seedCustomerSegments();
+        await seedValuePropositions();
         await seedViews();
         console.log('🎉 Data seeding completed successfully!');
     } catch (error) {

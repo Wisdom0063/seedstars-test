@@ -97,9 +97,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         updatedAt: new Date()
       };
 
-      if (data.name !== undefined) updateData.name = data.name.trim();
-      if (data.description !== undefined) updateData.description = data.description?.trim();
-      if (data.status !== undefined) updateData.status = data.status;
       if (data.tags !== undefined) updateData.tags = data.tags ? JSON.stringify(data.tags) : null;
 
       const vp = await tx.valueProposition.update({
