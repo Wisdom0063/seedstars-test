@@ -1,17 +1,12 @@
 'use client';
 
-import React, { useState, forwardRef, useMemo, useCallback } from 'react';
+import React, { useState, forwardRef, useMemo, useCallback, useRef } from 'react';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DraggableCard } from '@/components/ui/draggable-card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Lightbulb, Users, Target, Tag, Search } from 'lucide-react';
+import { Lightbulb, Users, Target, Tag } from 'lucide-react';
 import { ValuePropositionWithRelations } from '@/lib/api/value-proposition';
-import { VirtualGridDnd, useContainerWidth, useResponsiveColumns } from '@/components/ui/virtual-grid-dnd';
-import { closestCenter, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { VirtuosoGrid } from 'react-virtuoso';
+import { VirtualGridDnd, useContainerWidth } from '@/components/ui/virtual-grid-dnd';
 
 interface ValuePropositionCardProps {
     valueProposition: ValuePropositionWithRelations;
@@ -102,7 +97,6 @@ export function ValuePropositionCard({
                     </div>
                 )}
 
-                {/* Value Proposition Statements Preview */}
                 {isFieldVisible('valuePropositionStatements') && valueProposition.valuePropositionStatements && valueProposition.valuePropositionStatements.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
@@ -133,7 +127,6 @@ export function ValuePropositionCard({
                     </div>
                 )}
 
-                {/* Customer Jobs Preview */}
                 {isFieldVisible('customerJobs') && valueProposition.customerJobs && valueProposition.customerJobs.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
@@ -159,7 +152,6 @@ export function ValuePropositionCard({
                     </div>
                 )}
 
-                {/* Customer Pains Preview */}
                 {isFieldVisible('customerPains') && valueProposition.customerPains && valueProposition.customerPains.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
@@ -185,7 +177,6 @@ export function ValuePropositionCard({
                     </div>
                 )}
 
-                {/* Products/Services Preview */}
                 {isFieldVisible('productsServices') && valueProposition.productsServices && valueProposition.productsServices.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
@@ -215,35 +206,6 @@ export function ValuePropositionCard({
     );
 }
 
-// Grid components for VirtuosoGrid - keep outside component to prevent remounting
-const gridComponents = {
-    List: forwardRef<HTMLDivElement, { style?: React.CSSProperties; children?: React.ReactNode }>(
-        ({ style, children, ...props }, ref) => (
-            <div
-                ref={ref}
-                {...props}
-                className="flex flex-wrap gap-4 p-4"
-                style={style}
-            >
-                {children}
-            </div>
-        )
-    ),
-    Item: ({ children, ...props }: { children?: React.ReactNode;[key: string]: any }) => (
-        <div
-            {...props}
-            className="
-                w-full 
-                sm:w-[calc(50%-0.5rem)] 
-                lg:w-[calc(33.333%-0.67rem)] 
-                xl:w-[calc(25%-0.75rem)]
-                flex-none
-            "
-        >
-            {children}
-        </div>
-    )
-};
 
 interface ValuePropositionCardsProps {
     valuePropositions: ValuePropositionWithRelations[];
@@ -260,66 +222,65 @@ export default function ValuePropositionCards({
 }: ValuePropositionCardsProps) {
     const [items, setItems] = useState(valuePropositions);
 
-    // Update items when valuePropositions prop changes
     React.useEffect(() => {
         setItems(valuePropositions);
     }, [valuePropositions]);
 
-    const sensors = useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: {
-                distance: 8,
-            },
-        }),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        })
-    );
+    const containerRef = useRef<HTMLDivElement>(null);
+    const containerWidth = useContainerWidth(containerRef);
 
-    const handleDragEnd = useCallback((event: DragEndEvent) => {
-        const { active, over } = event;
+    const columns = useMemo(() => {
+        if (containerWidth <= 0) return 1;
 
-        if (active.id !== over?.id) {
-            const oldIndex = items.findIndex((item) => item.id === active.id);
-            const newIndex = items.findIndex((item) => item.id === over?.id);
+        if (containerWidth < 640) return 1;
+        if (containerWidth < 1024) return 2;
+        if (containerWidth < 1400) return 3;
+        return 3;
+    }, [containerWidth]);
 
-            const newItems = arrayMove(items, oldIndex, newIndex);
-            setItems(newItems);
-            onValuePropositionReorder?.(newItems);
-        }
-    }, [items, onValuePropositionReorder]);
+    const itemWidth = useMemo(() => {
+        if (containerWidth <= 0) return 350;
 
-    const itemsStr = useMemo(() => items.map(vp => vp.id), [items]);
+        const gap = 32;
+        const totalGaps = (columns - 1) * gap;
+        const availableWidth = containerWidth - totalGaps;
+        return Math.floor(availableWidth / columns);
+    }, [containerWidth, columns]);
 
-    const itemContent = useCallback((index: number) => (
+    const renderItem = useCallback((valueProposition: ValuePropositionWithRelations, index: number) => (
         <ValuePropositionCard
-            key={items[index].id}
-            valueProposition={items[index]}
+            valueProposition={valueProposition}
             onClick={onValuePropositionClick}
             visibleFields={visibleFields}
         />
-    ), [items, onValuePropositionClick, visibleFields]);
+    ), [onValuePropositionClick, visibleFields]);
 
-    const gridStyle = useMemo(() => ({ height: 700, width: '100%' }), []);
+    const getItemKey = useCallback((valueProposition: ValuePropositionWithRelations, index: number) =>
+        valueProposition.id, []);
+
+    const handleReorder = useCallback((reorderedData: ValuePropositionWithRelations[]) => {
+        setItems(reorderedData);
+        onValuePropositionReorder?.(reorderedData);
+    }, [onValuePropositionReorder]);
 
     return (
-        <div className="space-y-4">
-            <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-            >
-                <SortableContext items={itemsStr} strategy={rectSortingStrategy}>
-                    <VirtuosoGrid
-                        style={gridStyle}
-                        totalCount={items.length}
-                        components={gridComponents}
-                        itemContent={itemContent}
-                        listClassName="w-full"
-                        itemClassName="transition-all duration-200 hover:scale-[1.02]"
-                    />
-                </SortableContext>
-            </DndContext>
+        <div className="space-y-4" ref={containerRef}>
+            <VirtualGridDnd
+                data={items}
+                itemHeight="auto"
+                itemWidth={itemWidth}
+                columns={columns}
+                gap={32}
+                height={700}
+                width="100%"
+                overscan={3}
+                renderItem={renderItem}
+                getItemKey={getItemKey}
+                onItemClick={onValuePropositionClick}
+                onReorder={handleReorder}
+                enableDragAndDrop={!!onValuePropositionReorder}
+                className="w-full"
+            />
         </div>
     );
 }

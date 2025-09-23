@@ -75,14 +75,14 @@ const valuePropositionFilterConfig = {
                 description: 'Filter by customer segment',
                 getOptions: (data: any[]) => getUniqueOptions(data, 'segment.name', 'segment.id')
             },
-            // {
-            //     id: 'personas',
-            //     label: 'Persona',
-            //     icon: User,
-            //     type: 'multiselect',
-            //     description: 'Filter by persona',
-            //     getOptions: (data: any[]) => getUniqueOptions(data, 'persona.name', 'persona.id')
-            // },
+            {
+                id: 'personas',
+                label: 'Persona',
+                icon: User,
+                type: 'multiselect',
+                description: 'Filter by persona',
+                getOptions: (data: any[]) => getUniqueOptions(data, 'persona.name', 'persona.id')
+            },
             {
                 id: 'status',
                 label: 'Status',
@@ -91,54 +91,54 @@ const valuePropositionFilterConfig = {
                 description: 'Filter by status',
                 getOptions: (data: any[]) => getUniqueOptions(data, 'status')
             },
-            // {
-            //     id: 'valuePropositionStatements',
-            //     label: 'Value Propositions',
-            //     icon: Target,
-            //     type: 'multiselect',
-            //     description: 'Filter by value proposition statements',
-            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'valuePropositionStatements.offering')
-            // },
-            // {
-            //     id: 'customerJobs',
-            //     label: 'Customer Jobs',
-            //     icon: Tag,
-            //     type: 'multiselect',
-            //     description: 'Filter by customer jobs',
-            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'customerJobs.title')
-            // },
-            // {
-            //     id: 'customerPains',
-            //     label: 'Customer Pains',
-            //     icon: AlertTriangle,
-            //     type: 'multiselect',
-            //     description: 'Filter by customer pains',
-            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'customerPains.title')
-            // },
-            // {
-            //     id: 'gainCreators',
-            //     label: 'Gain Creators',
-            //     icon: TrendingUp,
-            //     type: 'multiselect',
-            //     description: 'Filter by gain creators',
-            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'gainCreators.title')
-            // },
-            // {
-            //     id: 'painRelievers',
-            //     label: 'Pain Relievers',
-            //     icon: Shield,
-            //     type: 'multiselect',
-            //     description: 'Filter by pain relievers',
-            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'painRelievers.title')
-            // },
-            // {
-            //     id: 'productsServices',
-            //     label: 'Products & Services',
-            //     icon: Package,
-            //     type: 'multiselect',
-            //     description: 'Filter by products and services',
-            //     getOptions: (data: any[]) => getFlattenedOptions(data, 'productsServices.name')
-            // },
+            {
+                id: 'valuePropositionStatements',
+                label: 'Value Propositions',
+                icon: Target,
+                type: 'multiselect',
+                description: 'Filter by value proposition statements',
+                getOptions: (data: any[]) => getFlattenedOptions(data, 'valuePropositionStatements.offering')
+            },
+            {
+                id: 'customerJobs',
+                label: 'Customer Jobs',
+                icon: Tag,
+                type: 'multiselect',
+                description: 'Filter by customer jobs',
+                getOptions: (data: any[]) => getFlattenedOptions(data, 'customerJobs.title')
+            },
+            {
+                id: 'customerPains',
+                label: 'Customer Pains',
+                icon: AlertTriangle,
+                type: 'multiselect',
+                description: 'Filter by customer pains',
+                getOptions: (data: any[]) => getFlattenedOptions(data, 'customerPains.title')
+            },
+            {
+                id: 'gainCreators',
+                label: 'Gain Creators',
+                icon: TrendingUp,
+                type: 'multiselect',
+                description: 'Filter by gain creators',
+                getOptions: (data: any[]) => getFlattenedOptions(data, 'gainCreators.title')
+            },
+            {
+                id: 'painRelievers',
+                label: 'Pain Relievers',
+                icon: Shield,
+                type: 'multiselect',
+                description: 'Filter by pain relievers',
+                getOptions: (data: any[]) => getFlattenedOptions(data, 'painRelievers.title')
+            },
+            {
+                id: 'productsServices',
+                label: 'Products & Services',
+                icon: Package,
+                type: 'multiselect',
+                description: 'Filter by products and services',
+                getOptions: (data: any[]) => getFlattenedOptions(data, 'productsServices.name')
+            },
             {
                 id: 'createdAt',
                 label: 'Created Date',

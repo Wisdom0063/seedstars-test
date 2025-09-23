@@ -52,8 +52,6 @@ export function VirtualGridDnd<T>({
     enableDragAndDrop = false,
 }: VirtualGridDndProps<T>) {
     const containerRef = useRef<HTMLDivElement>(null);
-
-    // Group data into rows
     const groupedData = useMemo(() => {
         const rows: T[][] = [];
         for (let i = 0; i < data.length; i += columns) {
@@ -62,7 +60,6 @@ export function VirtualGridDnd<T>({
         return rows;
     }, [data, columns]);
 
-    // Calculate item width accounting for horizontal gaps
     const actualItemWidth = useMemo(() => {
         if (typeof width === 'string' && width.includes('%')) {
             return `calc((100% - ${(columns - 1) * gap}px) / ${columns})`;
@@ -70,17 +67,14 @@ export function VirtualGridDnd<T>({
         return itemWidth;
     }, [width, itemWidth, gap, columns]);
 
-    // Determine if we're using dynamic heights
     const isDynamicHeight = itemHeight === 'auto';
     const staticItemHeight = typeof itemHeight === 'number' ? itemHeight : 300;
 
-    // Memoized item keys for SortableContext
     const itemKeys = useMemo(() =>
         data.map((item, index) => getItemKey(item, index).toString()),
         [data, getItemKey]
     );
 
-    // Drag and drop sensors
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
@@ -92,7 +86,6 @@ export function VirtualGridDnd<T>({
         })
     );
 
-    // Handle drag end
     const handleDragEnd = useCallback((event: DragEndEvent) => {
         const { active, over } = event;
 
@@ -111,12 +104,11 @@ export function VirtualGridDnd<T>({
         }
     }, [data, getItemKey, onReorder]);
 
-    // Render row content - each row contains multiple items
     const renderRowContent = useCallback((rowIndex: number, rowData: T[]) => {
         return (
-            <div 
+            <div
                 className="flex"
-                style={{ 
+                style={{
                     gap: `${gap}px`,
                     padding: `${gap / 2}px`,
                     height: isDynamicHeight ? 'auto' : staticItemHeight,
@@ -142,14 +134,12 @@ export function VirtualGridDnd<T>({
         );
     }, [actualItemWidth, gap, isDynamicHeight, staticItemHeight, columns, renderItem, getItemKey, onItemClick]);
 
-    // Virtuoso item content renderer
     const itemContent = useCallback((index: number) => {
         const rowData = groupedData[index];
         if (!rowData) return null;
         return renderRowContent(index, rowData);
     }, [groupedData, renderRowContent]);
 
-    // Virtuoso components for custom styling
     const virtuosoComponents = useMemo(() => ({
         List: React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>(
             ({ style, children, ...props }, ref) => (
@@ -165,7 +155,7 @@ export function VirtualGridDnd<T>({
                 </div>
             )
         ),
-        Item: ({ children, ...props }: { children?: React.ReactNode; [key: string]: any }) => (
+        Item: ({ children, ...props }: { children?: React.ReactNode;[key: string]: any }) => (
             <div {...props} style={{ width: '100%' }}>
                 {children}
             </div>
@@ -175,7 +165,7 @@ export function VirtualGridDnd<T>({
     const gridContent = (
         <div className={`relative ${className}`} ref={containerRef}>
             <Virtuoso
-                style={{ 
+                style={{
                     height: typeof height === 'number' ? `${height}px` : height,
                     width: typeof width === 'number' ? `${width}px` : width,
                 }}
@@ -188,7 +178,6 @@ export function VirtualGridDnd<T>({
         </div>
     );
 
-    // Wrap with DnD context if enabled
     if (enableDragAndDrop) {
         return (
             <DndContext
@@ -206,7 +195,6 @@ export function VirtualGridDnd<T>({
     return gridContent;
 }
 
-// Hook for responsive columns
 export function useResponsiveColumns(
     containerWidth: number,
     itemWidth: number,
@@ -225,7 +213,6 @@ export function useResponsiveColumns(
     }, [containerWidth, itemWidth, gap, minColumns, maxColumns]);
 }
 
-// Hook for container width observation
 export function useContainerWidth(ref: React.RefObject<HTMLElement | null>): number {
     const [width, setWidth] = React.useState(0);
 
@@ -241,7 +228,6 @@ export function useContainerWidth(ref: React.RefObject<HTMLElement | null>): num
 
         resizeObserver.observe(element);
 
-        // Set initial width
         setWidth(element.getBoundingClientRect().width);
 
         return () => {
