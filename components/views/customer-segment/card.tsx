@@ -1,27 +1,12 @@
 'use client';
 
-import React, { useState, forwardRef, useMemo, useCallback } from 'react';
+import React, { useState, forwardRef, useMemo, useCallback, useRef } from 'react';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DraggableCard } from '@/components/ui/draggable-card';
 import { Badge } from '@/components/ui/badge';
 import { User, MapPin, GraduationCap, DollarSign, Quote, Tag, Search } from 'lucide-react';
 import { Persona } from '@/lib/api/customer-segment';
-import { VirtuosoGrid } from 'react-virtuoso';
-import {
-    DndContext,
-    closestCenter,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-    DragEndEvent,
-} from '@dnd-kit/core';
-import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    rectSortingStrategy,
-} from '@dnd-kit/sortable';
+import { VirtualGridDnd, useContainerWidth, useResponsiveColumns } from '@/components/ui/virtual-grid-dnd';
 
 
 interface PersonaCardProps {
@@ -232,58 +217,67 @@ export default function PersonaCards({
         setItems(personas);
     }, [personas]);
 
-    const sensors = useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: {
-                distance: 8,
-            },
-        }),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        })
-    );
+    const containerRef = useRef<HTMLDivElement>(null);
+    const containerWidth = useContainerWidth(containerRef);
 
-    const handleDragEnd = useCallback((event: DragEndEvent) => {
-        const { active, over } = event;
+    // Calculate responsive columns that always fit the container
+    const columns = useMemo(() => {
+        if (containerWidth <= 0) return 1;
 
-        if (active.id !== over?.id) {
-            const oldIndex = items.findIndex((item) => item.id === active.id);
-            const newIndex = items.findIndex((item) => item.id === over?.id);
+        // Define breakpoints for responsive columns
+        if (containerWidth < 640) return 1;      // Mobile: 1 column
+        if (containerWidth < 1024) return 2;     // Tablet: 2 columns  
+        if (containerWidth < 1400) return 3;     // Desktop: 3 columns
+        return 3;                                // Large desktop: 4 columns
+    }, [containerWidth]);
 
-            const newItems = arrayMove(items, oldIndex, newIndex);
-            setItems(newItems);
-            onPersonaReorder?.(newItems);
-        }
-    }, [items, onPersonaReorder]);
+    // Calculate item width to fit exactly in the container
+    const itemWidth = useMemo(() => {
+        if (containerWidth <= 0) return 350;
 
-    const itemsStr = useMemo(() => items.map(p => p.id), [items]);
+        const gap = 16;
+        const totalGaps = (columns - 1) * gap;
+        const availableWidth = containerWidth - totalGaps;
+        return Math.floor(availableWidth / columns);
+    }, [containerWidth, columns]);
 
-    const itemContent = useCallback((index: number) => (
+    // Render function for each item
+    const renderItem = useCallback((persona: Persona, index: number) => (
         <PersonaCard
-            key={items[index].id}
-            persona={items[index]}
+            persona={persona}
             onClick={onPersonaClick}
             visibleFields={visibleFields}
         />
-    ), [items, onPersonaClick, visibleFields]);
+    ), [onPersonaClick, visibleFields]);
 
-    const gridStyle = useMemo(() => ({ height: 700, width: '100%' }), []);
+    // Get item key function
+    const getItemKey = useCallback((persona: Persona, index: number) =>
+        persona.id, []);
+
+    // Handle reorder
+    const handleReorder = useCallback((reorderedData: Persona[]) => {
+        setItems(reorderedData);
+        onPersonaReorder?.(reorderedData);
+    }, [onPersonaReorder]);
+
     return (
-        <div className="space-y-4">
-            <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-            >
-                <SortableContext items={itemsStr} strategy={rectSortingStrategy}>
-                    <VirtuosoGrid
-                        style={gridStyle}
-                        totalCount={items.length}
-                        components={gridComponents}
-                        itemContent={itemContent}
-                    />
-                </SortableContext>
-            </DndContext>
+        <div className="space-y-4" ref={containerRef}>
+            <VirtualGridDnd
+                data={items}
+                itemHeight="auto"
+                itemWidth={itemWidth}
+                columns={columns}
+                gap={16}
+                height={700}
+                width="100%"
+                overscan={3}
+                renderItem={renderItem}
+                getItemKey={getItemKey}
+                onItemClick={onPersonaClick}
+                onReorder={handleReorder}
+                enableDragAndDrop={!!onPersonaReorder}
+                className="w-full"
+            />
         </div>
     );
 }

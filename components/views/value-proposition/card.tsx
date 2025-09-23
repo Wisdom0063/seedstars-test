@@ -9,6 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Lightbulb, Users, Target, Tag, Search } from 'lucide-react';
 import { ValuePropositionWithRelations } from '@/lib/api/value-proposition';
 import { VirtualGridDnd, useContainerWidth, useResponsiveColumns } from '@/components/ui/virtual-grid-dnd';
+import { closestCenter, DndContext, DragEndEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { VirtuosoGrid } from 'react-virtuoso';
 
 interface ValuePropositionCardProps {
     valueProposition: ValuePropositionWithRelations;
@@ -316,6 +319,8 @@ export default function ValuePropositionCards({
                         totalCount={items.length}
                         components={gridComponents}
                         itemContent={itemContent}
+                        listClassName='d-flex flex-wrap space-between'
+                        itemClassName=''
                     />
                 </SortableContext>
             </DndContext>
