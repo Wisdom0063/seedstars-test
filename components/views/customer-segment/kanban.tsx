@@ -1,6 +1,6 @@
 'use client';
 import { Virtuoso } from 'react-virtuoso'
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { User, MapPin, GraduationCap, DollarSign, Quote, Tag, Users } from 'lucide-react';
 import { Persona } from '@/lib/api/customer-segment';
@@ -198,7 +198,7 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
     setData(kanbanData);
   }, [kanbanData]);
 
-  const handleDataChange = (newData: PersonaKanbanItem[]) => {
+  const handleDataChange = useCallback((newData: PersonaKanbanItem[]) => {
     setData(newData);
 
     // Find moved personas and notify parent
@@ -208,11 +208,11 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
         onPersonaMove?.(item.id, item.column);
       }
     });
-  };
+  }, [kanbanData, onPersonaMove]);
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     // Additional drag end logic if needed
-  };
+  }, []);
 
   return (
     <div className="w-full">

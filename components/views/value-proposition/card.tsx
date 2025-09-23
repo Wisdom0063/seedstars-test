@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, forwardRef, useMemo } from 'react';
+import React, { useState, forwardRef, useMemo, useCallback } from 'react';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DraggableCard } from '@/components/ui/draggable-card';
 import { Badge } from '@/components/ui/badge';
@@ -8,22 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Lightbulb, Users, Target, Tag, Search } from 'lucide-react';
 import { ValuePropositionWithRelations } from '@/lib/api/value-proposition';
-import { VirtuosoGrid } from 'react-virtuoso';
-import {
-    DndContext,
-    closestCenter,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-    DragEndEvent,
-} from '@dnd-kit/core';
-import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    rectSortingStrategy,
-} from '@dnd-kit/sortable';
+import { VirtualGridDnd, useContainerWidth, useResponsiveColumns } from '@/components/ui/virtual-grid-dnd';
 
 interface ValuePropositionCardProps {
     valueProposition: ValuePropositionWithRelations;
@@ -275,7 +260,6 @@ export default function ValuePropositionCards({
     onValuePropositionReorder
 }: ValuePropositionCardsProps) {
     const [items, setItems] = useState(valuePropositions);
-    const [globalFilter, setGlobalFilter] = useState('');
 
     // Update items when valuePropositions prop changes
     React.useEffect(() => {
@@ -293,7 +277,7 @@ export default function ValuePropositionCards({
         })
     );
 
-    function handleDragEnd(event: DragEndEvent) {
+    const handleDragEnd = useCallback((event: DragEndEvent) => {
         const { active, over } = event;
 
         if (active.id !== over?.id) {
@@ -304,9 +288,20 @@ export default function ValuePropositionCards({
             setItems(newItems);
             onValuePropositionReorder?.(newItems);
         }
-    }
+    }, [items, onValuePropositionReorder]);
 
     const itemsStr = useMemo(() => items.map(vp => vp.id), [items]);
+
+    const itemContent = useCallback((index: number) => (
+        <ValuePropositionCard
+            key={items[index].id}
+            valueProposition={items[index]}
+            onClick={onValuePropositionClick}
+            visibleFields={visibleFields}
+        />
+    ), [items, onValuePropositionClick, visibleFields]);
+
+    const gridStyle = useMemo(() => ({ height: 700, width: '100%' }), []);
 
     return (
         <div className="space-y-4">
@@ -317,17 +312,10 @@ export default function ValuePropositionCards({
             >
                 <SortableContext items={itemsStr} strategy={rectSortingStrategy}>
                     <VirtuosoGrid
-                        style={{ height: 700, width: '100%' }}
+                        style={gridStyle}
                         totalCount={items.length}
                         components={gridComponents}
-                        itemContent={(index) => (
-                            <ValuePropositionCard
-                                key={items[index].id}
-                                valueProposition={items[index]}
-                                onClick={onValuePropositionClick}
-                                visibleFields={visibleFields}
-                            />
-                        )}
+                        itemContent={itemContent}
                     />
                 </SortableContext>
             </DndContext>

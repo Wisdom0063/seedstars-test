@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Lightbulb, Users, Target, Tag } from 'lucide-react';
 import { ValuePropositionWithRelations } from '@/lib/api/value-proposition';
@@ -264,7 +264,7 @@ export function ValuePropositionKanban({
     setData(kanbanData);
   }, [kanbanData]);
 
-  const handleDataChange = (newData: ValuePropositionKanbanItem[]) => {
+  const handleDataChange = useCallback((newData: ValuePropositionKanbanItem[]) => {
     setData(newData);
 
     // Find moved value propositions and notify parent
@@ -274,11 +274,11 @@ export function ValuePropositionKanban({
         onValuePropositionMove?.(item.id, item.column);
       }
     });
-  };
+  }, [kanbanData, onValuePropositionMove]);
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     // Additional drag end logic if needed
-  };
+  }, []);
 
   return (
     <div className="w-full">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, forwardRef, useMemo } from 'react';
+import React, { useState, forwardRef, useMemo, useCallback } from 'react';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DraggableCard } from '@/components/ui/draggable-card';
 import { Badge } from '@/components/ui/badge';
@@ -226,14 +226,11 @@ export default function PersonaCards({
     onPersonaReorder
 }: PersonaCardsProps) {
     const [items, setItems] = useState(personas);
-    const [globalFilter, setGlobalFilter] = useState('');
 
     // Update items when personas prop changes
     React.useEffect(() => {
         setItems(personas);
     }, [personas]);
-
-
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -246,7 +243,7 @@ export default function PersonaCards({
         })
     );
 
-    function handleDragEnd(event: DragEndEvent) {
+    const handleDragEnd = useCallback((event: DragEndEvent) => {
         const { active, over } = event;
 
         if (active.id !== over?.id) {
@@ -257,7 +254,20 @@ export default function PersonaCards({
             setItems(newItems);
             onPersonaReorder?.(newItems);
         }
-    }
+    }, [items, onPersonaReorder]);
+
+    const itemsStr = useMemo(() => items.map(p => p.id), [items]);
+
+    const itemContent = useCallback((index: number) => (
+        <PersonaCard
+            key={items[index].id}
+            persona={items[index]}
+            onClick={onPersonaClick}
+            visibleFields={visibleFields}
+        />
+    ), [items, onPersonaClick, visibleFields]);
+
+    const gridStyle = useMemo(() => ({ height: 700, width: '100%' }), []);
     return (
         <div className="space-y-4">
             <DndContext
@@ -265,20 +275,13 @@ export default function PersonaCards({
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
             >
-                <SortableContext items={items.map(p => p.id)} strategy={rectSortingStrategy}>
+                <SortableContext items={itemsStr} strategy={rectSortingStrategy}>
                     <VirtuosoGrid
-                        style={{ height: 700, width: '100%' }}
+                        style={gridStyle}
                         totalCount={items.length}
                         components={gridComponents}
-                        itemContent={(index) => (
-                            <PersonaCard
-                                persona={items[index]}
-                                onClick={onPersonaClick}
-                                visibleFields={visibleFields}
-                            />
-                        )}
+                        itemContent={itemContent}
                     />
-
                 </SortableContext>
             </DndContext>
         </div>
