@@ -37,118 +37,7 @@ interface ActiveFiltersBarProps {
     sortConfig?: SortConfig;
 }
 
-// Helper functions
-function getUniqueOptions(data: any[], path: string, valuePath?: string): Array<{ id: string, label: string, value: any, count: number }> {
-    const values = new Map<string, { label: string; value: any; count: number }>();
 
-    data.forEach(item => {
-        const value = getNestedValue(item, path);
-        const key = getNestedValue(item, valuePath || path);
-
-        if (value && key) {
-            const existing = values.get(key);
-            if (existing) {
-                existing.count++;
-            } else {
-                values.set(key, { label: value, value: key, count: 1 });
-            }
-        }
-    });
-
-    return Array.from(values.entries()).map(([id, data]) => ({
-        id,
-        label: data.label,
-        value: data.value,
-        count: data.count,
-    }));
-}
-
-function getFlattenedOptions(data: any[], path: string): Array<{ id: string, label: string, value: any, count: number }> {
-    const values = new Map<string, number>();
-
-    data.forEach(item => {
-        const array = getNestedValue(item, path);
-        if (Array.isArray(array)) {
-            array.forEach(value => {
-                if (value) {
-                    values.set(value, (values.get(value) || 0) + 1);
-                }
-            });
-        }
-    });
-
-    return Array.from(values.entries()).map(([value, count]) => ({
-        id: value,
-        label: value,
-        value,
-        count,
-    }));
-}
-
-function getNestedValue(obj: any, path: string): any {
-    return path.split('.').reduce((current, key) => current?.[key], obj);
-}
-
-// Filter field configurations
-const getFilterConfig = (filterId: string, source: ViewSource) => {
-    const configs: Record<string, any> = {
-        segments: {
-            label: 'Customer Segment',
-            icon: Users,
-            type: 'multiselect',
-            getOptions: (data: any[]) => getUniqueOptions(data, 'segment.name', 'segment.id')
-        },
-        locations: {
-            label: 'Location',
-            icon: MapPin,
-            type: 'multiselect',
-            getOptions: (data: any[]) => getUniqueOptions(data, 'location')
-        },
-        education: {
-            label: 'Education',
-            icon: GraduationCap,
-            type: 'multiselect',
-            getOptions: (data: any[]) => getUniqueOptions(data, 'education')
-        },
-        income: {
-            label: 'Income Level',
-            icon: DollarSign,
-            type: 'multiselect',
-            getOptions: (data: any[]) => getUniqueOptions(data, 'incomePerMonth')
-        },
-        ageRange: {
-            label: 'Age Range',
-            icon: User,
-            type: 'range',
-            min: 18,
-            max: 80
-        },
-        painPoints: {
-            label: 'Pain Points',
-            icon: Heart,
-            type: 'multiselect',
-            getOptions: (data: any[]) => getFlattenedOptions(data, 'painPoints')
-        },
-        channels: {
-            label: 'Preferred Channels',
-            icon: MessageCircle,
-            type: 'multiselect',
-            getOptions: (data: any[]) => getFlattenedOptions(data, 'channels')
-        },
-        createdAt: {
-            label: 'Created Date',
-            icon: Calendar,
-            type: 'date'
-        },
-        id: {
-            label: 'ID',
-            icon: Hash,
-            type: 'text'
-        }
-    };
-
-    return configs[filterId];
-};
 
 export function ActiveFiltersBar({ filters, onFiltersChange, source, data = [], sorts, onSortsChange, filterConfig, sortConfig }: ActiveFiltersBarProps) {
     const activeFilterKeys = Object.keys(filters).filter(key => {
@@ -200,7 +89,7 @@ export function ActiveFiltersBar({ filters, onFiltersChange, source, data = [], 
                     />
                 )}
                 {activeFilterKeys.map(filterId => {
-                    const config = getFilterConfig(filterId, source);
+                    const config = filterConfig?.getFilterFields()?.find((field) => field.id === filterId);
                     if (!config) return null;
 
                     return (

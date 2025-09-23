@@ -9,10 +9,66 @@ import { PersonaKanban } from './virtusso-kanban';
 import PersonaCards from './virtusso-card';
 import { PersonaTable } from './virtusso-table';
 
+
+
+// Helper functions
+function getUniqueOptions(data: any[], path: string, valuePath?: string): Array<{ id: string, label: string, value: any, count: number }> {
+    const values = new Map<string, { label: string; value: any; count: number }>();
+
+    data.forEach(item => {
+        const value = getNestedValue(item, path);
+        const key = getNestedValue(item, valuePath || path);
+
+        if (value && key) {
+            const existing = values.get(key);
+            if (existing) {
+                existing.count++;
+            } else {
+                values.set(key, { label: value, value: key, count: 1 });
+            }
+        }
+    });
+
+    return Array.from(values.entries()).map(([id, data]) => ({
+        id,
+        label: data.label,
+        value: data.value,
+        count: data.count,
+    }));
+}
+
+function getFlattenedOptions(data: any[], path: string): Array<{ id: string, label: string, value: any, count: number }> {
+    const values = new Map<string, number>();
+
+    data.forEach(item => {
+        const array = getNestedValue(item, path);
+        if (Array.isArray(array)) {
+            array.forEach(value => {
+                if (value) {
+                    values.set(value, (values.get(value) || 0) + 1);
+                }
+            });
+        }
+    });
+
+    return Array.from(values.entries()).map(([value, count]) => ({
+        id: value,
+        label: value,
+        value,
+        count,
+    }));
+}
+
+function getNestedValue(obj: any, path: string): any {
+    return path.split('.').reduce((current, key) => current?.[key], obj);
+}
+
+
+
 // Persona-specific filter configuration
 const personaFilterConfig = {
-    getFilterFields: (source: ViewSource) => {
-        const { Users, MapPin, GraduationCap, DollarSign, Tag, User, Calendar } = require('lucide-react');
+    getFilterFields: () => {
+        const { Users, MapPin, GraduationCap, DollarSign, Tag, User, Calendar, Heart, MessageCircle, Hash } = require('lucide-react');
 
         return [
             {
@@ -20,56 +76,79 @@ const personaFilterConfig = {
                 label: 'Customer Segment',
                 icon: Users,
                 type: 'multiselect',
-                description: 'Filter by customer segment'
+                description: 'Filter by customer segment',
+                getOptions: (data: any[]) => getUniqueOptions(data, 'segment.name', 'segment.id')
             },
             {
                 id: 'locations',
                 label: 'Location',
                 icon: MapPin,
                 type: 'multiselect',
-                description: 'Filter by location'
+                description: 'Filter by location',
+                getOptions: (data: any[]) => getUniqueOptions(data, 'location')
             },
             {
                 id: 'education',
                 label: 'Education',
                 icon: GraduationCap,
                 type: 'multiselect',
-                description: 'Filter by education level'
+                description: 'Filter by education level',
+                getOptions: (data: any[]) => getUniqueOptions(data, 'education')
             },
             {
                 id: 'income',
                 label: 'Income Level',
                 icon: DollarSign,
                 type: 'multiselect',
-                description: 'Filter by income level'
+                description: 'Filter by income level',
+                getOptions: (data: any[]) => getUniqueOptions(data, 'incomePerMonth')
             },
             {
                 id: 'painPoints',
                 label: 'Pain Points',
-                icon: Tag,
+                icon: Heart,
                 type: 'multiselect',
-                description: 'Filter by pain points'
+                description: 'Filter by pain points',
+                getOptions: (data: any[]) => getFlattenedOptions(data, 'painPoints')
             },
             {
                 id: 'channels',
                 label: 'Channels',
-                icon: Tag,
+                icon: MessageCircle,
                 type: 'multiselect',
-                description: 'Filter by channels'
+                description: 'Filter by channels',
+                getOptions: (data: any[]) => getFlattenedOptions(data, 'channels')
             },
             {
                 id: 'gender',
                 label: 'Gender',
                 icon: User,
                 type: 'multiselect',
-                description: 'Filter by gender'
+                description: 'Filter by gender',
+                getOptions: (data: any[]) => getUniqueOptions(data, 'gender')
             },
             {
                 id: 'age',
                 label: 'Age Range',
                 icon: Calendar,
                 type: 'range',
-                description: 'Filter by age range'
+                description: 'Filter by age range',
+                min: 18,
+                max: 80
+            },
+            {
+                id: 'createdAt',
+                label: 'Created Date',
+                icon: Calendar,
+                type: 'date',
+                description: 'Filter by created date'
+            },
+            {
+                id: 'id',
+                label: 'ID',
+                icon: Hash,
+                type: 'text',
+                description: 'Filter by ID'
             }
         ];
     },
@@ -92,6 +171,10 @@ const personaFilterConfig = {
                 return persona.age;
             case 'gender':
                 return persona.gender;
+            case 'createdAt':
+                return persona.createdAt;
+            case 'id':
+                return persona.id;
             default:
                 return null;
         }

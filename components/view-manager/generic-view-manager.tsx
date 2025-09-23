@@ -28,7 +28,7 @@ export interface LayoutConfig<T extends BaseDataItem> {
 }
 
 export interface FilterConfig {
-    getFilterFields: (source: ViewSource) => any[];
+    getFilterFields: () => any[];
     getFilterValue: (item: any, field: string) => any;
     applyFilters: (items: any[], filters: Record<string, any>) => any[];
 }
