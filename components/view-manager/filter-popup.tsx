@@ -20,6 +20,7 @@ interface FilterField {
   icon: React.ComponentType<{ className?: string }>;
   type: 'text' | 'multiselect' | 'range' | 'date';
   description?: string;
+  getOptions?: (data: any[]) => Array<{ id: string, label: string, value: any, count: number }>;
 }
 
 interface FilterPopupProps {
@@ -112,10 +113,20 @@ export function FilterPopup({ source, activeFilters, onAddFilter, getFilterField
                         </div>
                       )}
                     </div>
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 flex gap-1">
                       <div className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">
                         {field.type}
                       </div>
+                      {field.type === 'multiselect' && field.getOptions && (
+                        (() => {
+                          const options = field.getOptions([]);
+                          return options.length > 100 ? (
+                            <div className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                              virtualized
+                            </div>
+                          ) : null;
+                        })()
+                      )}
                     </div>
                   </button>
                 );

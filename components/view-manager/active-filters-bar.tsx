@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
     Popover,
@@ -11,20 +10,13 @@ import {
 import {
     X,
     ChevronDown,
-    User,
-    MapPin,
-    GraduationCap,
-    DollarSign,
-    Users,
-    Heart,
-    MessageCircle,
-    Calendar,
-    Hash,
+
 } from 'lucide-react';
 import { ViewSource } from '@/lib/api/views';
 import { SortDropdown } from './sort-dropdown';
 import { ViewSortCriteria } from '@/lib/api/views';
 import { FilterConfig, SortConfig } from './generic-view-manager';
+import { VirtualizedMultiSelect } from './virtualized-multi-select';
 
 interface ActiveFiltersBarProps {
     filters: Record<string, any>;
@@ -157,6 +149,20 @@ function FilterChip({ filterId, config, value, data, onUpdate, onRemove }: Filte
         if (config.type === 'multiselect') {
             const options = config.getOptions ? config.getOptions(data) : [];
 
+            // Use virtualized multi-select for large option lists (>100 items)
+            if (options.length > 100) {
+                return (
+                    <VirtualizedMultiSelect
+                        options={options}
+                        value={Array.isArray(value) ? value : []}
+                        onUpdate={onUpdate}
+                        label={config.label}
+                        searchPlaceholder={`Search ${config.label.toLowerCase()}...`}
+                    />
+                );
+            }
+
+            // Use regular multi-select for smaller lists (≤100 items)
             return (
                 <div className="w-80 max-h-96 overflow-y-auto">
                     <div className="p-4">
@@ -263,7 +269,6 @@ function FilterChip({ filterId, config, value, data, onUpdate, onRemove }: Filte
 
     return (
         <div className="w-48 bg-white border border-gray-200 rounded-lg shadow-sm">
-            {/* Header with label and remove button */}
             <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100">
                 <div className="flex items-center gap-2">
                     <Icon className="h-4 w-4 text-gray-500" />
@@ -277,7 +282,6 @@ function FilterChip({ filterId, config, value, data, onUpdate, onRemove }: Filte
                 </button>
             </div>
 
-            {/* Value display and dropdown trigger */}
             <Popover open={isOpen} onOpenChange={setIsOpen}>
                 <PopoverTrigger asChild>
                     <button className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors">
