@@ -2,16 +2,10 @@
 
 A modern, flexible card navigation system built for SIGMA's business design platform. This project implements a Notion-like, multi-view interface that transforms static framework cards into a dynamic and scalable experience
 
-## 🎯 Project Overview
-
-This implementation addresses SIGMA's core pain points:
-- **Framework cards are hard to navigate at scale** → Multi-view system with smooth transitions
-- **Need for modern, AI-native productivity platform** → Future-ready architecture
-
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 22+ 
 - npm
 - SQLite (for database)
 
@@ -23,7 +17,13 @@ cd card-navigation
 npm install
 ```
 
-2. **Set up the database:**
+2. **Set up environment variables:**
+```bash
+# Copy the example environment file
+# cp env.example .env
+```
+
+3. **Set up the database:**
 ```bash
 # Set up Mock database
 npx prisma generate
@@ -34,12 +34,12 @@ npx prisma db push
 npm run seed
 ```
 
-3. **Start the development server:**
+4. **Start the development server:**
 ```bash
 npm run dev
 ```
 
-4. **Open the application:**
+5. **Open the application:**
 Navigate to [http://localhost:3000](http://localhost:3000)
 
 ### Available Scripts
