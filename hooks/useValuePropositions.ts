@@ -11,7 +11,7 @@ interface UseValuePropositionsReturn {
     loading: boolean;
     error: string | null;
     refetch: () => Promise<void>;
-    setValuePropositions: React.Dispatch<React.SetStateAction<ValuePropositionWithRelations[]>>;
+    updateValueProposition: (updatedValueProposition: ValuePropositionWithRelations) => void;
 }
 
 export function useValuePropositions(options: UseValuePropositionsOptions = {}): UseValuePropositionsReturn {
@@ -69,6 +69,14 @@ export function useValuePropositions(options: UseValuePropositionsOptions = {}):
         }
     };
 
+    const updateValueProposition = (updatedValueProposition: ValuePropositionWithRelations) => {
+        setValuePropositions(prevValuePropositions =>
+            prevValuePropositions.map(vp =>
+                vp.id === updatedValueProposition.id ? updatedValueProposition : vp
+            )
+        );
+    };
+
     useEffect(() => {
         if (autoFetch) {
             fetchValuePropositions();
@@ -80,6 +88,6 @@ export function useValuePropositions(options: UseValuePropositionsOptions = {}):
         loading,
         error,
         refetch: fetchValuePropositions,
-        setValuePropositions
+        updateValueProposition
     };
 }

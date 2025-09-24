@@ -1,6 +1,3 @@
-import { customerSegmentsApi, personasApi } from './customer-segment';
-import { viewsApi } from './views';
-
 // API Response Types
 export interface ApiResponse<T> {
     success: boolean;
@@ -9,8 +6,6 @@ export interface ApiResponse<T> {
     error?: string;
     message?: string;
 }
-
-
 
 // API Error Type
 export class ApiError extends Error {
@@ -25,7 +20,7 @@ export class ApiError extends Error {
 }
 
 // Base fetcher function with proper error handling
-async function fetcher<T>(url: string, options?: RequestInit): Promise<ApiResponse<T>> {
+export async function fetcher<T>(url: string, options?: RequestInit): Promise<ApiResponse<T>> {
     try {
         const response = await fetch(url, {
             headers: {
@@ -61,14 +56,3 @@ async function fetcher<T>(url: string, options?: RequestInit): Promise<ApiRespon
         );
     }
 }
-
-
-// Combined API object for easy importing
-export const api = {
-    customerSegments: customerSegmentsApi,
-    personas: personasApi,
-    views: viewsApi,
-};
-
-// Export the base fetcher for custom requests
-export { fetcher };

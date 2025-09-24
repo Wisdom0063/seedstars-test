@@ -11,7 +11,7 @@ interface UseBusinessModelsReturn {
     loading: boolean;
     error: string | null;
     refetch: () => Promise<void>;
-    setBusinessModels: React.Dispatch<React.SetStateAction<BusinessModelWithRelations[]>>;
+    updateBusinessModel: (updatedBusinessModel: BusinessModelWithRelations) => void;
 }
 
 export function useBusinessModels(options: UseBusinessModelsOptions = {}): UseBusinessModelsReturn {
@@ -38,17 +38,23 @@ export function useBusinessModels(options: UseBusinessModelsOptions = {}): UseBu
         }
     };
 
+    const updateBusinessModel = (updatedBusinessModel: BusinessModelWithRelations) => {
+        setBusinessModels(prevBusinessModels =>
+            prevBusinessModels.map(bm =>
+                bm.id === updatedBusinessModel.id ? updatedBusinessModel : bm
+            )
+        );
+    };
+
     useEffect(() => {
-        if (autoFetch) {
-            fetchBusinessModels();
-        }
-    }, [autoFetch]);
+        fetchBusinessModels();
+    }, []);
 
     return {
         businessModels,
         loading,
         error,
         refetch: fetchBusinessModels,
-        setBusinessModels
+        updateBusinessModel
     };
 }

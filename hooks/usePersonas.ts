@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Persona } from '@/lib/api/customer-segment';
-import { api, ApiError } from '@/lib/api';
+import { api } from '@/lib/api/combined';
+import { ApiError } from '@/lib/api';
 
 interface UsePersonasOptions {
     segmentId?: string;
@@ -12,7 +13,7 @@ interface UsePersonasReturn {
     loading: boolean;
     error: string | null;
     refetch: () => Promise<void>;
-    setPersonas: React.Dispatch<React.SetStateAction<Persona[]>>;
+    updatePersona: (updatedPersona: Persona) => void;
 }
 
 export function usePersonas(options: UsePersonasOptions = {}): UsePersonasReturn {
@@ -39,17 +40,23 @@ export function usePersonas(options: UsePersonasOptions = {}): UsePersonasReturn
         }
     };
 
+    const updatePersona = (updatedPersona: Persona) => {
+        setPersonas(prevPersonas =>
+            prevPersonas.map(persona =>
+                persona.id === updatedPersona.id ? updatedPersona : persona
+            )
+        );
+    };
+
     useEffect(() => {
-        if (autoFetch) {
-            fetchPersonas();
-        }
-    }, [autoFetch, segmentId]);
+        fetchPersonas();
+    }, []);
 
     return {
         personas,
         loading,
         error,
         refetch: fetchPersonas,
-        setPersonas
+        updatePersona
     };
 }

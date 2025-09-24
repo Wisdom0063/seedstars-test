@@ -9,7 +9,7 @@ import { Target } from 'lucide-react';
 import { useValuePropositions } from '@/hooks/useValuePropositions';
 
 export default function ValuePropositionsPage() {
-    const { valuePropositions, loading, error, refetch, setValuePropositions } = useValuePropositions();
+    const { valuePropositions, loading, error, refetch, updateValueProposition } = useValuePropositions();
     const handleValuePropositionClick = (valueProposition: ValuePropositionWithRelations) => {
     };
 
@@ -17,11 +17,8 @@ export default function ValuePropositionsPage() {
     };
 
     const handleValuePropositionUpdate = (updatedValueProposition: ValuePropositionWithRelations) => {
-        setValuePropositions(prevValuePropositions =>
-            prevValuePropositions.map(vp =>
-                vp.id === updatedValueProposition.id ? updatedValueProposition : vp
-            )
-        );
+        // Update the local state immediately without refetching
+        updateValueProposition(updatedValueProposition);
     };
 
     if (loading) {

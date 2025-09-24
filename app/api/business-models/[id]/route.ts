@@ -4,9 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 interface RouteParams {
-    params: {
-        id: string;
-    };
+    params: Promise<{ id: string }>;
 }
 
 /**
@@ -63,7 +61,7 @@ async function getById(id: string) {
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         if (!id) {
             return NextResponse.json(
@@ -93,7 +91,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         });
 
     } catch (error) {
-        console.error(`GET /api/business-models/${params.id} error:`, error);
+        const { id } = await params;
+        console.error(`GET /api/business-models/${id} error:`, error);
 
         return NextResponse.json(
             {
@@ -111,7 +110,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
  */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
     try {
-        const { id } = params;
+        const { id } = await params;
 
         if (!id) {
             return NextResponse.json(
@@ -174,7 +173,8 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         });
 
     } catch (error) {
-        console.error(`PUT /api/business-models/${params.id} error:`, error);
+        const { id } = await params;
+        console.error(`PUT /api/business-models/${id} error:`, error);
 
         return NextResponse.json(
             {

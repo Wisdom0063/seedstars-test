@@ -9,7 +9,7 @@ import { Building2 } from 'lucide-react';
 import { useBusinessModels } from '@/hooks/useBusinessModels';
 
 export default function BusinessModelsPage() {
-    const { businessModels, loading, error, refetch, setBusinessModels } = useBusinessModels();
+    const { businessModels, loading, error, refetch, updateBusinessModel } = useBusinessModels();
 
 
 
@@ -20,11 +20,8 @@ export default function BusinessModelsPage() {
     };
 
     const handleBusinessModelUpdate = (updatedBusinessModel: BusinessModelWithRelations) => {
-        setBusinessModels(prevBusinessModels =>
-            prevBusinessModels.map(bm =>
-                bm.id === updatedBusinessModel.id ? updatedBusinessModel : bm
-            )
-        );
+        // Update the local state immediately without refetching
+        updateBusinessModel(updatedBusinessModel);
     };
 
     if (loading) {

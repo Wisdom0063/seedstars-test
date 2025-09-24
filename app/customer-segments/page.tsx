@@ -9,7 +9,7 @@ import { Users } from 'lucide-react';
 import { usePersonas } from '@/hooks/usePersonas';
 
 export default function CustomerSegmentsPage() {
-    const { personas, loading, error, refetch, setPersonas } = usePersonas();
+    const { personas, loading, error, refetch, updatePersona } = usePersonas();
 
     const handlePersonaClick = (persona: Persona) => {
     };
@@ -18,8 +18,8 @@ export default function CustomerSegmentsPage() {
     };
 
     const handlePersonaUpdate = (updatedPersona: Persona) => {
-        // For now, just refetch all data. In a real app, you might want to update the local state
-        refetch();
+        // Update the local state immediately without refetching
+        updatePersona(updatedPersona);
     };
 
     if (loading) {
