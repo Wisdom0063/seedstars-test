@@ -150,15 +150,9 @@ const businessModelAvailableProperties = [
     { id: 'persona', label: 'Persona' },
     { id: 'keyPartners', label: 'Key Partners' },
     { id: 'keyActivities', label: 'Key Activities' },
-    { id: 'keyResources', label: 'Key Resources' },
-    { id: 'customerRelationships', label: 'Customer Relationships' },
-    { id: 'channels', label: 'Channels' },
-    { id: 'costStructure', label: 'Cost Structure' },
     { id: 'revenueStreams', label: 'Revenue Streams' },
     { id: 'tags', label: 'Tags' },
-    { id: 'notes', label: 'Notes' },
-    { id: 'createdAt', label: 'Created Date' },
-    { id: 'updatedAt', label: 'Updated Date' }
+
 ];
 
 // Wrapper components to match the generic interface

@@ -249,11 +249,7 @@ const valuePropositionAvailableProperties = [
     { id: 'valuePropositionStatements', label: 'Value Propositions' },
     { id: 'customerJobs', label: 'Customer Jobs' },
     { id: 'customerPains', label: 'Customer Pains' },
-    { id: 'gainCreators', label: 'Gain Creators' },
-    { id: 'painRelievers', label: 'Pain Relievers' },
-    { id: 'productsServices', label: 'Products & Services' },
-    { id: 'createdAt', label: 'Created Date' },
-    { id: 'updatedAt', label: 'Updated Date' }
+    { id: 'productsServices', label: 'Products & Services' }
 ];
 
 // Wrapper components to match the generic interface
