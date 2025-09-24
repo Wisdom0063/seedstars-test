@@ -8,9 +8,6 @@ export default function ValuePropositionsPage() {
     const [valuePropositions, setValuePropositions] = useState<ValuePropositionWithRelations[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-    console.log('valuePropositions', valuePropositions);
-
     useEffect(() => {
         fetchValuePropositions();
     }, []);
@@ -53,7 +50,7 @@ export default function ValuePropositionsPage() {
 
     if (loading) {
         return (
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-12">
                 <div className="flex items-center justify-center min-h-64">
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
@@ -66,7 +63,7 @@ export default function ValuePropositionsPage() {
 
     if (error) {
         return (
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-12">
                 <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
                     <h2 className="text-red-800 font-semibold mb-2">Error</h2>
                     <p className="text-red-600">{error}</p>
@@ -82,7 +79,7 @@ export default function ValuePropositionsPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4">
             {/* Header */}
             <div className="mb-6">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Value Propositions</h1>

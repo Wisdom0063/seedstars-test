@@ -38,8 +38,11 @@ function getUniqueOptions(data: any[], path: string, valuePath?: string): Array<
 function getFlattenedOptions(data: any[], path: string): Array<{ id: string, label: string, value: any, count: number }> {
     const values = new Map<string, number>();
 
+
     data.forEach(item => {
+        console.log(item, "item");
         const array = getNestedValue(item, path);
+        console.log(array, "array");
         if (Array.isArray(array)) {
             array.forEach(value => {
                 if (value) {
