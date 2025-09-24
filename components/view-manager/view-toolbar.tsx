@@ -60,33 +60,20 @@ export function ViewToolbar({
     return (
         <div>
             <div className="border-b bg-white">
-                {/* Desktop Layout - Single Row */}
                 <div className="hidden lg:flex items-center py-3 min-h-[60px]">
-                    {/* Left side - Scrollable View Selector */}
                     <div className="flex-1 min-w-0 mr-4">
-                        <div className="overflow-x-auto overflow-y-hidden" style={{
-                            scrollbarWidth: 'none',
-                            msOverflowStyle: 'none',
-                        }}>
-                            <style jsx>{`
-                                div::-webkit-scrollbar {
-                                    display: none;
-                                }
-                            `}</style>
-                            <ViewSelector
-                                views={views}
-                                currentView={currentView}
-                                onViewChange={onViewChange}
-                                onCreateView={onCreateView}
-                                onEditView={onEditView}
-                                onLayoutChange={onLayoutChange}
-                                source={source}
-                                availableProperties={availableProperties}
-                            />
-                        </div>
+                        <ViewSelector
+                            views={views}
+                            currentView={currentView}
+                            onViewChange={onViewChange}
+                            onCreateView={onCreateView}
+                            onEditView={onEditView}
+                            onLayoutChange={onLayoutChange}
+                            source={source}
+                            availableProperties={availableProperties}
+                        />
                     </div>
 
-                    {/* Right side - Fixed Controls */}
                     <div className="flex items-center gap-2 flex-shrink-0">
                         {onSearchChange && (
                             <AnimatedSearch
@@ -158,33 +145,20 @@ export function ViewToolbar({
                     </div>
                 </div>
 
-                {/* Tablet & Mobile Layout - Two Rows */}
                 <div className="lg:hidden">
-                    {/* First Row - View Selector */}
                     <div className="py-2 px-4">
-                        <div className="overflow-x-auto overflow-y-hidden" style={{
-                            scrollbarWidth: 'none',
-                            msOverflowStyle: 'none',
-                        }}>
-                            <style jsx>{`
-                                div::-webkit-scrollbar {
-                                    display: none;
-                                }
-                            `}</style>
-                            <ViewSelector
-                                views={views}
-                                currentView={currentView}
-                                onViewChange={onViewChange}
-                                onCreateView={onCreateView}
-                                onEditView={onEditView}
-                                onLayoutChange={onLayoutChange}
-                                source={source}
-                                availableProperties={availableProperties}
-                            />
-                        </div>
+                        <ViewSelector
+                            views={views}
+                            currentView={currentView}
+                            onViewChange={onViewChange}
+                            onCreateView={onCreateView}
+                            onEditView={onEditView}
+                            onLayoutChange={onLayoutChange}
+                            source={source}
+                            availableProperties={availableProperties}
+                        />
                     </div>
 
-                    {/* Second Row - Controls */}
                     <div className="flex items-center justify-between px-4 py-2 border-t border-gray-100">
                         <div className="flex items-center gap-2">
                             {onSearchChange && (

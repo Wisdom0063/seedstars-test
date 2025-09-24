@@ -45,7 +45,15 @@ export function ViewSelector({
   return (
     <div className="flex items-center bg-gray-100 rounded-lg p-1 relative">
       {/* Scrollable views area */}
-      <div className="flex items-center gap-1 flex-nowrap overflow-hidden pr-20">
+      <div className="flex items-center gap-1 flex-nowrap overflow-x-auto overflow-y-hidden pr-20" style={{
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+      }}>
+        <style jsx>{`
+          div::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
         {filteredViews.map((view) => {
           const LayoutIcon = LayoutIcons[view.layout];
           const isActive = view.id === currentView.id;
