@@ -52,13 +52,13 @@ export function ValuePropositionCard({
             <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
-                            <Lightbulb className="h-5 w-5" />
+                        <div className="w-5 h-5 bg-gray-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            <Lightbulb className="h-3 w-3" />
                         </div>
                         <div>
                             {isFieldVisible('name') && (
-                                <CardTitle className="text-lg font-semibold text-gray-900">
-                                    {valueProposition.persona ? `VP for ${valueProposition.persona.name}` : `VP for ${valueProposition.segment.name}`}
+                                <CardTitle className="text-md font-semibold text-gray-900">
+                                    {valueProposition.persona ? ` ${valueProposition.persona.name}` : ` ${valueProposition.segment.name}`}
                                 </CardTitle>
                             )}
 

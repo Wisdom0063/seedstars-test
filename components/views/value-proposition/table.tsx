@@ -74,7 +74,7 @@ export function ValuePropositionTable({ valuePropositions, onValuePropositionCli
                             </div>
                             <div>
                                 <div className="font-medium">
-                                    {valueProposition.persona ? `VP for ${valueProposition.persona.name}` : `VP for ${valueProposition.segment.name}`}
+                                    {valueProposition.persona ? ` ${valueProposition.persona.name}` : ` ${valueProposition.segment.name}`}
                                 </div>
                             </div>
                         </div>

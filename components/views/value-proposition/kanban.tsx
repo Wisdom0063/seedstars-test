@@ -20,7 +20,6 @@ interface ValuePropositionKanbanProps {
   visibleFields?: string[];
 }
 
-// Transform ValueProposition to KanbanItem format
 interface ValuePropositionKanbanItem extends Record<string, unknown> {
   id: string;
   name: string;
@@ -28,13 +27,11 @@ interface ValuePropositionKanbanItem extends Record<string, unknown> {
   valueProposition: ValuePropositionWithRelations;
 }
 
-// Transform CustomerSegment to KanbanColumn format
 interface SegmentKanbanColumn extends Record<string, unknown> {
   id: string;
   name: string;
 }
 
-// Value Proposition Card Component for Kanban
 function ValuePropositionKanbanCard({
   valueProposition,
   onValuePropositionClick,
@@ -44,38 +41,22 @@ function ValuePropositionKanbanCard({
   onValuePropositionClick?: (valueProposition: ValuePropositionWithRelations) => void;
   visibleFields?: string[];
 }) {
-  // Helper function to check if a field should be visible
   const isFieldVisible = (fieldName: string) => {
     return visibleFields.length === 0 || visibleFields.includes(fieldName);
   };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'DRAFT':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'ARCHIVED':
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-      default:
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-    }
-  };
-
   return (
     <div
       className="space-y-3 cursor-pointer"
       onClick={() => onValuePropositionClick?.(valueProposition)}
     >
-      {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center text-white">
-          <Lightbulb className="h-4 w-4" />
+        <div className="w-5 h-5 bg-gray-500 rounded-full flex items-center justify-center text-white">
+          <Lightbulb className="h-3 w-3" />
         </div>
         <div className="flex-1">
           {isFieldVisible('name') && (
             <div className="font-medium text-sm">
-              {valueProposition.persona ? `VP for ${valueProposition.persona.name}` : `VP for ${valueProposition.segment.name}`}
+              {valueProposition.persona ? ` ${valueProposition.persona.name}` : ` ${valueProposition.segment.name}`}
             </div>
           )}
 
@@ -84,7 +65,6 @@ function ValuePropositionKanbanCard({
 
 
 
-      {/* Persona */}
       {isFieldVisible('persona') && valueProposition.persona && (
         <div className="flex items-center gap-2 text-xs">
           <Users className="h-3 w-3 text-gray-500" />
@@ -92,7 +72,6 @@ function ValuePropositionKanbanCard({
         </div>
       )}
 
-      {/* Value Proposition Statements Preview */}
       {isFieldVisible('valuePropositionStatements') && valueProposition.valuePropositionStatements && valueProposition.valuePropositionStatements.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
@@ -123,7 +102,6 @@ function ValuePropositionKanbanCard({
         </div>
       )}
 
-      {/* Customer Jobs Preview */}
       {isFieldVisible('customerJobs') && valueProposition.customerJobs && valueProposition.customerJobs.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
@@ -150,7 +128,6 @@ function ValuePropositionKanbanCard({
         </div>
       )}
 
-      {/* Customer Pains Preview */}
       {isFieldVisible('customerPains') && valueProposition.customerPains && valueProposition.customerPains.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
@@ -177,7 +154,6 @@ function ValuePropositionKanbanCard({
         </div>
       )}
 
-      {/* Products/Services Preview */}
       {isFieldVisible('productsServices') && valueProposition.productsServices && valueProposition.productsServices.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
@@ -213,16 +189,13 @@ export function ValuePropositionKanban({
   onValuePropositionMove,
   visibleFields
 }: ValuePropositionKanbanProps) {
-  // Transform value propositions to kanban items and extract unique segments
   const { kanbanData, columns } = useMemo(() => {
     const segmentMap = new Map<string, SegmentKanbanColumn>();
 
-    // Create kanban items and collect unique segments
     const kanbanItems: ValuePropositionKanbanItem[] = valuePropositions.map(valueProposition => {
       const segmentId = valueProposition.segment.id;
       const segmentName = valueProposition.segment.name;
 
-      // Add segment to map if not exists
       if (!segmentMap.has(segmentId)) {
         segmentMap.set(segmentId, {
           id: segmentId,
@@ -232,7 +205,7 @@ export function ValuePropositionKanban({
 
       return {
         id: valueProposition.id,
-        name: valueProposition.persona ? `VP for ${valueProposition.persona.name}` : `VP for ${valueProposition.segment.name}`,
+        name: valueProposition.persona ? ` ${valueProposition.persona.name}` : ` ${valueProposition.segment.name}`,
         column: segmentId,
         valueProposition,
       };
@@ -246,7 +219,6 @@ export function ValuePropositionKanban({
 
   const [data, setData] = useState<ValuePropositionKanbanItem[]>(kanbanData);
 
-  // Update data when valuePropositions prop changes
   React.useEffect(() => {
     setData(kanbanData);
   }, [kanbanData]);
@@ -254,7 +226,6 @@ export function ValuePropositionKanban({
   const handleDataChange = useCallback((newData: ValuePropositionKanbanItem[]) => {
     setData(newData);
 
-    // Find moved value propositions and notify parent
     newData.forEach((item, index) => {
       const originalItem = kanbanData.find(orig => orig.id === item.id);
       if (originalItem && originalItem.column !== item.column) {
@@ -264,7 +235,7 @@ export function ValuePropositionKanban({
   }, [kanbanData, onValuePropositionMove]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
-    // Additional drag end logic if needed
+    console.log(event.over?.id);
   }, []);
 
   return (

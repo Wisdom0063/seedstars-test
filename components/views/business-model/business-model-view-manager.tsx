@@ -8,58 +8,7 @@ import { BusinessModelWithRelations, businessModelsApi, UpdateBusinessModelReque
 import { BusinessModelKanban } from './kanban';
 import BusinessModelCards from './card';
 import { BusinessModelTable } from './table';
-
-// Helper functions
-function getUniqueOptions(data: any[], path: string, valuePath?: string): Array<{ id: string, label: string, value: any, count: number }> {
-    const values = new Map<string, { label: string; value: any; count: number }>();
-
-    data.forEach(item => {
-        const value = getNestedValue(item, path);
-        const key = getNestedValue(item, valuePath || path);
-
-        if (value && key) {
-            const existing = values.get(key);
-            if (existing) {
-                existing.count++;
-            } else {
-                values.set(key, { label: value, value: key, count: 1 });
-            }
-        }
-    });
-
-    return Array.from(values.entries()).map(([id, data]) => ({
-        id,
-        label: data.label,
-        value: data.value,
-        count: data.count,
-    }));
-}
-
-function getFlattenedOptions(data: any[], path: string): Array<{ id: string, label: string, value: any, count: number }> {
-    const values = new Map<string, number>();
-
-    data.forEach(item => {
-        const array = getNestedValue(item, path);
-        if (Array.isArray(array)) {
-            array.forEach(value => {
-                if (value) {
-                    values.set(value, (values.get(value) || 0) + 1);
-                }
-            });
-        }
-    });
-
-    return Array.from(values.entries()).map(([value, count]) => ({
-        id: value,
-        label: value,
-        value,
-        count,
-    }));
-}
-
-function getNestedValue(obj: any, path: string): any {
-    return path.split('.').reduce((current, key) => current?.[key], obj);
-}
+import { getUniqueOptions, getFlattenedOptions } from '@/lib/utils';
 
 // Business Model-specific filter configuration
 const businessModelFilterConfig: FilterConfig = {
@@ -84,52 +33,15 @@ const businessModelFilterConfig: FilterConfig = {
                 getOptions: (data: any[]) => getUniqueOptions(data, 'valuePropositionStatement.valueProposition.persona.name', 'valuePropositionStatement.valueProposition.persona.id')
             },
             {
-                id: 'keyPartners',
-                label: 'Key Partners',
-                icon: Building2,
-                type: 'multiselect',
-                description: 'Filter by key partners',
-                getOptions: (data: any[]) => getFlattenedOptions(data, 'keyPartners')
-            },
-            {
-                id: 'keyActivities',
-                label: 'Key Activities',
-                icon: Lightbulb,
-                type: 'multiselect',
-                description: 'Filter by key activities',
-                getOptions: (data: any[]) => getFlattenedOptions(data, 'keyActivities')
-            },
-            {
-                id: 'customerSegments',
-                label: 'Customer Segments',
-                icon: Users,
-                type: 'multiselect',
-                description: 'Filter by customer segments',
-                getOptions: (data: any[]) => getFlattenedOptions(data, 'customerSegments')
-            },
-            {
-                id: 'channels',
-                label: 'Channels',
-                icon: Package,
-                type: 'multiselect',
-                description: 'Filter by channels',
-                getOptions: (data: any[]) => getFlattenedOptions(data, 'channels')
-            },
-            {
-                id: 'revenueStreams',
-                label: 'Revenue Streams',
-                icon: DollarSign,
-                type: 'multiselect',
-                description: 'Filter by revenue streams',
-                getOptions: (data: any[]) => getFlattenedOptions(data, 'revenueStreams')
-            },
-            {
                 id: 'createdAt',
                 label: 'Created Date',
                 icon: Calendar,
                 type: 'daterange',
                 description: 'Filter by creation date'
             },
+
+
+
             {
                 id: 'id',
                 label: 'Business Model ID',
@@ -146,16 +58,6 @@ const businessModelFilterConfig: FilterConfig = {
                 return businessModel.valuePropositionStatement?.valueProposition?.segment?.id;
             case 'personas':
                 return businessModel.valuePropositionStatement?.valueProposition?.persona?.id;
-            case 'keyPartners':
-                return businessModel.keyPartners;
-            case 'keyActivities':
-                return businessModel.keyActivities;
-            case 'customerSegments':
-                return businessModel.customerSegments;
-            case 'channels':
-                return businessModel.channels;
-            case 'revenueStreams':
-                return businessModel.revenueStreams;
             case 'createdAt':
                 return businessModel.createdAt;
             case 'id':
@@ -179,36 +81,6 @@ const businessModelFilterConfig: FilterConfig = {
             result = result.filter(bm =>
                 bm.valuePropositionStatement?.valueProposition?.persona &&
                 filters.personas.includes(bm.valuePropositionStatement.valueProposition.persona.id)
-            );
-        }
-
-        if (filters.keyPartners && filters.keyPartners.length > 0) {
-            result = result.filter(bm =>
-                bm.keyPartners?.some(partner => filters.keyPartners.includes(partner))
-            );
-        }
-
-        if (filters.keyActivities && filters.keyActivities.length > 0) {
-            result = result.filter(bm =>
-                bm.keyActivities?.some(activity => filters.keyActivities.includes(activity))
-            );
-        }
-
-        if (filters.customerSegments && filters.customerSegments.length > 0) {
-            result = result.filter(bm =>
-                bm.customerSegments?.some(segment => filters.customerSegments.includes(segment))
-            );
-        }
-
-        if (filters.channels && filters.channels.length > 0) {
-            result = result.filter(bm =>
-                bm.channels?.some(channel => filters.channels.includes(channel))
-            );
-        }
-
-        if (filters.revenueStreams && filters.revenueStreams.length > 0) {
-            result = result.filter(bm =>
-                bm.revenueStreams?.some(stream => filters.revenueStreams.includes(stream))
             );
         }
 
@@ -260,26 +132,13 @@ const businessModelSortConfig: SortConfig = {
                 type: 'text'
             },
             {
-                id: 'persona',
-                label: 'Persona',
-                icon: User,
-                field: 'valuePropositionStatement.valueProposition.persona.name',
-                type: 'text'
-            },
-            {
                 id: 'createdAt',
                 label: 'Created Date',
                 icon: Calendar,
                 field: 'createdAt',
                 type: 'date'
             },
-            {
-                id: 'updatedAt',
-                label: 'Updated Date',
-                icon: Calendar,
-                field: 'updatedAt',
-                type: 'date'
-            }
+
         ];
     }
 };

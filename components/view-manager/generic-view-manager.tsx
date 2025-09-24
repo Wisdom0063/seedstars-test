@@ -340,6 +340,7 @@ export function GenericViewManager<T extends BaseDataItem>({
                 onSortsChange={handleSortsChange}
                 data={data}
                 filterConfig={config.filterConfig}
+                sortConfig={config.sortConfig}
                 availableProperties={config.availableProperties}
             />
 

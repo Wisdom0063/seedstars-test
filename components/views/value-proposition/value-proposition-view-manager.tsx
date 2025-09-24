@@ -8,61 +8,9 @@ import { ValuePropositionWithRelations, valuePropositionsApi, UpdateValueProposi
 import { ValuePropositionKanban } from './kanban';
 import ValuePropositionCards from './card';
 import { ValuePropositionTable } from './table';
-
-// Helper functions
-function getUniqueOptions(data: any[], path: string, valuePath?: string): Array<{ id: string, label: string, value: any, count: number }> {
-    const values = new Map<string, { label: string; value: any; count: number }>();
-
-    data.forEach(item => {
-        const value = getNestedValue(item, path);
-        const key = getNestedValue(item, valuePath || path);
-
-        if (value && key) {
-            const existing = values.get(key);
-            if (existing) {
-                existing.count++;
-            } else {
-                values.set(key, { label: value, value: key, count: 1 });
-            }
-        }
-    });
-
-    return Array.from(values.entries()).map(([id, data]) => ({
-        id,
-        label: data.label,
-        value: data.value,
-        count: data.count,
-    }));
-}
-
-function getFlattenedOptions(data: any[], path: string): Array<{ id: string, label: string, value: any, count: number }> {
-    const values = new Map<string, number>();
+import { getUniqueOptions, getFlattenedOptions, getNestedValue } from '@/lib/utils';
 
 
-    data.forEach(item => {
-        console.log(item, "item");
-        const array = getNestedValue(item, path);
-        console.log(array, "array");
-        if (Array.isArray(array)) {
-            array.forEach(value => {
-                if (value) {
-                    values.set(value, (values.get(value) || 0) + 1);
-                }
-            });
-        }
-    });
-
-    return Array.from(values.entries()).map(([value, count]) => ({
-        id: value,
-        label: value,
-        value,
-        count,
-    }));
-}
-
-function getNestedValue(obj: any, path: string): any {
-    return path.split('.').reduce((current, key) => current?.[key], obj);
-}
 
 // Value Proposition-specific filter configuration
 const valuePropositionFilterConfig = {
@@ -284,13 +232,12 @@ const valuePropositionSortConfig = {
     },
 
     getSortableFields: () => {
-        const { Lightbulb, Calendar, Users, User, Target } = require('lucide-react');
+        const { Calendar, Users, User } = require('lucide-react');
 
         return [
             { id: 'persona', label: 'Persona', icon: User, field: 'persona.name', type: 'text' as const, description: 'Sort by persona name' },
             { id: 'segment', label: 'Customer Segment', icon: Users, field: 'segment.name', type: 'text' as const, description: 'Sort by customer segment' },
             { id: 'createdAt', label: 'Created Date', icon: Calendar, field: 'createdAt', type: 'date' as const, description: 'Sort by creation date' },
-            { id: 'updatedAt', label: 'Updated Date', icon: Calendar, field: 'updatedAt', type: 'date' as const, description: 'Sort by update date' }
         ];
     }
 };

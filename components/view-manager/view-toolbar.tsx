@@ -106,14 +106,7 @@ export function ViewToolbar({
                             sorts={sorts}
                             onSortsChange={onSortsChange}
                             source={source}
-                            availableFields={[
-                                { id: 'name', label: 'Name', icon: () => null, field: 'name', type: 'text' },
-                                { id: 'segment', label: 'Customer Segment', icon: () => null, field: 'segment.name', type: 'text' },
-                                { id: 'location', label: 'Location', icon: () => null, field: 'location', type: 'text' },
-                                { id: 'education', label: 'Education', icon: () => null, field: 'education', type: 'text' },
-                                { id: 'income', label: 'Income Level', icon: () => null, field: 'incomePerMonth', type: 'number' },
-                                { id: 'age', label: 'Age', icon: () => null, field: 'age', type: 'number' },
-                            ]}
+                            availableFields={sortConfig?.getSortableFields() || []}
                             onAddSort={(field: any) => {
                                 const newSort: ViewSortCriteria = {
                                     id: `${field.field}-${Date.now()}`,
