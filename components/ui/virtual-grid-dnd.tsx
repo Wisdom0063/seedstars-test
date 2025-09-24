@@ -44,7 +44,7 @@ export function VirtualGridDnd<T>({
     height = 600,
     width = '100%',
     className = '',
-    overscan = 5,
+    overscan = 10,
     renderItem,
     getItemKey,
     onItemClick,

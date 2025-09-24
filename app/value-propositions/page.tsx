@@ -36,7 +36,7 @@ export default function ValuePropositionsPage() {
     return (
         <div className="container mx-auto px-4">
             <div className="mb-6">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Value Propositions</h1>
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">Value Propositions</h1>
                 <p className="text-gray-600">
                     Explore and manage value proposition canvases across different customer segments
                 </p>
