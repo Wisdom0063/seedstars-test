@@ -304,13 +304,13 @@ export function BusinessModelTable({ businessModels, onBusinessModelClick, visib
     const TableComponents = useMemo(
         () => ({
             Scroller: forwardRef<HTMLDivElement>((props, ref) => (
-                <div {...props} ref={ref} className="rounded-md border bg-white" />
+                <div {...props} ref={ref} className="overflow-auto" />
             )),
             Table: (props: any) => (
-                <Table {...props} className="w-full caption-bottom text-sm" />
+                <Table {...props} className="w-full h-[1200px] caption-bottom text-sm" />
             ),
             TableHead: forwardRef<HTMLTableSectionElement>((props, ref) => (
-                <TableHeader {...props} ref={ref} className="bg-gray-50/50 sticky top-0 z-10" />
+                <TableHeader {...props} ref={ref} className="bg-gray-50 sticky top-0 z-20 border-b" />
             )),
             TableBody: forwardRef<HTMLTableSectionElement>((props, ref) => (
                 <TableBody {...props} ref={ref} />
@@ -330,43 +330,44 @@ export function BusinessModelTable({ businessModels, onBusinessModelClick, visib
     }
 
     return (
-        <div className="space-y-4">
-            <TableVirtuoso
-                style={{ height: 600, width: '100%' }}
-                data={rows}
-                components={TableComponents}
-                fixedHeaderContent={() => (
-                    <>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="font-semibold py-3 px-4 border-b">
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </>
-                )}
-                itemContent={(index, row) => (
-                    <>
-                        {row.getVisibleCells().map((cell) => (
-                            <TableCell
-                                key={cell.id}
-                                className="py-3 px-4 border-b cursor-pointer hover:bg-gray-50 transition-colors"
-                                onClick={() => onBusinessModelClick?.(row.original)}
-                            >
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </TableCell>
-                        ))}
-                    </>
-                )}
-            />
+        <div className="w-full h-full">
+            <div className="border rounded-md bg-white overflow-hidden" style={{ height: 800 }}>
+                <TableVirtuoso
+                    style={{ height: '100%', width: '100%' }}
+                    data={rows}
+                    components={TableComponents}
+                    fixedHeaderContent={() => (
+                        <TableRow className="bg-gray-50 border-b">
+                            {table.getHeaderGroups()[0]?.headers.map((header) => (
+                                <TableHead
+                                    key={header.id}
+                                    className="font-semibold py-3 px-4 text-left bg-gray-50 sticky top-0 z-10"
+                                >
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                </TableHead>
+                            ))}
+                        </TableRow>
+                    )}
+                    itemContent={(index, row) => (
+                        <>
+                            {row.getVisibleCells().map((cell) => (
+                                <TableCell
+                                    key={cell.id}
+                                    className="py-3 px-4 border-b cursor-pointer hover:bg-gray-50 transition-colors"
+                                    onClick={() => onBusinessModelClick?.(row.original)}
+                                >
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </TableCell>
+                            ))}
+                        </>
+                    )}
+                />
+            </div>
         </div>
     );
 }

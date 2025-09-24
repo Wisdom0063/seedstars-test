@@ -337,47 +337,48 @@ export function ValuePropositionTable({ valuePropositions, onValuePropositionCli
     );
 
     return (
-        <div className="space-y-4">
-            {/* Virtualized Table with React Virtuoso */}
-            <TableVirtuoso
-                style={{ height: 600, width: '100%' }}
-                data={rows}
-                components={TableComponents}
-                fixedHeaderContent={() => (
-                    <>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id} className="font-semibold py-3 px-4 border-b">
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </>
-                )}
-                itemContent={(index, row) => (
-                    <>
-                        {row.getVisibleCells().map((cell) => (
-                            <TableCell
-                                key={cell.id}
-                                className="py-3 px-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                                onClick={() => onValuePropositionClick?.(row.original)}
-                            >
-                                {flexRender(
-                                    cell.column.columnDef.cell,
-                                    cell.getContext()
-                                )}
-                            </TableCell>
-                        ))}
-                    </>
-                )}
-            />
+        <div className="w-full h-full">
+            <div className="border rounded-md bg-white overflow-hidden" style={{ height: 800 }}>
+                <TableVirtuoso
+                    style={{ height: '100%', width: '100%' }}
+                    data={rows}
+                    components={TableComponents}
+                    fixedHeaderContent={() => (
+                        <>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <TableHead key={header.id} className="font-semibold py-3 px-4 border-b">
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                        </TableHead>
+                                    ))}
+                                </TableRow>
+                            ))}
+                        </>
+                    )}
+                    itemContent={(index, row) => (
+                        <>
+                            {row.getVisibleCells().map((cell) => (
+                                <TableCell
+                                    key={cell.id}
+                                    className="py-3 px-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                                    onClick={() => onValuePropositionClick?.(row.original)}
+                                >
+                                    {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext()
+                                    )}
+                                </TableCell>
+                            ))}
+                        </>
+                    )}
+                />
+            </div>
         </div>
     );
 }
