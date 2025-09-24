@@ -44,6 +44,8 @@ export function BusinessModelDetailDrawer({
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
+    const [lastSaved, setLastSaved] = useState<Date | null>(null);
+    const [autoSaveTimer, setAutoSaveTimer] = useState<NodeJS.Timeout | null>(null);
 
     // Initialize editing state when businessModel changes
     React.useEffect(() => {
@@ -77,6 +79,7 @@ export function BusinessModelDetailDrawer({
 
             await onSave(updateRequest);
             setHasUnsavedChanges(false);
+            setLastSaved(new Date());
         } catch (error: any) {
             console.error('Failed to save business model:', error);
             setSaveError(error.message || 'Failed to save changes');
@@ -84,6 +87,28 @@ export function BusinessModelDetailDrawer({
             setIsSaving(false);
         }
     }, [editedBM, hasUnsavedChanges, onSave]);
+
+    // Auto-save functionality
+    const scheduleAutoSave = React.useCallback(() => {
+        if (autoSaveTimer) {
+            clearTimeout(autoSaveTimer);
+        }
+
+        const timer = setTimeout(() => {
+            handleSave();
+        }, 2000); // Auto-save after 2 seconds of inactivity
+
+        setAutoSaveTimer(timer);
+    }, [autoSaveTimer, handleSave]);
+
+    // Cleanup timer on unmount
+    React.useEffect(() => {
+        return () => {
+            if (autoSaveTimer) {
+                clearTimeout(autoSaveTimer);
+            }
+        };
+    }, [autoSaveTimer]);
 
     const handleDelete = () => {
         if (businessModel && onDelete) {
@@ -113,6 +138,9 @@ export function BusinessModelDetailDrawer({
             if (onRealtimeUpdate) {
                 onRealtimeUpdate(updatedBM);
             }
+
+            // Schedule auto-save
+            scheduleAutoSave();
         }
     };
 
@@ -235,77 +263,91 @@ export function BusinessModelDetailDrawer({
 
         return (
             <div className="space-y-6">
+                <h3 className="font-semibold text-lg">Business Model Canvas</h3>
 
-                {/* Business Model Canvas Sections */}
-                <div className="space-y-6">
-                    <h3 className="font-semibold text-lg">Business Model Canvas</h3>
-
-                    {/* Left Side */}
+                {/* Two Column Layout for Tablet and Desktop */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Left Column */}
                     <div className="space-y-6">
-                        <h4 className="font-medium text-gray-900">Left Side</h4>
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h4 className="font-medium text-blue-900 mb-4 flex items-center gap-2">
+                                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                                Left Side
+                            </h4>
 
-                        <ArrayFieldEditor
-                            field="keyPartners"
-                            label="Key Partners"
-                            icon={Handshake}
-                            placeholder="Add a key partner"
-                            description="Who are our key partners and suppliers?"
-                        />
+                            <div className="space-y-6">
+                                <ArrayFieldEditor
+                                    field="keyPartners"
+                                    label="Key Partners"
+                                    icon={Handshake}
+                                    placeholder="Add a key partner"
+                                    description="Who are our key partners and suppliers?"
+                                />
 
-                        <ArrayFieldEditor
-                            field="keyActivities"
-                            label="Key Activities"
-                            icon={Lightbulb}
-                            placeholder="Add a key activity"
-                            description="What key activities does our value proposition require?"
-                        />
+                                <ArrayFieldEditor
+                                    field="keyActivities"
+                                    label="Key Activities"
+                                    icon={Lightbulb}
+                                    placeholder="Add a key activity"
+                                    description="What key activities does our value proposition require?"
+                                />
 
-                        <ArrayFieldEditor
-                            field="keyResources"
-                            label="Key Resources"
-                            icon={Settings}
-                            placeholder="Add a key resource"
-                            description="What key resources does our value proposition require?"
-                        />
+                                <ArrayFieldEditor
+                                    field="keyResources"
+                                    label="Key Resources"
+                                    icon={Settings}
+                                    placeholder="Add a key resource"
+                                    description="What key resources does our value proposition require?"
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <Separator />
-
-                    {/* Right Side */}
+                    {/* Right Column */}
                     <div className="space-y-6">
-                        <h4 className="font-medium text-gray-900">Right Side</h4>
+                        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 className="font-medium text-green-900 mb-4 flex items-center gap-2">
+                                <div className="w-2 h-2 bg-green-600 rounded-full"></div>
+                                Right Side
+                            </h4>
 
-                        <ArrayFieldEditor
-                            field="customerRelationships"
-                            label="Customer Relationships"
-                            icon={Heart}
-                            placeholder="Add a customer relationship type"
-                            description="What type of relationship does each customer segment expect?"
-                        />
+                            <div className="space-y-6">
+                                <ArrayFieldEditor
+                                    field="customerRelationships"
+                                    label="Customer Relationships"
+                                    icon={Heart}
+                                    placeholder="Add a customer relationship type"
+                                    description="What type of relationship does each customer segment expect?"
+                                />
 
-                        <ArrayFieldEditor
-                            field="channels"
-                            label="Channels"
-                            icon={Truck}
-                            placeholder="Add a channel"
-                            description="Through which channels do we want to reach our customer segments?"
-                        />
+                                <ArrayFieldEditor
+                                    field="channels"
+                                    label="Channels"
+                                    icon={Truck}
+                                    placeholder="Add a channel"
+                                    description="Through which channels do we want to reach our customer segments?"
+                                />
 
-                        <ArrayFieldEditor
-                            field="customerSegments"
-                            label="Customer Segments"
-                            icon={Users}
-                            placeholder="Add a customer segment"
-                            description="For whom are we creating value?"
-                        />
+                                <ArrayFieldEditor
+                                    field="customerSegments"
+                                    label="Customer Segments"
+                                    icon={Users}
+                                    placeholder="Add a customer segment"
+                                    description="For whom are we creating value?"
+                                />
+                            </div>
+                        </div>
                     </div>
+                </div>
 
-                    <Separator />
+                {/* Bottom Section - Full Width */}
+                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                    <h4 className="font-medium text-purple-900 mb-4 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                        Financial Structure
+                    </h4>
 
-                    {/* Bottom */}
-                    <div className="space-y-6">
-                        <h4 className="font-medium text-gray-900">Bottom</h4>
-
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <ArrayFieldEditor
                             field="costStructure"
                             label="Cost Structure"
@@ -322,10 +364,14 @@ export function BusinessModelDetailDrawer({
                             description="For what value are our customers really willing to pay?"
                         />
                     </div>
+                </div>
 
-                    <Separator />
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
+                        Additional Information
+                    </h4>
 
-                    {/* Tags & Notes */}
                     <div className="space-y-6">
                         <ArrayFieldEditor
                             field="tags"
@@ -336,7 +382,10 @@ export function BusinessModelDetailDrawer({
                         />
 
                         <div>
-                            <Label htmlFor="notes">Notes</Label>
+                            <Label htmlFor="notes" className="flex items-center gap-2 text-sm font-medium mb-2">
+                                <Settings className="h-4 w-4 text-gray-500" />
+                                Notes
+                            </Label>
                             <Textarea
                                 id="notes"
                                 value={editedBM.notes || ''}
@@ -344,6 +393,7 @@ export function BusinessModelDetailDrawer({
                                 onBlur={handleFieldBlur}
                                 placeholder="Additional notes about this business model"
                                 rows={4}
+                                className="w-full"
                             />
                         </div>
                     </div>
@@ -351,6 +401,27 @@ export function BusinessModelDetailDrawer({
             </div>
         );
     };
+
+    const getSaveStatus = () => {
+        if (isSaving) {
+            return { text: "Saving...", color: "text-blue-600" };
+        }
+        if (hasUnsavedChanges) {
+            return { text: "Unsaved changes", color: "text-orange-600" };
+        }
+        if (lastSaved) {
+            const timeAgo = Math.floor((Date.now() - lastSaved.getTime()) / 1000);
+            if (timeAgo < 60) {
+                return { text: `Saved ${timeAgo}s ago`, color: "text-green-600" };
+            } else {
+                const minutesAgo = Math.floor(timeAgo / 60);
+                return { text: `Saved ${minutesAgo}m ago`, color: "text-green-600" };
+            }
+        }
+        return { text: "Auto-save enabled", color: "text-gray-500" };
+    };
+
+    const saveStatus = getSaveStatus();
 
     const footer = (
         <div className="space-y-4">
@@ -360,8 +431,16 @@ export function BusinessModelDetailDrawer({
                 </div>
             )}
 
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-                Changes save when you move to the next field
+            <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500">
+                    Changes auto-save after 2 seconds
+                </span>
+                <span className={`flex items-center gap-1 ${saveStatus.color}`}>
+                    {isSaving && (
+                        <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin"></div>
+                    )}
+                    {saveStatus.text}
+                </span>
             </div>
         </div>
     );
