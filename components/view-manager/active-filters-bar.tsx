@@ -16,7 +16,7 @@ import { ViewSource } from '@/lib/api/views';
 import { SortDropdown } from './sort-dropdown';
 import { ViewSortCriteria } from '@/lib/api/views';
 import { FilterConfig, SortConfig } from './generic-view-manager';
-import { VirtualizedMultiSelect } from './virtualized-multi-select';
+import { VirtualizedMultiSelect } from '../ui/shadcn-io/virtualized-multi-select';
 
 interface ActiveFiltersBarProps {
     filters: Record<string, any>;

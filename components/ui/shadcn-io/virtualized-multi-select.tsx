@@ -53,7 +53,6 @@ export function VirtualizedMultiSelect({
 }: VirtualizedMultiSelectProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Filter options based on search query
   const filteredOptions = useMemo(() => {
     if (!searchQuery.trim()) return options;
 
@@ -81,7 +80,6 @@ export function VirtualizedMultiSelect({
 
   return (
     <div className="w-full">
-      {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between mb-3">
           <div className="text-sm font-medium text-gray-700">
@@ -92,7 +90,6 @@ export function VirtualizedMultiSelect({
           </div>
         </div>
 
-        {/* Search Input */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
@@ -110,7 +107,6 @@ export function VirtualizedMultiSelect({
         )}
       </div>
 
-      {/* Virtualized Options List */}
       <div className="h-80">
         {filteredOptions.length === 0 ? (
           <div className="flex items-center justify-center h-full text-gray-500 text-sm">
@@ -137,7 +133,6 @@ export function VirtualizedMultiSelect({
         )}
       </div>
 
-      {/* Footer with selection summary */}
       {selectedCount > 0 && (
         <div className="p-3 border-t border-gray-200 bg-gray-50">
           <div className="flex items-center justify-between">

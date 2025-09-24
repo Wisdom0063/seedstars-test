@@ -77,7 +77,6 @@ export function SortDropdown({ sorts, onSortsChange, source, availableFields, on
                     <GripVertical className="h-4 w-4 text-gray-400" />
 
                     <div className="flex items-center gap-2 flex-1">
-                      {/* {Icon && <Icon className="h-4 w-4 text-gray-500" />} */}
                       <span className="text-sm font-medium text-gray-700">
                         {sort.label}
                       </span>

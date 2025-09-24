@@ -2,12 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  Grid3X3,
-  Kanban,
-  X,
-} from 'lucide-react';
+import { X } from 'lucide-react';
 import { ViewLayout } from '@/lib/api/views';
 import { AllowedLayoutOptions, BaseDataItem, LayoutConfig } from './generic-view-manager';
 

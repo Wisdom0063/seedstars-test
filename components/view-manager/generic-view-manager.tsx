@@ -210,20 +210,19 @@ export function GenericViewManager<T extends BaseDataItem>({
                 name: 'Untitled View',
                 source: config.source,
                 layout,
+                visibleFields: config.defaultVisibleFields,
             });
 
             setViews(prev => [...prev, newView]);
             setCurrentView(newView);
 
             setShowLayoutSelection(false);
-            // View will be automatically selected and can be edited via popover
         } catch (error) {
             console.error('Failed to create view:', error);
         }
     };
 
     const handleEditView = (view: View) => {
-        // View editing is now handled by the popover
         console.log('Edit view:', view);
     };
 
@@ -288,11 +287,10 @@ export function GenericViewManager<T extends BaseDataItem>({
 
         const commonProps: LayoutComponentProps<T> = {
             data: filteredData,
-            onItemClick: handleItemClick, // Use smart click handler
+            onItemClick: handleItemClick,
             visibleFields: currentView.visibleFields || config.defaultVisibleFields || [],
             onItemReorder: (reorderedItems: T[]) => {
                 console.log('Items reordered:', reorderedItems.map(item => item.id));
-                // TODO: Optionally persist the order to the view or handle reordering logic
             },
         };
 

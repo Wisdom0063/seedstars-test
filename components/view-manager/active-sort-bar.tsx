@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
@@ -79,7 +78,6 @@ function SortChip({ sort, index, onOrderChange, onRemove }: SortChipProps) {
 
   return (
     <div className="w-48 bg-white border border-blue-200 rounded-lg shadow-sm">
-      {/* Header with label and remove button */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-gray-100">
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded">
@@ -96,7 +94,6 @@ function SortChip({ sort, index, onOrderChange, onRemove }: SortChipProps) {
         </button>
       </div>
 
-      {/* Order selection */}
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <button className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors">
