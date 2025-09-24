@@ -20,30 +20,6 @@ export async function GET(request: NextRequest) {
       ]
     });
 
-    // If no views exist, create default views
-    // if (views.length === 0) {
-    //   const defaultViews = await Promise.all(
-    //     DEFAULT_VIEWS.map(view =>
-    //       prisma.view.create({
-    //         data: {
-    //           ...view,
-    //         }
-    //       })
-    //     )
-    //   );
-
-    //   return NextResponse.json({
-    //     success: true,
-    //     data: defaultViews.map(view => ({
-    //       ...view,
-    //       filters: view.filters ? JSON.parse(view.filters) : null,
-    //       visibleFields: view.visibleFields ? JSON.parse(view.visibleFields) : null,
-    //     })),
-    //     count: defaultViews.length,
-    //   });
-    // }
-
-    // Parse JSON fields
     const parsedViews = views.map(view => ({
       ...view,
       filters: view.filters ? JSON.parse(view.filters) : null,

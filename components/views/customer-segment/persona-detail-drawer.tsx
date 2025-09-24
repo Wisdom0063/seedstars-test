@@ -2,20 +2,14 @@
 
 import React, { useState } from 'react';
 import { ViewDetailDrawer } from '../../view-manager/view-detail-drawer';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import {
-    Edit,
-    Save,
-    X,
     User,
     MapPin,
     Calendar,
-    Users,
     MessageSquare,
 } from 'lucide-react';
 import { Persona } from '@/lib/api/customer-segment';
@@ -42,7 +36,6 @@ export function PersonaDetailDrawer({
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState<string | null>(null);
 
-    // Initialize editing state when persona changes
     React.useEffect(() => {
         if (persona) {
             setEditedPersona({ ...persona });
@@ -66,12 +59,6 @@ export function PersonaDetailDrawer({
         }
     }, [editedPersona, hasUnsavedChanges, onSave]);
 
-    const handleDelete = () => {
-        if (persona && onDelete) {
-            onDelete(persona);
-        }
-        onClose();
-    };
 
     const handleClose = () => {
         if (hasUnsavedChanges) {
@@ -139,7 +126,6 @@ export function PersonaDetailDrawer({
                 </div>
                 <Separator />
 
-                {/* Basic Info Section */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2">
                         <User className="h-5 w-5 text-gray-500" />
@@ -191,7 +177,6 @@ export function PersonaDetailDrawer({
                     </div>
                 </div>
 
-                {/* Location & Background */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2">
                         <MapPin className="h-5 w-5 text-gray-500" />
@@ -232,7 +217,6 @@ export function PersonaDetailDrawer({
                     </div>
                 </div>
 
-                {/* Insights */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2">
                         <MessageSquare className="h-5 w-5 text-gray-500" />
@@ -266,7 +250,6 @@ export function PersonaDetailDrawer({
                     </div>
                 </div>
 
-                {/* Metadata - Read Only */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2">
                         <Calendar className="h-5 w-5 text-gray-500" />
@@ -291,13 +274,6 @@ export function PersonaDetailDrawer({
 
     const footer = (
         <div className="flex justify-between w-full">
-            <div>
-                {onDelete && (
-                    <Button variant="destructive" size="sm" onClick={handleDelete}>
-                        Delete Persona
-                    </Button>
-                )}
-            </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
                 Changes save when you move to the next field

@@ -47,7 +47,6 @@ const menuItems = [
   },
 ];
 
-// Secondary menu items
 const secondaryItems = [
   {
     title: 'Settings',

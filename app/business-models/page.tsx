@@ -1,37 +1,15 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { BusinessModelWithRelations, businessModelsApi } from '@/lib/api/business-model';
+import { BusinessModelWithRelations } from '@/lib/api/business-model';
 import { BusinessModelViewManager } from '@/components/views/business-model/business-model-view-manager';
 import { LoadingState } from '@/components/ui/custom/loading-state';
 import { ErrorState } from '@/components/ui/custom/error-state';
 import { EmptyState } from '@/components/ui/custom/empty-state';
 import { Building2 } from 'lucide-react';
+import { useBusinessModels } from '@/hooks/useBusinessModels';
 
 export default function BusinessModelsPage() {
-    const [businessModels, setBusinessModels] = useState<BusinessModelWithRelations[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchBusinessModels = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const data = await businessModelsApi.getAll();
-            setBusinessModels(data);
-        } catch (err) {
-            const errorMessage = err instanceof Error
-                ? err.message
-                : 'Failed to fetch business models';
-            setError(errorMessage);
-            console.error('Error fetching business models:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-    useEffect(() => {
-        fetchBusinessModels();
-    }, []);
+    const { businessModels, loading, error, refetch, updateBusinessModel } = useBusinessModels();
 
 
 
@@ -42,11 +20,7 @@ export default function BusinessModelsPage() {
     };
 
     const handleBusinessModelUpdate = (updatedBusinessModel: BusinessModelWithRelations) => {
-        setBusinessModels(prevBusinessModels =>
-            prevBusinessModels.map(bm =>
-                bm.id === updatedBusinessModel.id ? updatedBusinessModel : bm
-            )
-        );
+        updateBusinessModel(updatedBusinessModel);
     };
 
     if (loading) {
@@ -57,22 +31,20 @@ export default function BusinessModelsPage() {
         return (
             <ErrorState
                 message={error}
-                onRetry={fetchBusinessModels}
+                onRetry={refetch}
             />
         );
     }
 
     return (
         <div className="container mx-auto px-4">
-            {/* Header */}
             <div className="mb-6">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Business Models</h1>
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">Business Models</h1>
                 <p className="text-gray-600">
                     Explore and manage business model canvases across different customer segments and value propositions
                 </p>
             </div>
 
-            {/* Business Models Views */}
             {businessModels.length === 0 ? (
                 <EmptyState
                     icon={Building2}

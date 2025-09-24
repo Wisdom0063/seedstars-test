@@ -294,7 +294,7 @@ const valuePropositionViewConfig: ViewManagerConfig<ValuePropositionWithRelation
     filterConfig: valuePropositionFilterConfig,
     sortConfig: valuePropositionSortConfig,
     availableProperties: valuePropositionAvailableProperties,
-    defaultVisibleFields: ['name', 'segment', 'persona', 'valuePropositionStatements']
+    defaultVisibleFields: ['name', 'segment', 'persona', 'valuePropositionStatements', 'customerPains']
 };
 
 // Value Proposition-specific ViewManager props

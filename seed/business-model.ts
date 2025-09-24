@@ -3,7 +3,6 @@ import Bluebird from 'bluebird';
 
 const prisma = new PrismaClient();
 
-// Business Model Canvas components
 const keyPartnersPool = [
     "Industry associations and professional bodies",
     "Educational institutions and universities",
@@ -168,7 +167,6 @@ const businessModelNotes = [
     "Strong emphasis on learner support and success through dedicated coaching and mentorship"
 ];
 
-// Helper function to get random items from array
 function getRandomItems<T>(array: T[], min: number, max: number): T[] {
     const count = Math.floor(Math.random() * (max - min + 1)) + min;
     const shuffled = [...array].sort(() => Math.random() - 0.5);
@@ -179,7 +177,6 @@ function getRandomItem<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-// Generate business models for value proposition statements
 function generateBusinessModels(valuePropositionStatements: any[], batchSize: number = 1000) {
     console.log(`🏢 Generating business models for ${valuePropositionStatements.length} value proposition statements in batches of ${batchSize}...`);
 
@@ -192,7 +189,6 @@ function generateBusinessModels(valuePropositionStatements: any[], batchSize: nu
         const currentBatchStatements = valuePropositionStatements.slice(startIndex, endIndex);
 
         const batch = currentBatchStatements.map((vpStatement, index) => {
-            // Generate business model canvas components (3-6 items each)
             const keyPartners = getRandomItems(keyPartnersPool, 3, 6);
             const keyActivities = getRandomItems(keyActivitiesPool, 4, 7);
             const keyResources = getRandomItems(keyResourcesPool, 3, 6);
@@ -202,7 +198,6 @@ function generateBusinessModels(valuePropositionStatements: any[], batchSize: nu
             const costStructure = getRandomItems(costStructurePool, 4, 8);
             const revenueStreams = getRandomItems(revenueStreamsPool, 2, 5);
 
-            // Generate tags and notes
             const tags = getRandomItems(businessModelTags, 3, 7);
             const notes = Math.random() > 0.3 ? getRandomItem(businessModelNotes) : null;
 
@@ -235,11 +230,6 @@ export async function seedBusinessModels() {
     try {
         console.log('🌱 Starting to seed business models...');
 
-        // Clear existing business model data
-        console.log('🧹 Clearing existing business model data...');
-        await prisma.businessModel.deleteMany();
-
-        // Fetch all value proposition statements
         console.log('🎯 Fetching value proposition statements...');
         const valuePropositionStatements = await prisma.valuePropositionStatement.findMany({
             include: {
@@ -258,7 +248,6 @@ export async function seedBusinessModels() {
 
         console.log(`📊 Found ${valuePropositionStatements.length} value proposition statements to create business models for`);
 
-        // Generate business models (create 1 business model per 2-3 value proposition statements)
         const selectedStatements = valuePropositionStatements.filter((_, index) => index % 2 === 0 || Math.random() > 0.5);
         console.log(`🎲 Selected ${selectedStatements.length} value proposition statements for business model creation`);
 
@@ -266,7 +255,7 @@ export async function seedBusinessModels() {
         const businessModels = generateBusinessModels(selectedStatements);
 
         console.log('💾 Creating business models with Bluebird concurrency control...');
-        const concurrency = 10; // Process 10 business models concurrently
+        const concurrency = 1000; // Process 1000 business models concurrently
         let completed = 0;
 
         await Bluebird.map(businessModels, async (bmData: any) => {
@@ -276,8 +265,7 @@ export async function seedBusinessModels() {
 
             completed++;
 
-            // Log progress every 50 business models
-            if (completed % 50 === 0) {
+            if (completed % 1000 === 0) {
                 console.log(`✅ Created ${completed}/${businessModels.length} business models`);
             }
 
@@ -288,7 +276,6 @@ export async function seedBusinessModels() {
 
         console.log('🎉 Business model seeding completed successfully!');
 
-        // Display summary
         const bmCount = await prisma.businessModel.count();
         const withNotesCount = await prisma.businessModel.count({ where: { notes: { not: null } } });
         const withTagsCount = await prisma.businessModel.count({ where: { tags: { not: null } } });

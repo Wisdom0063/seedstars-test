@@ -1,4 +1,4 @@
-import { fetcher } from ".";
+import { fetcher, ApiResponse } from ".";
 
 
 
@@ -36,25 +36,25 @@ export interface Persona {
     };
 }
 export const customerSegmentsApi = {
-    getAll: (): Promise<CustomerSegment[]> => {
+    getAll: (): Promise<ApiResponse<CustomerSegment[]>> => {
         return fetcher<CustomerSegment[]>('/api/customer-segments');
     },
-    getById: (id: string): Promise<CustomerSegment> => {
+    getById: (id: string): Promise<ApiResponse<CustomerSegment>> => {
         return fetcher<CustomerSegment>(`/api/customer-segments/${id}`);
     },
-    create: (data: { name: string }): Promise<CustomerSegment> => {
+    create: (data: { name: string }): Promise<ApiResponse<CustomerSegment>> => {
         return fetcher<CustomerSegment>('/api/customer-segments', {
             method: 'POST',
             body: JSON.stringify(data),
         });
     },
-    update: (id: string, data: { name: string }): Promise<CustomerSegment> => {
+    update: (id: string, data: { name: string }): Promise<ApiResponse<CustomerSegment>> => {
         return fetcher<CustomerSegment>(`/api/customer-segments/${id}`, {
             method: 'PUT',
             body: JSON.stringify(data),
         });
     },
-    delete: (id: string): Promise<{ message: string }> => {
+    delete: (id: string): Promise<ApiResponse<{ message: string }>> => {
         return fetcher<{ message: string }>(`/api/customer-segments/${id}`, {
             method: 'DELETE',
         });
@@ -62,28 +62,28 @@ export const customerSegmentsApi = {
 };
 
 export const personasApi = {
-    getAll: (segmentId?: string): Promise<Persona[]> => {
+    getAll: (segmentId?: string): Promise<ApiResponse<Persona[]>> => {
         const url = segmentId
             ? `/api/customer-segments/personas?segmentId=${segmentId}`
             : '/api/customer-segments/personas';
         return fetcher<Persona[]>(url);
     },
-    getById: (id: string): Promise<Persona> => {
+    getById: (id: string): Promise<ApiResponse<Persona>> => {
         return fetcher<Persona>(`/api/customer-segments/personas/${id}`);
     },
-    create: (data: Omit<Persona, 'id' | 'createdAt' | 'updatedAt' | 'segment'> & { segmentId: string }): Promise<Persona> => {
+    create: (data: Omit<Persona, 'id' | 'createdAt' | 'updatedAt' | 'segment'> & { segmentId: string }): Promise<ApiResponse<Persona>> => {
         return fetcher<Persona>('/api/customer-segments/personas', {
             method: 'POST',
             body: JSON.stringify(data),
         });
     },
-    update: (data: Persona): Promise<Persona> => {
+    update: (data: Persona): Promise<ApiResponse<Persona>> => {
         return fetcher<Persona>('/api/customer-segments/personas', {
             method: 'PUT',
             body: JSON.stringify(data),
         });
     },
-    delete: (id: string): Promise<{ message: string }> => {
+    delete: (id: string): Promise<ApiResponse<{ message: string }>> => {
         return fetcher<{ message: string }>(`/api/customer-segments/personas/${id}`, {
             method: 'DELETE',
         });

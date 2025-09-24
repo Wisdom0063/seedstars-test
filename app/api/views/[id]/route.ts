@@ -58,7 +58,6 @@ export async function PUT(
   try {
     const { id } = await params;
     const body: Omit<UpdateViewRequest, 'id'> = await request.json();
-    // Check if view exists
     const existingView = await prisma.view.findUnique({
       where: { id },
     });

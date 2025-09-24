@@ -2,8 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import Bluebird from 'bluebird';
 
 const prisma = new PrismaClient();
-
-// Data pools for generating realistic value propositions
 const valuePropositionOfferings = [
     "Provide interactive learning experiences",
     "Deliver personalized skill development",
@@ -295,7 +293,6 @@ const productsServicesPool = [
     }
 ];
 
-// Helper function to get random items from array
 function getRandomItems<T>(array: T[], min: number, max: number): T[] {
     const count = Math.floor(Math.random() * (max - min + 1)) + min;
     const shuffled = [...array].sort(() => Math.random() - 0.5);
@@ -306,7 +303,6 @@ function getRandomItem<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-// Generate value propositions for personas
 function generateValuePropositions(personas: any[], batchSize: number = 1000) {
     console.log(`🎯 Generating value propositions for ${personas.length} personas in batches of ${batchSize}...`);
 
@@ -319,17 +315,14 @@ function generateValuePropositions(personas: any[], batchSize: number = 1000) {
         const currentBatchPersonas = personas.slice(startIndex, endIndex);
 
         const batch = currentBatchPersonas.map((persona, index) => {
-            // Generate basic value proposition info
             const offering = getRandomItem(valuePropositionOfferings);
             const description = getRandomItem(valuePropositionDescriptions);
 
-            // Generate value proposition statements (1-3 per VP)
             const vpStatements = Array.from({ length: Math.floor(Math.random() * 3) + 1 }, () => ({
                 offering: getRandomItem(valuePropositionOfferings),
                 description: getRandomItem(valuePropositionDescriptions)
             }));
 
-            // Generate canvas components (2-5 items each)
             const customerJobs = getRandomItems(customerJobsPool, 2, 5).map((job, order) => ({
                 ...job,
                 order
@@ -352,7 +345,7 @@ function generateValuePropositions(personas: any[], batchSize: number = 1000) {
 
             const productsServices = getRandomItems(productsServicesPool, 1, 3).map((product, order) => ({
                 ...product,
-                features: null, // Can be expanded later
+                features: null,
                 order
             }));
 
@@ -383,17 +376,6 @@ export async function seedValuePropositions() {
     try {
         console.log('🌱 Starting to seed value propositions...');
 
-        // Clear existing value proposition data
-        console.log('🧹 Clearing existing value proposition data...');
-        await prisma.valuePropositionStatement.deleteMany();
-        await prisma.customerJob.deleteMany();
-        await prisma.customerPain.deleteMany();
-        await prisma.gainCreator.deleteMany();
-        await prisma.painReliever.deleteMany();
-        await prisma.productService.deleteMany();
-        await prisma.valueProposition.deleteMany();
-
-        // Fetch all personas with their segments
         console.log('👥 Fetching personas...');
         const personas = await prisma.persona.findMany({
             include: {
@@ -407,16 +389,14 @@ export async function seedValuePropositions() {
 
         console.log(`📊 Found ${personas.length} personas to create value propositions for`);
 
-        // Generate value propositions
         console.log('💡 Generating value propositions...');
         const valuePropositions = generateValuePropositions(personas);
 
         console.log('💾 Creating value propositions with Bluebird concurrency control...');
-        const concurrency = 5; // Process 5 value propositions concurrently
+        const concurrency = 5;
         let completed = 0;
 
         await Bluebird.map(valuePropositions, async (vpData: any) => {
-            // Extract nested data
             const {
                 valuePropositionStatements,
                 customerJobs,
@@ -427,64 +407,28 @@ export async function seedValuePropositions() {
                 ...vpCore
             } = vpData;
 
-            // Create the main value proposition
             const createdVP = await prisma.valueProposition.create({
-                data: vpCore
+                data: {
+                    ...vpCore,
+                    customerJobs: JSON.stringify(customerJobs),
+                    customerPains: JSON.stringify(customerPains),
+                    gainCreators: JSON.stringify(gainCreators),
+                    painRelievers: JSON.stringify(painRelievers),
+                    productsServices: JSON.stringify(productsServices)
+                }
             });
 
-            // Create all related components in parallel
-            await Promise.all([
-                // Value proposition statements
-                prisma.valuePropositionStatement.createMany({
+            if (valuePropositionStatements && valuePropositionStatements.length > 0) {
+                await prisma.valuePropositionStatement.createMany({
                     data: valuePropositionStatements.map((stmt: any) => ({
                         ...stmt,
                         valuePropositionId: createdVP.id
                     }))
-                }),
-
-                // Customer jobs
-                prisma.customerJob.createMany({
-                    data: customerJobs.map((job: any) => ({
-                        ...job,
-                        valuePropositionId: createdVP.id
-                    }))
-                }),
-
-                // Customer pains
-                prisma.customerPain.createMany({
-                    data: customerPains.map((pain: any) => ({
-                        ...pain,
-                        valuePropositionId: createdVP.id
-                    }))
-                }),
-
-                prisma.gainCreator.createMany({
-                    data: gainCreators.map((gain: any) => ({
-                        ...gain,
-                        valuePropositionId: createdVP.id
-                    }))
-                }),
-
-                // Pain relievers
-                prisma.painReliever.createMany({
-                    data: painRelievers.map((reliever: any) => ({
-                        ...reliever,
-                        valuePropositionId: createdVP.id
-                    }))
-                }),
-
-                // Products and services
-                prisma.productService.createMany({
-                    data: productsServices.map((product: any) => ({
-                        ...product,
-                        valuePropositionId: createdVP.id
-                    }))
-                })
-            ]);
+                });
+            }
 
             completed++;
 
-            // Log progress every 100 value propositions
             if (completed % 100 === 0) {
                 console.log(`✅ Created ${completed}/${valuePropositions.length} value propositions`);
             }
@@ -496,23 +440,13 @@ export async function seedValuePropositions() {
 
         console.log('🎉 Value proposition seeding completed successfully!');
 
-        // Display summary
         const vpCount = await prisma.valueProposition.count();
         const statementsCount = await prisma.valuePropositionStatement.count();
-        const jobsCount = await prisma.customerJob.count();
-        const painsCount = await prisma.customerPain.count();
-        const gainsCount = await prisma.gainCreator.count();
-        const relieversCount = await prisma.painReliever.count();
-        const productsCount = await prisma.productService.count();
 
         console.log(`📈 Summary:`);
         console.log(`   • ${vpCount} value propositions created`);
         console.log(`   • ${statementsCount} value proposition statements`);
-        console.log(`   • ${jobsCount} customer jobs`);
-        console.log(`   • ${painsCount} customer pains`);
-        console.log(`   • ${gainsCount} gain creators`);
-        console.log(`   • ${relieversCount} pain relievers`);
-        console.log(`   • ${productsCount} products & services`);
+        console.log(`   • Canvas components stored as JSON strings`);
 
     } catch (error) {
         console.error('❌ Error seeding value propositions:', error);

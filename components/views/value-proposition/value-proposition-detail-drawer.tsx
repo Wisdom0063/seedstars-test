@@ -61,34 +61,30 @@ export function ValuePropositionDetailDrawer({
         try {
             const updateRequest: UpdateValuePropositionRequest = {
                 id: editedVP.id,
-                tags: editedVP.tags ? JSON.parse(editedVP.tags) : undefined,
+                tags: editedVP.tags,
                 customerJobs: editedVP.customerJobs.map(job => ({
                     title: job.title,
                     description: job.description,
                     importance: job.importance,
                     category: job.category,
-                    order: job.order
                 })),
                 customerPains: editedVP.customerPains.map(pain => ({
                     title: pain.title,
                     description: pain.description,
                     severity: pain.severity,
                     category: pain.category,
-                    order: pain.order
                 })),
                 gainCreators: editedVP.gainCreators.map(gain => ({
                     title: gain.title,
                     description: gain.description,
                     priority: gain.priority,
                     category: gain.category,
-                    order: gain.order
                 })),
                 painRelievers: editedVP.painRelievers.map(reliever => ({
                     title: reliever.title,
                     description: reliever.description,
                     priority: reliever.priority,
                     category: reliever.category,
-                    order: reliever.order
                 })),
                 productsServices: editedVP.productsServices.map(product => ({
                     name: product.name,
@@ -96,7 +92,6 @@ export function ValuePropositionDetailDrawer({
                     type: product.type,
                     category: product.category,
                     features: product.features,
-                    order: product.order
                 })),
                 valuePropositionStatements: editedVP.valuePropositionStatements.map(statement => ({
                     offering: statement.offering,
@@ -232,7 +227,7 @@ export function ValuePropositionDetailDrawer({
                                 <div>
                                     <Label className="text-sm font-medium text-gray-700">Tags</Label>
                                     <div className="flex flex-wrap gap-1 mt-1">
-                                        {JSON.parse(editedVP.tags).map((tag: string, index: number) => (
+                                        {editedVP.tags.map((tag: string, index: number) => (
                                             <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                                                 {tag}
                                             </span>
@@ -641,13 +636,6 @@ export function ValuePropositionDetailDrawer({
 
     const footer = (
         <div className="flex justify-between w-full">
-            <div>
-                {onDelete && (
-                    <Button variant="destructive" size="sm" onClick={handleDelete}>
-                        Delete Value Proposition
-                    </Button>
-                )}
-            </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
                 Changes save when you move to the next field
