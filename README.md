@@ -85,10 +85,10 @@ Navigate to [http://localhost:3000](http://localhost:3000)
 └── ui/                   # Reusable UI components
 ```
 
-**Design Decision:** Separated view management logic from framework-specific implementations to enable easy extension and maintenance.
-
-Personas represented as the framework card instead of customer segments to put more focus on the personas and allow for easy navigation.
-
+**Design Decision:** 
+- Relied on Virtualization for performance optimization for large datasets
+- Separated view management logic from framework-specific implementations to enable easy extension and maintenance.
+- Personas represented as the framework card instead of customer segments to put more focus on the personas and allow for easy navigation.
 
 ### Mock API
 Mock API is used for development and testing purposes.
@@ -98,8 +98,8 @@ Mock API is used for development and testing purposes.
 
 ### **1. Multi-View Navigation**
 - **Card View:** Visual card-based layout with drag-and-drop
-- **Table View:** Sortable, filterable data tables
-- **Kanban View:** Workflow-based organization
+- **Table View:** Persisted Sortable, filterable data tables
+- **Kanban View:** Group data by columns
 - **Smooth Transitions:** No page reloads between views
 
 ### **2. Side-Drawer Detail View**
