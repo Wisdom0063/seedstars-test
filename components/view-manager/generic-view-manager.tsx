@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { ViewSettingsModal } from './view-settings-modal';
 import { LayoutSelectionPopup } from './layout-selection-popup';
 import { ViewToolbar } from './view-toolbar';
 import { View, ViewLayout, ViewSource, ViewSortCriteria, viewsApi } from '@/lib/api/views';
@@ -116,8 +115,6 @@ export function GenericViewManager<T extends BaseDataItem>({
 
     const [selectedItem, setSelectedItem] = useState<T | null>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [showViewSettings, setShowViewSettings] = useState(false);
-    const [viewToEdit, setViewToEdit] = useState<View | null>(null);
 
     useEffect(() => {
         loadViews();
@@ -219,21 +216,15 @@ export function GenericViewManager<T extends BaseDataItem>({
             setCurrentView(newView);
 
             setShowLayoutSelection(false);
-            setViewToEdit(newView);
-            setShowViewSettings(true);
+            // View will be automatically selected and can be edited via popover
         } catch (error) {
             console.error('Failed to create view:', error);
         }
     };
 
     const handleEditView = (view: View) => {
-        setViewToEdit(view);
-        setShowViewSettings(true);
-    };
-
-    const handleViewSettingsClose = () => {
-        setShowViewSettings(false);
-        setViewToEdit(null);
+        // View editing is now handled by the popover
+        console.log('Edit view:', view);
     };
 
     const handleViewUpdate = (updatedView: View) => {
@@ -356,16 +347,6 @@ export function GenericViewManager<T extends BaseDataItem>({
                 />
             )}
 
-            {showViewSettings && viewToEdit && (
-                <ViewSettingsModal
-                    view={viewToEdit}
-                    onClose={handleViewSettingsClose}
-                    onLayoutChange={handleLayoutChange}
-                    onEditView={handleEditView}
-                    onViewUpdate={handleViewUpdate}
-                    availableProperties={config.availableProperties}
-                />
-            )}
 
             {renderDetailDrawer && renderDetailDrawer(selectedItem, isDrawerOpen, handleDrawerClose)}
         </div>
