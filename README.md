@@ -6,14 +6,13 @@ A modern, flexible card navigation system built for SIGMA's business design plat
 
 This implementation addresses SIGMA's core pain points:
 - **Framework cards are hard to navigate at scale** → Multi-view system with smooth transitions
-- **Tables feel rigid for power users** → Flexible views with inline editing and auto-save
 - **Need for modern, AI-native productivity platform** → Future-ready architecture
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+ 
-- npm or yarn
+- npm
 - SQLite (for database)
 
 ### Installation & Setup
@@ -59,7 +58,7 @@ Navigate to [http://localhost:3000](http://localhost:3000)
 ┌─────────────────────────────────────────┐
 │              View Manager               │
 ├─────────────────────────────────────────┤
-│  Card View  │  Table View │ Kanban View │
+│  Card Layout │  Table Layout │ Kanban Layout │
 ├─────────────────────────────────────────┤
 │           Detail Drawer                 │
 └─────────────────────────────────────────┘
@@ -117,6 +116,10 @@ Mock API is used for development and testing purposes.
 
 
 ## ⚠️ Known Limitations & Trade-offs
+
+- Drag and drop functionality is not persisted
+- A large volume of data is fetched at once to enable test performance so loading times are quite long
+- Mostly implemented viewing and editing functionalities
 
 
 
