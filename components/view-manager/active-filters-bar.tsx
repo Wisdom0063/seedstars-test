@@ -62,7 +62,7 @@ export function ActiveFiltersBar({ filters, onFiltersChange, source, data = [], 
         <div className="px-6 py-3 bg-gray-50 border-b border-gray-200">
             <div className="flex flex-wrap gap-2">
 
-                {onSortsChange && sorts?.length && sortConfig && (
+                {onSortsChange && sorts && sorts.length > 0 && sortConfig && (
                     <SortDropdown
                         sorts={sorts}
                         onSortsChange={onSortsChange}
@@ -149,7 +149,6 @@ function FilterChip({ filterId, config, value, data, onUpdate, onRemove }: Filte
         if (config.type === 'multiselect') {
             const options = config.getOptions ? config.getOptions(data) : [];
 
-            // Use virtualized multi-select for large option lists (>100 items)
             if (options.length > 100) {
                 return (
                     <VirtualizedMultiSelect
@@ -162,9 +161,8 @@ function FilterChip({ filterId, config, value, data, onUpdate, onRemove }: Filte
                 );
             }
 
-            // Use regular multi-select for smaller lists (≤100 items)
             return (
-                <div className="w-80 max-h-96 overflow-y-auto">
+                <div className="w-full max-h-96 overflow-y-auto">
                     <div className="p-4">
                         <div className="text-sm font-medium text-gray-700 mb-3">
                             Select values for {config.label}
@@ -284,10 +282,10 @@ function FilterChip({ filterId, config, value, data, onUpdate, onRemove }: Filte
 
             <Popover open={isOpen} onOpenChange={setIsOpen}>
                 <PopoverTrigger asChild>
-                    <button className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors">
+                    <button className="w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors max-h-20 overflow-y-auto">
                         <div className="flex items-center justify-between">
                             <div className="flex-1 min-w-0">
-                                <div className="text-sm text-gray-900 break-words">
+                                <div className="text-sm text-gray-900 break-words leading-relaxed">
                                     {getDisplayText()}
                                 </div>
                             </div>
