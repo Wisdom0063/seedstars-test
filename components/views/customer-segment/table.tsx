@@ -281,6 +281,7 @@ export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: P
                     style={{ height: dynamicHeight, width: '100%' }}
                     data={rows}
                     components={TableComponents}
+                    increaseViewportBy={500}
                     fixedHeaderContent={() => (
                         <>
                             {table.getHeaderGroups().map((headerGroup) => (

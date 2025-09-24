@@ -330,6 +330,7 @@ export function ValuePropositionTable({ valuePropositions, onValuePropositionCli
                     style={{ height: '100%', width: '100%' }}
                     data={rows}
                     components={TableComponents}
+                    increaseViewportBy={500}
                     fixedHeaderContent={() => (
                         <>
                             {table.getHeaderGroups().map((headerGroup) => (

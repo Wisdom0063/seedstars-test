@@ -237,7 +237,7 @@ export default function PersonaCards({
                 gap={32}
                 height={dynamicHeight}
                 width="100%"
-                overscan={3}
+                increaseViewportBy={500}
                 renderItem={renderItem}
                 getItemKey={getItemKey}
                 onItemClick={onPersonaClick}

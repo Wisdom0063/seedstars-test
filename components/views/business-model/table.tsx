@@ -324,6 +324,7 @@ export function BusinessModelTable({ businessModels, onBusinessModelClick, visib
                     style={{ height: '100%', width: '100%' }}
                     data={rows}
                     components={TableComponents}
+                    increaseViewportBy={500}
                     fixedHeaderContent={() => (
                         <TableRow className="bg-gray-50 border-b">
                             {table.getHeaderGroups()[0]?.headers.map((header) => (

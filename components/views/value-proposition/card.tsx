@@ -253,7 +253,7 @@ export default function ValuePropositionCards({
                 gap={32}
                 height={dynamicHeight}
                 width="100%"
-                overscan={10}
+                increaseViewportBy={500}
                 renderItem={renderItem}
                 getItemKey={getItemKey}
                 onItemClick={onValuePropositionClick}

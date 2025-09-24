@@ -27,7 +27,7 @@ export interface VirtualGridDndProps<T> {
     height?: number | string;
     width?: number | string;
     className?: string;
-    overscan?: number;
+    increaseViewportBy?: number;
     renderItem: (item: T, index: number) => React.ReactNode;
     getItemKey: (item: T, index: number) => string | number;
     onItemClick?: (item: T, index: number) => void;
@@ -44,7 +44,7 @@ export function VirtualGridDnd<T>({
     height = 600,
     width = '100%',
     className = '',
-    overscan = 10,
+    increaseViewportBy = 500,
     renderItem,
     getItemKey,
     onItemClick,
@@ -172,7 +172,8 @@ export function VirtualGridDnd<T>({
                 totalCount={groupedData.length}
                 itemContent={itemContent}
                 components={virtuosoComponents}
-                overscan={overscan}
+                increaseViewportBy={500}
+                // overscan={overscan}
                 fixedItemHeight={isDynamicHeight ? undefined : staticItemHeight + gap}
             />
         </div>

@@ -176,6 +176,7 @@ export const KanbanCards = <T extends KanbanItemProps = KanbanItemProps>({
           style={{ height: 700 }}
           data={filteredData}
           itemContent={(_, item) => children(item)}
+          increaseViewportBy={500}
         />
 
 
