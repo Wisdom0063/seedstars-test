@@ -225,9 +225,7 @@ export default function PersonaCards({
         }
     }, [heightRef]);
 
-    useEffect(() => {
-        console.log('dynamicHeight', dynamicHeight);
-    }, [dynamicHeight]);
+
 
     return (
         <div className="space-y-4" ref={mergedRef}>

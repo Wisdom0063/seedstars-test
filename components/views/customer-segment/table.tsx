@@ -25,6 +25,7 @@ import { ArrowUpDown, Search } from 'lucide-react';
 import { Persona } from '@/lib/api/customer-segment';
 import { TableVirtuoso } from 'react-virtuoso';
 import { isFieldVisible } from '@/lib/utils';
+import { useVirtualizedGridHeight } from '@/hooks/use-dynamic-height';
 
 
 interface PersonaTableProps {
@@ -269,12 +270,15 @@ export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: P
     );
 
 
+    const { height: dynamicHeight, containerRef: heightRef } = useVirtualizedGridHeight();
+
+
 
     return (
-        <div className="w-full h-full">
-            <div className="border rounded-md bg-white overflow-hidden" style={{ height: 800 }}>
+        <div className="w-full h-full" ref={heightRef}  >
+            <div className="border rounded-md bg-white overflow-hidden" style={{ height: dynamicHeight }}>
                 <TableVirtuoso
-                    style={{ height: 700, width: '100%' }}
+                    style={{ height: dynamicHeight, width: '100%' }}
                     data={rows}
                     components={TableComponents}
                     fixedHeaderContent={() => (

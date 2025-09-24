@@ -5,6 +5,7 @@ import { LayoutSelectionPopup } from './layout-selection-popup';
 import { ViewToolbar } from './view-toolbar';
 import { View, ViewLayout, ViewSource, ViewSortCriteria, viewsApi } from '@/lib/api/views';
 import { Grid3X3, Kanban, Table } from 'lucide-react';
+import { Button } from '../ui/button';
 
 export interface BaseDataItem {
     id: string;
@@ -346,7 +347,27 @@ export function GenericViewManager<T extends BaseDataItem>({
             )}
 
 
+
+
+
             {renderDetailDrawer && renderDetailDrawer(selectedItem, isDrawerOpen, handleDrawerClose)}
+
+            <div className='d-flex flex-end'>
+                <Button
+                    variant="outline"
+                    onClick={() => {
+
+                    }}
+                >
+                    Previous                </Button>
+                <Button
+                    variant="outline"
+                    onClick={() => {
+
+                    }}
+                >
+                    Next                </Button>
+            </div>
         </div>
     );
 }

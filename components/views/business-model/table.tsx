@@ -25,6 +25,7 @@ import { ArrowUpDown, Search, Building2 } from 'lucide-react';
 import { BusinessModelWithRelations } from '@/lib/api/business-model';
 import { TableVirtuoso } from 'react-virtuoso';
 import { isFieldVisible } from '@/lib/utils';
+import { useVirtualizedGridHeight } from '@/hooks/use-dynamic-height';
 
 interface BusinessModelTableProps {
     businessModels: BusinessModelWithRelations[];
@@ -313,9 +314,12 @@ export function BusinessModelTable({ businessModels, onBusinessModelClick, visib
         );
     }
 
+    const { height, containerRef } = useVirtualizedGridHeight();
+
+
     return (
         <div className="w-full h-full">
-            <div className="border rounded-md bg-white overflow-hidden" style={{ height: 800 }}>
+            <div className="border rounded-md bg-white overflow-hidden" ref={containerRef} style={{ height: height }}>
                 <TableVirtuoso
                     style={{ height: '100%', width: '100%' }}
                     data={rows}
