@@ -3,7 +3,6 @@ import Bluebird from 'bluebird';
 
 const prisma = new PrismaClient();
 
-// Mock data for customer segments
 const customerSegments = [
     {
         name: "Early Career Professionals",
@@ -22,7 +21,6 @@ const customerSegments = [
     }
 ];
 
-// Data pools for generating realistic personas
 const firstNames = [
     "Mary", "Sarah", "David", "Jennifer", "Robert", "Lisa", "Michael", "Jessica", "James", "Ashley",
     "Christopher", "Amanda", "Daniel", "Melissa", "Matthew", "Deborah", "Anthony", "Dorothy", "Mark", "Lisa",
@@ -130,19 +128,16 @@ const quotesPool = [
     "I value credentials and certifications for career advancement."
 ];
 
-// Helper function to generate unique random items from a pool
 function getRandomUniqueItems<T>(pool: T[], min: number, max: number): T[] {
     const count = Math.floor(Math.random() * (max - min + 1)) + min;
     const shuffled = [...pool].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, Math.min(count, pool.length));
 }
 
-// Helper function to get random item from array
 function getRandomItem<T>(array: T[]): T {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-// Ultimate optimized function with batching for memory efficiency
 function generatePersonas(count: number, batchSize: number = 1000) {
     console.log(`🎯 Generating ${count} personas in batches of ${batchSize}...`);
 
@@ -150,7 +145,6 @@ function generatePersonas(count: number, batchSize: number = 1000) {
     let totalGenerated = 0;
     const segmentNames = customerSegments.map(s => s.name);
 
-    // Pre-define descriptions and purchasing behaviors outside the loop
     const descriptions = {
         "Early Career Professionals": (age: number, location: string) =>
             `An ambitious ${age}-year-old professional from ${location} focused on career advancement and skill development.`,
@@ -187,15 +181,12 @@ function generatePersonas(count: number, batchSize: number = 1000) {
         }
     };
 
-    // Generate personas in batches for optimal memory usage
     const allPersonas = Array.from({ length: batches }, (_, batchIndex) => {
         const startIndex = batchIndex * batchSize;
         const endIndex = Math.min(startIndex + batchSize, count);
         const currentBatchSize = endIndex - startIndex;
 
-        // Generate current batch
         const batch = Array.from({ length: currentBatchSize }, (_, index) => {
-            // Generate basic info
             const firstName = getRandomItem(firstNames);
             const lastName = getRandomItem(lastNames);
             const name = `${firstName} ${lastName}`;
@@ -207,7 +198,6 @@ function generatePersonas(count: number, batchSize: number = 1000) {
             const segmentName = getRandomItem(segmentNames);
             const quote = getRandomItem(quotesPool);
 
-            // Generate arrays efficiently
             const painPoints = getRandomUniqueItems(painPointsPool, 2, 5);
             const channels = getRandomUniqueItems(channelsPool, 2, 6);
 
@@ -241,7 +231,6 @@ export async function seedCustomerSegments() {
     try {
         console.log('🌱 Starting to seed customer segments and personas...');
 
-        // Create customer segments
         console.log('📊 Creating customer segments...');
         const createdSegments: { id: string; name: string }[] = [];
         for (const segment of customerSegments) {
@@ -252,11 +241,9 @@ export async function seedCustomerSegments() {
             console.log(`✅ Created segment: ${createdSegment.name}`);
         }
 
-        // Generate and create 10,000 personas
         console.log('👥 Generating 10,000 personas...');
         const personas = generatePersonas(10000);
 
-        // Transform personas to include segmentId
         console.log('🔄 Preparing persona data...');
         const personasWithSegmentId = personas.map(persona => {
             const segment = createdSegments.find(s => s.name === persona.segmentName);
@@ -272,7 +259,7 @@ export async function seedCustomerSegments() {
         });
 
         console.log('💾 Creating personas with Bluebird concurrency control...');
-        const concurrency = 1000; // Process 10 personas concurrently
+        const concurrency = 1000; // Process 1000 personas concurrently
         let completed = 0;
 
         await Bluebird.map(personasWithSegmentId, async (personaData: any) => {
@@ -281,7 +268,6 @@ export async function seedCustomerSegments() {
             });
             completed++;
 
-            // Log progress every 1000 personas
             if (completed % 1000 === 0) {
                 console.log(`✅ Created ${completed}/${personasWithSegmentId.length} personas`);
             }
@@ -293,7 +279,6 @@ export async function seedCustomerSegments() {
 
         console.log('🎉 Data seeding completed successfully!');
 
-        // Display summary
         const segmentCount = await prisma.customerSegment.count();
         const personaCount = await prisma.persona.count();
         console.log(`📈 Summary: ${segmentCount} segments, ${personaCount} personas created`);

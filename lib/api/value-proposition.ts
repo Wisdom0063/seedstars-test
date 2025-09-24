@@ -1,17 +1,57 @@
 import { ApiResponse, fetcher } from ".";
 import type {
   ValueProposition,
-  CustomerJob,
-  CustomerPain,
-  GainCreator,
-  PainReliever,
-  ProductService,
   ValuePropositionStatement,
-  ValuePropositionStatus,
+  JobImportance,
+  JobCategory,
+  PainSeverity,
+  PainCategory,
+  GainPriority,
+  GainCategory,
+  RelieverPriority,
+  RelieverCategory,
+  ProductType,
 } from '@prisma/client';
 
-// Extended types with relations
-export interface ValuePropositionWithRelations extends ValueProposition {
+// Simplified types for JSON data
+export interface CustomerJob {
+  title: string;
+  description: string;
+  importance: JobImportance;
+  category?: JobCategory;
+}
+
+export interface CustomerPain {
+  title: string;
+  description: string;
+  severity: PainSeverity;
+  category?: PainCategory;
+}
+
+export interface GainCreator {
+  title: string;
+  description: string;
+  priority: GainPriority;
+  category?: GainCategory;
+}
+
+export interface PainReliever {
+  title: string;
+  description: string;
+  priority: RelieverPriority;
+  category?: RelieverCategory;
+}
+
+export interface ProductService {
+  name: string;
+  description: string;
+  type: ProductType;
+  category?: string;
+  features?: string[];
+}
+
+// Extended types with relations and parsed JSON
+export interface ValuePropositionWithRelations extends Omit<ValueProposition, 'tags' | 'customerJobs' | 'customerPains' | 'gainCreators' | 'painRelievers' | 'productsServices'> {
   segment: {
     id: string;
     name: string;
@@ -20,6 +60,7 @@ export interface ValuePropositionWithRelations extends ValueProposition {
     id: string;
     name: string;
   } | null;
+  tags: string[];
   customerJobs: CustomerJob[];
   customerPains: CustomerPain[];
   gainCreators: GainCreator[];
@@ -32,14 +73,12 @@ export interface ValuePropositionWithRelations extends ValueProposition {
 export interface UpdateValuePropositionRequest {
   id: string;
   tags?: string[];
-
-  // Complete replacement of canvas components
-  customerJobs?: Omit<CustomerJob, 'id' | 'valuePropositionId' | 'createdAt' | 'updatedAt'>[];
-  customerPains?: Omit<CustomerPain, 'id' | 'valuePropositionId' | 'createdAt' | 'updatedAt'>[];
-  gainCreators?: Omit<GainCreator, 'id' | 'valuePropositionId' | 'createdAt' | 'updatedAt'>[];
-  painRelievers?: Omit<PainReliever, 'id' | 'valuePropositionId' | 'createdAt' | 'updatedAt'>[];
-  productsServices?: Omit<ProductService, 'id' | 'valuePropositionId' | 'createdAt' | 'updatedAt'>[];
-  valuePropositionStatements?: Omit<ValuePropositionStatement, 'id' | 'valuePropositionId' | 'createdAt' | 'updatedAt'>[];
+  customerJobs?: CustomerJob[];
+  customerPains?: CustomerPain[];
+  gainCreators?: GainCreator[];
+  painRelievers?: PainReliever[];
+  productsServices?: ProductService[];
+  valuePropositionStatements: { offering: string; description: string; }[];
 }
 
 // Pagination parameters interface

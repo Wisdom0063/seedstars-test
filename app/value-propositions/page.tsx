@@ -17,7 +17,6 @@ export default function ValuePropositionsPage() {
     };
 
     const handleValuePropositionUpdate = (updatedValueProposition: ValuePropositionWithRelations) => {
-        // Update the local state immediately without refetching
         updateValueProposition(updatedValueProposition);
     };
 

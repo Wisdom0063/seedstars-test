@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "seed": "rm -f prisma/dev.db-journal prisma/dev.db && npx prisma migrate reset --force && npx tsx seed/index.ts",
+    "seed": "rm -f prisma/dev.db-journal prisma/dev.db && npx prisma db push && npx tsx seed/index.ts",
     "clear-db": "npx tsx scripts/clear-db.ts"
   },
   "dependencies": {

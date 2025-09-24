@@ -18,7 +18,6 @@ export default function CustomerSegmentsPage() {
     };
 
     const handlePersonaUpdate = (updatedPersona: Persona) => {
-        // Update the local state immediately without refetching
         updatePersona(updatedPersona);
     };
 

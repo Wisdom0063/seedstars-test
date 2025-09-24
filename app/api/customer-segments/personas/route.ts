@@ -61,10 +61,7 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Prepare the update data - stringify JSON fields if they exist
     const processedData: any = { ...updateData };
-
-    // Handle JSON fields that need to be stringified for database storage
     if (updateData.painPoints && Array.isArray(updateData.painPoints)) {
       processedData.painPoints = JSON.stringify(updateData.painPoints);
     }
@@ -75,23 +72,16 @@ export async function PUT(request: Request) {
       processedData.channels = JSON.stringify(updateData.channels);
     }
 
-    // Handle segment update - if segment is provided as an object, extract the ID
     if (updateData.segment && typeof updateData.segment === 'object') {
       if (updateData.segment.id) {
         processedData.segmentId = updateData.segment.id;
       }
-      // Remove the segment object from processed data as we use segmentId for the relation
       delete processedData.segment;
     }
-
-    // Remove fields that shouldn't be updated
     delete processedData.id;
     delete processedData.createdAt;
-
-    // Update the updatedAt timestamp
     processedData.updatedAt = new Date();
 
-    // Update the persona in the database
     const updatedPersona = await prisma.persona.update({
       where: { id },
       data: processedData,
@@ -105,7 +95,6 @@ export async function PUT(request: Request) {
       }
     });
 
-    // Parse JSON fields for response
     const parsedPersona = {
       ...updatedPersona,
       painPoints: updatedPersona.painPoints ? JSON.parse(updatedPersona.painPoints) : [],
@@ -122,7 +111,6 @@ export async function PUT(request: Request) {
   } catch (error: any) {
     console.error('Error updating persona:', error);
 
-    // Handle specific Prisma errors
     if (error?.code === 'P2025') {
       return NextResponse.json(
         {

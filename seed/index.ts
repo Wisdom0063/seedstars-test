@@ -8,17 +8,11 @@ const prisma = new PrismaClient();
 
 async function clearAllData() {
     console.log('🧹 Clearing all existing data...');
+    await prisma.businessModel.deleteMany();
     await prisma.valuePropositionStatement.deleteMany();
-    await prisma.customerJob.deleteMany();
-    await prisma.customerPain.deleteMany();
-    await prisma.gainCreator.deleteMany();
-    await prisma.painReliever.deleteMany();
-    await prisma.productService.deleteMany();
     await prisma.valueProposition.deleteMany();
-
     await prisma.persona.deleteMany();
     await prisma.customerSegment.deleteMany();
-
     await prisma.view.deleteMany();
 
     console.log('✅ All data cleared successfully');

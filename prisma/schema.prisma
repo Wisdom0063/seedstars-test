@@ -66,122 +66,29 @@ model ValueProposition {
   createdBy   String?
 
   // Link to Customer Segment/Persona
-  segmentId   String
-  segment     CustomerSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
-  
-  // Link to specific Persona (optional - can be segment-wide or persona-specific)
-  personaId   String?
-  persona     Persona? @relation(fields: [personaId], references: [id], onDelete: Cascade)
+  segmentId String
+  segment   CustomerSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
 
-  // Value Proposition Canvas Components
-  customerJobs      CustomerJob[]
-  customerPains     CustomerPain[]
-  gainCreators      GainCreator[]
-  painRelievers     PainReliever[]
-  productsServices  ProductService[]
-  
+  personaId String?
+  persona   Persona? @relation(fields: [personaId], references: [id], onDelete: Cascade)
+
+  // Value Proposition Canvas Components as JSON strings
+  customerJobs     String? // JSON array of customer jobs
+  customerPains    String? // JSON array of customer pains
+  gainCreators     String? // JSON array of gain creators
+  painRelievers    String? // JSON array of pain relievers
+  productsServices String? // JSON array of products/services
+
   // Value Proposition Statements
   valuePropositionStatements ValuePropositionStatement[]
 
   @@map("value_propositions")
 }
 
-model CustomerJob {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  importance  JobImportance
-  category    JobCategory?
-  order       Int      @default(0)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Link to Value Proposition
-  valuePropositionId String
-  valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
-
-  @@map("customer_jobs")
-}
-
-model CustomerPain {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  severity    PainSeverity
-  category    PainCategory?
-  order       Int      @default(0)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Link to Value Proposition
-  valuePropositionId String
-  valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
-
-  @@map("customer_pains")
-}
-
-model GainCreator {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  priority    GainPriority
-  category    GainCategory?
-  order       Int      @default(0)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Link to Value Proposition
-  valuePropositionId String
-  valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
-
-  @@map("gain_creators")
-}
-
-model PainReliever {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  priority    RelieverPriority
-  category    RelieverCategory?
-  order       Int      @default(0)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Link to Value Proposition
-  valuePropositionId String
-  valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
-
-  @@map("pain_relievers")
-}
-
-model ProductService {
-  id          String   @id @default(cuid())
-  name        String
-  description String
-  type        ProductType
-  category    String?
-  features    String?  // JSON array of features
-  order       Int      @default(0)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  valuePropositionId String
-  valueProposition   ValueProposition @relation(fields: [valuePropositionId], references: [id], onDelete: Cascade)
-
-  @@map("products_services")
-}
-
 model ValuePropositionStatement {
-  id          String   @id @default(cuid())
-  offering    String   // What we offer (e.g., "Provide toys", "Providing children milk")
-  description String   // How we deliver value (e.g., "Provide toys", "Providing children milk")
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String @id @default(cuid())
+  offering    String // What we offer
+  description String // How we deliver value
 
   // Link to Value Proposition
   valuePropositionId String
@@ -189,6 +96,9 @@ model ValuePropositionStatement {
 
   // Business models linked to this value proposition statement
   businessModels BusinessModel[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 
   @@map("value_proposition_statements")
 }
@@ -200,52 +110,49 @@ model BusinessModel {
 
   valuePropositionStatementId String
   valuePropositionStatement   ValuePropositionStatement @relation(fields: [valuePropositionStatementId], references: [id], onDelete: Cascade)
-    keyPartners   String? // JSON array - Key Partners - who are our key partners and suppliers
-  keyActivities String? // JSON array - Key Activities - what key activities does our value proposition require
-  keyResources  String? // JSON array - Key Resources - what key resources does our value proposition require
-  
-  customerRelationships String? // JSON array - Customer Relationships - what type of relationship does each customer segment expect
-  channels              String? // JSON array - Channels - through which channels do we want to reach our customer segments
-  customerSegments      String? // JSON array - Customer Segments - for whom are we creating value (derived from value proposition)
-  
-  costStructure    String? // JSON array - Cost Structure - what are the most important costs inherent in our business model
-  revenueStreams   String? // JSON array - Revenue Streams - for what value are our customers really willing to pay
 
-  tags        String? // JSON array - Tags for categorization
-  notes       String?  // Additional notes
-  
-  createdBy String?
-  updatedBy String?
+  // Business Model Canvas components as JSON strings
+  keyPartners           String? // JSON array
+  keyActivities         String? // JSON array
+  keyResources          String? // JSON array
+  customerRelationships String? // JSON array
+  channels              String? // JSON array
+  customerSegments      String? // JSON array
+  costStructure         String? // JSON array
+  revenueStreams        String? // JSON array
+
+  tags  String? // JSON array
+  notes String?
 
   @@map("business_models")
 }
 
 model View {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
-  isDefault   Boolean  @default(false)
-  
+  isDefault   Boolean @default(false)
+
   // View source - what type of data this view displays
-  source      ViewSource 
-  
+  source ViewSource
+
   // View configuration
-  layout      ViewLayout @default(CARD)
-  
+  layout ViewLayout @default(CARD)
+
   // Filters (JSON)
-  filters     String?  // JSON object with filter criteria
-  
+  filters String? // JSON object with filter criteria
+
   // Active user selections (JSON)
   activeFilters String? // JSON object with current active filter selections
   activeSorts   String? // JSON array with current active sort selections
-  
+
   // Sorting
-  sortBy      String?  // Field to sort by
-  sortOrder   SortOrder @default(ASC)
-  
+  sortBy    String?
+  sortOrder SortOrder @default(ASC)
+
   // Grouping
-  groupBy     String?  // Field to group by
-  
+  groupBy String? // Field to group by
+
   // Visible columns/fields (JSON array)
   visibleFields String? // JSON array of field names
   

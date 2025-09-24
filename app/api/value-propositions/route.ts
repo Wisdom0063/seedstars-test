@@ -11,13 +11,9 @@ const prisma = new PrismaClient();
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-
-    // Pagination parameters
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '50');
     const skip = (page - 1) * limit;
-
-    // Get total count for pagination metadata
     const totalCount = await prisma.valueProposition.count();
 
     const result = await prisma.valueProposition.findMany({
@@ -36,21 +32,6 @@ export async function GET(request: NextRequest) {
             name: true
           }
         },
-        customerJobs: {
-          orderBy: { createdAt: 'asc' }
-        },
-        customerPains: {
-          orderBy: { createdAt: 'asc' }
-        },
-        gainCreators: {
-          orderBy: { createdAt: 'asc' }
-        },
-        painRelievers: {
-          orderBy: { createdAt: 'asc' }
-        },
-        productsServices: {
-          orderBy: { createdAt: 'asc' }
-        },
         valuePropositionStatements: {
           orderBy: { createdAt: 'asc' }
         }
@@ -59,6 +40,15 @@ export async function GET(request: NextRequest) {
         createdAt: 'asc'
       }
     });
+    const parsedResult = result.map(vp => ({
+      ...vp,
+      tags: vp.tags ? JSON.parse(vp.tags) : [],
+      customerJobs: (vp as any).customerJobs ? JSON.parse((vp as any).customerJobs) : [],
+      customerPains: (vp as any).customerPains ? JSON.parse((vp as any).customerPains) : [],
+      gainCreators: (vp as any).gainCreators ? JSON.parse((vp as any).gainCreators) : [],
+      painRelievers: (vp as any).painRelievers ? JSON.parse((vp as any).painRelievers) : [],
+      productsServices: (vp as any).productsServices ? JSON.parse((vp as any).productsServices) : [],
+    }));
 
     const totalPages = Math.ceil(totalCount / limit);
     const hasNextPage = page < totalPages;
@@ -66,7 +56,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       data: {
-        data: result,
+        data: parsedResult,
         pagination: {
           page,
           limit,
@@ -74,7 +64,7 @@ export async function GET(request: NextRequest) {
           totalPages,
           hasNextPage,
           hasPreviousPage,
-          count: result.length
+          count: parsedResult.length
         }
       },
       success: true,
