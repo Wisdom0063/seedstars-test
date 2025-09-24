@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Building2, Users, Target, Tag, Package, DollarSign, Lightbulb, Handshake } from 'lucide-react';
 import { BusinessModelWithRelations } from '@/lib/api/business-model';
 import { VirtualGridDnd, useContainerWidth } from '@/components/ui/virtual-grid-dnd';
+import { useVirtualizedGridHeight } from '@/hooks/use-dynamic-height';
+import { isFieldVisible } from '@/lib/utils';
 
 interface BusinessModelCardProps {
     businessModel: BusinessModelWithRelations;
@@ -21,23 +23,8 @@ export function BusinessModelCard({
     className = "",
     visibleFields = []
 }: BusinessModelCardProps) {
-    // Helper function to check if a field should be visible
-    const isFieldVisible = (fieldName: string) => {
-        return visibleFields.length === 0 || visibleFields.includes(fieldName);
-    };
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'active':
-                return 'border-l-green-500 bg-green-50';
-            case 'draft':
-                return 'border-l-yellow-500 bg-yellow-50';
-            case 'archived':
-                return 'border-l-gray-500 bg-gray-50';
-            default:
-                return 'border-l-blue-500 bg-blue-50';
-        }
-    };
+
 
     return (
         <DraggableCard
@@ -56,14 +43,14 @@ export function BusinessModelCard({
                             <Building2 className="h-3 w-3" />
                         </div>
                         <div>
-                            {isFieldVisible('name') && (
+                            {isFieldVisible(visibleFields, 'name') && (
                                 <CardTitle className="text-lg font-semibold text-gray-900">
                                     {businessModel.valuePropositionStatement?.offering}
                                 </CardTitle>
                             )}
                         </div>
                     </div>
-                    {isFieldVisible('segment') && businessModel.valuePropositionStatement?.valueProposition?.segment && (
+                    {isFieldVisible(visibleFields, 'segment') && businessModel.valuePropositionStatement?.valueProposition?.segment && (
                         <Badge variant="outline" className="shrink-0">
                             {businessModel.valuePropositionStatement.valueProposition.segment.name}
                         </Badge>
@@ -73,14 +60,14 @@ export function BusinessModelCard({
 
             <CardContent className="pt-0 space-y-4">
                 {/* Description */}
-                {isFieldVisible('description') && businessModel.valuePropositionStatement?.description && (
+                {isFieldVisible(visibleFields, 'description') && businessModel.valuePropositionStatement?.description && (
                     <p className="text-sm text-gray-600 line-clamp-2">
                         {businessModel.valuePropositionStatement.description}
                     </p>
                 )}
 
                 {/* Persona */}
-                {isFieldVisible('persona') && businessModel.valuePropositionStatement?.valueProposition?.persona && (
+                {isFieldVisible(visibleFields, 'persona') && businessModel.valuePropositionStatement?.valueProposition?.persona && (
                     <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-gray-500" />
                         <span className="text-sm text-gray-700 truncate">
@@ -90,7 +77,7 @@ export function BusinessModelCard({
                 )}
 
                 {/* Value Proposition Statement */}
-                {isFieldVisible('valuePropositionStatement') && businessModel.valuePropositionStatement && (
+                {isFieldVisible(visibleFields, 'valuePropositionStatement') && businessModel.valuePropositionStatement && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Target className="h-4 w-4 text-purple-500" />
@@ -109,7 +96,7 @@ export function BusinessModelCard({
                 )}
 
                 {/* Key Partners Preview */}
-                {isFieldVisible('keyPartners') && businessModel.keyPartners && businessModel.keyPartners.length > 0 && (
+                {isFieldVisible(visibleFields, 'keyPartners') && businessModel.keyPartners && businessModel.keyPartners.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Handshake className="h-4 w-4 text-blue-500" />
@@ -136,7 +123,7 @@ export function BusinessModelCard({
                 )}
 
                 {/* Key Activities Preview */}
-                {isFieldVisible('keyActivities') && businessModel.keyActivities && businessModel.keyActivities.length > 0 && (
+                {isFieldVisible(visibleFields, 'keyActivities') && businessModel.keyActivities && businessModel.keyActivities.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Lightbulb className="h-4 w-4 text-orange-500" />
@@ -163,7 +150,7 @@ export function BusinessModelCard({
                 )}
 
                 {/* Customer Segments Preview */}
-                {isFieldVisible('customerSegments') && businessModel.customerSegments && businessModel.customerSegments.length > 0 && (
+                {isFieldVisible(visibleFields, 'customerSegments') && businessModel.customerSegments && businessModel.customerSegments.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Users className="h-4 w-4 text-green-500" />
@@ -190,7 +177,7 @@ export function BusinessModelCard({
                 )}
 
                 {/* Revenue Streams Preview */}
-                {isFieldVisible('revenueStreams') && businessModel.revenueStreams && businessModel.revenueStreams.length > 0 && (
+                {isFieldVisible(visibleFields, 'revenueStreams') && businessModel.revenueStreams && businessModel.revenueStreams.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <DollarSign className="h-4 w-4 text-emerald-500" />
@@ -217,7 +204,7 @@ export function BusinessModelCard({
                 )}
 
                 {/* Tags */}
-                {isFieldVisible('tags') && businessModel.tags && businessModel.tags.length > 0 && (
+                {isFieldVisible(visibleFields, 'tags') && businessModel.tags && businessModel.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                         {businessModel.tags.slice(0, 3).map((tag, index) => (
                             <Badge
@@ -255,6 +242,7 @@ export default function BusinessModelCards({
 }: BusinessModelCardsProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const containerWidth = useContainerWidth(containerRef);
+    const { height: dynamicHeight, containerRef: heightRef } = useVirtualizedGridHeight();
 
     // Calculate responsive columns and item width
     const columns = useMemo(() => {
@@ -287,6 +275,16 @@ export default function BusinessModelCards({
         onBusinessModelReorder?.(reorderedItems);
     }, [onBusinessModelReorder]);
 
+    // Merge refs to handle both width and height measurements
+    const mergedRef = useCallback((node: HTMLDivElement | null) => {
+        if (containerRef.current !== node) {
+            containerRef.current = node;
+        }
+        if (heightRef.current !== node) {
+            heightRef.current = node;
+        }
+    }, [heightRef]);
+
     if (businessModels.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-12 text-gray-500">
@@ -298,14 +296,14 @@ export default function BusinessModelCards({
     }
 
     return (
-        <div ref={containerRef} className="w-full h-full">
+        <div ref={mergedRef} className="w-full h-full">
             <VirtualGridDnd
                 data={businessModels}
                 itemHeight="auto"
                 itemWidth={itemWidth}
                 columns={columns}
                 gap={32}
-                height={700}
+                height={dynamicHeight}
                 width="100%"
                 overscan={3}
                 renderItem={renderItem}

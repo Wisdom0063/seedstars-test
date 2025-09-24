@@ -81,7 +81,7 @@ export default function CustomerSegmentsPage() {
     }
 
     return (
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto lg:px-4 px-1">
             {/* Header */}
             <div className="mb-6">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Customer Personas</h1>

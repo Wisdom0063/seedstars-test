@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { ArrowUpDown, Search } from 'lucide-react';
 import { Persona } from '@/lib/api/customer-segment';
 import { TableVirtuoso } from 'react-virtuoso';
+import { isFieldVisible } from '@/lib/utils';
 
 
 interface PersonaTableProps {
@@ -33,10 +34,6 @@ interface PersonaTableProps {
 }
 
 export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: PersonaTableProps) {
-    // Helper function to check if a field should be visible
-    const isFieldVisible = (fieldName: string) => {
-        return visibleFields.length === 0 || visibleFields.includes(fieldName);
-    };
     const allColumns: ColumnDef<Persona>[] = useMemo(
         () => [
             {
@@ -61,7 +58,7 @@ export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: P
                             </div>
                             <div>
                                 <div className="font-medium">{persona.name}</div>
-                                {isFieldVisible('age') && persona.age && (
+                                {isFieldVisible(visibleFields, 'age') && persona.age && (
                                     <div className="text-sm text-gray-500">{persona.age} years old</div>
                                 )}
                             </div>
@@ -231,7 +228,7 @@ export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: P
     const columns = useMemo(() => {
         if (visibleFields.length === 0) return allColumns;
         return allColumns.filter(column =>
-            column.id && isFieldVisible(column.id)
+            column.id && isFieldVisible(visibleFields, column.id)
         );
     }, [allColumns, visibleFields, isFieldVisible]);
 

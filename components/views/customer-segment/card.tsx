@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, forwardRef, useMemo, useCallback, useRef } from 'react';
+import React, { useState, forwardRef, useMemo, useCallback, useRef, useEffect } from 'react';
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DraggableCard } from '@/components/ui/draggable-card';
 import { Badge } from '@/components/ui/badge';
 import { User, MapPin, GraduationCap, DollarSign, Quote, Tag, Search } from 'lucide-react';
 import { Persona } from '@/lib/api/customer-segment';
 import { VirtualGridDnd, useContainerWidth } from '@/components/ui/virtual-grid-dnd';
+import { useVirtualizedGridHeight } from '@/hooks/use-dynamic-height';
+import { isFieldVisible } from '@/lib/utils';
 
 
 interface PersonaCardProps {
@@ -22,10 +24,6 @@ export function PersonaCard({
     className = "",
     visibleFields = []
 }: PersonaCardProps) {
-    // Helper function to check if a field should be visible
-    const isFieldVisible = (fieldName: string) => {
-        return visibleFields.length === 0 || visibleFields.includes(fieldName);
-    };
     return (
         <DraggableCard
             id={persona.id}
@@ -43,19 +41,19 @@ export function PersonaCard({
                             {persona.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                            {isFieldVisible('name') && (
+                            {isFieldVisible(visibleFields, 'name') && (
                                 <CardTitle className="text-md font-semibold text-gray-900">
                                     {persona.name}
                                 </CardTitle>
                             )}
-                            {isFieldVisible('age') && persona.age && (
+                            {isFieldVisible(visibleFields, 'age') && persona.age && (
                                 <p className="text-sm text-gray-500">
                                     {persona.age} years old
                                 </p>
                             )}
                         </div>
                     </div>
-                    {isFieldVisible('segment') && (
+                    {isFieldVisible(visibleFields, 'segment') && (
                         <Badge variant="outline" className="shrink-0">
                             {persona.segment.name}
                         </Badge>
@@ -64,8 +62,7 @@ export function PersonaCard({
             </CardHeader>
 
             <CardContent className="pt-0 space-y-4">
-                {/* Quote */}
-                {isFieldVisible('quote') && persona.quote && (
+                {isFieldVisible(visibleFields, 'quote') && persona.quote && (
                     <div className="bg-gray-50 p-3 rounded-lg border-l-2 border-l-gray-300">
                         <div className="flex items-start gap-2">
                             <Quote className="h-4 w-4 text-gray-400 mt-0.5 shrink-0" />
@@ -76,30 +73,29 @@ export function PersonaCard({
                     </div>
                 )}
 
-                {/* Demographics */}
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                    {isFieldVisible('location') && persona.location && (
+                    {isFieldVisible(visibleFields, 'location') && persona.location && (
                         <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-700 truncate">{persona.location}</span>
                         </div>
                     )}
 
-                    {isFieldVisible('education') && persona.education && (
+                    {isFieldVisible(visibleFields, 'education') && persona.education && (
                         <div className="flex items-center gap-2">
                             <GraduationCap className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-700 truncate">{persona.education}</span>
                         </div>
                     )}
 
-                    {isFieldVisible('gender') && persona.gender && (
+                    {isFieldVisible(visibleFields, 'gender') && persona.gender && (
                         <div className="flex items-center gap-2">
                             <User className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-700 truncate">{persona.gender}</span>
                         </div>
                     )}
 
-                    {isFieldVisible('incomePerMonth') && persona.incomePerMonth && (
+                    {isFieldVisible(visibleFields, 'incomePerMonth') && persona.incomePerMonth && (
                         <div className="flex items-center gap-2">
                             <DollarSign className="h-4 w-4 text-gray-500" />
                             <span className="text-gray-700 truncate">{persona.incomePerMonth}</span>
@@ -107,8 +103,7 @@ export function PersonaCard({
                     )}
                 </div>
 
-                {/* Pain Points Preview */}
-                {isFieldVisible('painPoints') && persona.painPoints && persona.painPoints.length > 0 && (
+                {isFieldVisible(visibleFields, 'painPoints') && persona.painPoints && persona.painPoints.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Tag className="h-4 w-4 text-red-500" />
@@ -133,8 +128,7 @@ export function PersonaCard({
                     </div>
                 )}
 
-                {/* Channels Preview */}
-                {isFieldVisible('channels') && persona.channels && persona.channels.length > 0 && (
+                {isFieldVisible(visibleFields, 'channels') && persona.channels && persona.channels.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Tag className="h-4 w-4 text-blue-500" />
@@ -186,6 +180,7 @@ export default function PersonaCards({
 
     const containerRef = useRef<HTMLDivElement>(null);
     const containerWidth = useContainerWidth(containerRef);
+    const { height: dynamicHeight, containerRef: heightRef } = useVirtualizedGridHeight();
 
     const columns = useMemo(() => {
         if (containerWidth <= 0) return 1;
@@ -220,15 +215,29 @@ export default function PersonaCards({
         onPersonaReorder?.(reorderedData);
     }, [onPersonaReorder]);
 
+    // Merge refs to handle both width and height measurements
+    const mergedRef = useCallback((node: HTMLDivElement | null) => {
+        if (containerRef.current !== node) {
+            containerRef.current = node;
+        }
+        if (heightRef.current !== node) {
+            heightRef.current = node;
+        }
+    }, [heightRef]);
+
+    useEffect(() => {
+        console.log('dynamicHeight', dynamicHeight);
+    }, [dynamicHeight]);
+
     return (
-        <div className="space-y-4" ref={containerRef}>
+        <div className="space-y-4" ref={mergedRef}>
             <VirtualGridDnd
                 data={items}
                 itemHeight="auto"
                 itemWidth={itemWidth}
                 columns={columns}
                 gap={32}
-                height={700}
+                height={dynamicHeight}
                 width="100%"
                 overscan={3}
                 renderItem={renderItem}

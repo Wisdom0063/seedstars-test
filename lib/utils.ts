@@ -76,3 +76,9 @@ export function getFlattenedOptions(data: any[], path: string): Array<{ id: stri
 export function getNestedValue(obj: any, path: string): any {
   return path.split('.').reduce((current, key) => current?.[key], obj);
 }
+
+
+
+export const isFieldVisible = (visibleFields: string[], fieldName: string) => {
+  return visibleFields.length === 0 || visibleFields.includes(fieldName);
+};

@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Lightbulb, Users, Target, Tag } from 'lucide-react';
 import { ValuePropositionWithRelations } from '@/lib/api/value-proposition';
 import { VirtualGridDnd, useContainerWidth } from '@/components/ui/virtual-grid-dnd';
+import { useVirtualizedGridHeight } from '@/hooks/use-dynamic-height';
+import { isFieldVisible } from '@/lib/utils';
 
 interface ValuePropositionCardProps {
     valueProposition: ValuePropositionWithRelations;
@@ -21,24 +23,6 @@ export function ValuePropositionCard({
     className = "",
     visibleFields = []
 }: ValuePropositionCardProps) {
-    // Helper function to check if a field should be visible
-    const isFieldVisible = (fieldName: string) => {
-        return visibleFields.length === 0 || visibleFields.includes(fieldName);
-    };
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'ACTIVE':
-                return 'border-l-green-500 bg-green-50';
-            case 'DRAFT':
-                return 'border-l-yellow-500 bg-yellow-50';
-            case 'ARCHIVED':
-                return 'border-l-gray-500 bg-gray-50';
-            default:
-                return 'border-l-blue-500 bg-blue-50';
-        }
-    };
-
     return (
         <DraggableCard
             id={valueProposition.id}
@@ -56,7 +40,7 @@ export function ValuePropositionCard({
                             <Lightbulb className="h-3 w-3" />
                         </div>
                         <div>
-                            {isFieldVisible('name') && (
+                            {isFieldVisible(visibleFields, 'name') && (
                                 <CardTitle className="text-md font-semibold text-gray-900">
                                     {valueProposition.persona ? ` ${valueProposition.persona.name}` : ` ${valueProposition.segment.name}`}
                                 </CardTitle>
@@ -64,7 +48,7 @@ export function ValuePropositionCard({
 
                         </div>
                     </div>
-                    {isFieldVisible('segment') && (
+                    {isFieldVisible(visibleFields, 'segment') && (
                         <Badge variant="outline" className="shrink-0">
                             {valueProposition.segment.name}
                         </Badge>
@@ -76,14 +60,14 @@ export function ValuePropositionCard({
 
 
                 {/* Persona */}
-                {isFieldVisible('persona') && valueProposition.persona && (
+                {isFieldVisible(visibleFields, 'persona') && valueProposition.persona && (
                     <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-gray-500" />
                         <span className="text-sm text-gray-700 truncate">{valueProposition.persona.name}</span>
                     </div>
                 )}
 
-                {isFieldVisible('valuePropositionStatements') && valueProposition.valuePropositionStatements && valueProposition.valuePropositionStatements.length > 0 && (
+                {isFieldVisible(visibleFields, 'valuePropositionStatements') && valueProposition.valuePropositionStatements && valueProposition.valuePropositionStatements.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Target className="h-4 w-4 text-purple-500" />
@@ -113,7 +97,7 @@ export function ValuePropositionCard({
                     </div>
                 )}
 
-                {isFieldVisible('customerJobs') && valueProposition.customerJobs && valueProposition.customerJobs.length > 0 && (
+                {isFieldVisible(visibleFields, 'customerJobs') && valueProposition.customerJobs && valueProposition.customerJobs.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Tag className="h-4 w-4 text-blue-500" />
@@ -138,7 +122,7 @@ export function ValuePropositionCard({
                     </div>
                 )}
 
-                {isFieldVisible('customerPains') && valueProposition.customerPains && valueProposition.customerPains.length > 0 && (
+                {isFieldVisible(visibleFields, 'customerPains') && valueProposition.customerPains && valueProposition.customerPains.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Tag className="h-4 w-4 text-red-500" />
@@ -163,7 +147,7 @@ export function ValuePropositionCard({
                     </div>
                 )}
 
-                {isFieldVisible('productsServices') && valueProposition.productsServices && valueProposition.productsServices.length > 0 && (
+                {isFieldVisible(visibleFields, 'productsServices') && valueProposition.productsServices && valueProposition.productsServices.length > 0 && (
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Tag className="h-4 w-4 text-green-500" />
@@ -214,6 +198,7 @@ export default function ValuePropositionCards({
 
     const containerRef = useRef<HTMLDivElement>(null);
     const containerWidth = useContainerWidth(containerRef);
+    const { height: dynamicHeight, containerRef: heightRef } = useVirtualizedGridHeight();
 
     const columns = useMemo(() => {
         if (containerWidth <= 0) return 1;
@@ -248,15 +233,25 @@ export default function ValuePropositionCards({
         onValuePropositionReorder?.(reorderedData);
     }, [onValuePropositionReorder]);
 
+    // Merge refs to handle both width and height measurements
+    const mergedRef = useCallback((node: HTMLDivElement | null) => {
+        if (containerRef.current !== node) {
+            containerRef.current = node;
+        }
+        if (heightRef.current !== node) {
+            heightRef.current = node;
+        }
+    }, [heightRef]);
+
     return (
-        <div className="space-y-4" ref={containerRef}>
+        <div className="space-y-4" ref={mergedRef}>
             <VirtualGridDnd
                 data={items}
                 itemHeight="auto"
                 itemWidth={itemWidth}
                 columns={columns}
                 gap={32}
-                height={700}
+                height={dynamicHeight}
                 width="100%"
                 overscan={3}
                 renderItem={renderItem}

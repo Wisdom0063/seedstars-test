@@ -12,6 +12,7 @@ import {
   KanbanCard,
   type DragEndEvent,
 } from '@/components/ui/shadcn-io/kanban';
+import { isFieldVisible } from '@/lib/utils';
 
 interface BusinessModelKanbanProps {
   businessModels: BusinessModelWithRelations[];
@@ -44,10 +45,7 @@ function BusinessModelKanbanCard({
   onBusinessModelClick?: (businessModel: BusinessModelWithRelations) => void;
   visibleFields?: string[];
 }) {
-  // Helper function to check if a field should be visible
-  const isFieldVisible = (fieldName: string) => {
-    return visibleFields.length === 0 || visibleFields.includes(fieldName);
-  };
+
 
 
   return (
@@ -61,7 +59,7 @@ function BusinessModelKanbanCard({
           <Building2 className="h-3 w-3" />
         </div>
         <div className="flex-1">
-          {isFieldVisible('valuePropositionStatement') && (
+          {isFieldVisible(visibleFields, 'valuePropositionStatement') && (
             <div className="font-medium text-sm">
               {businessModel.valuePropositionStatement?.offering || 'Untitled Business Model'}
             </div>
@@ -70,7 +68,7 @@ function BusinessModelKanbanCard({
       </div>
 
       {/* Description */}
-      {isFieldVisible('description') && businessModel.valuePropositionStatement?.description && (
+      {isFieldVisible(visibleFields, 'description') && businessModel.valuePropositionStatement?.description && (
         <p className="text-xs text-gray-600 line-clamp-2">
           {businessModel.valuePropositionStatement.description}
         </p>
@@ -78,7 +76,7 @@ function BusinessModelKanbanCard({
 
       {/* Segment & Persona */}
       <div className="space-y-1">
-        {isFieldVisible('segment') && businessModel.valuePropositionStatement?.valueProposition?.segment && (
+        {isFieldVisible(visibleFields, 'segment') && businessModel.valuePropositionStatement?.valueProposition?.segment && (
           <div className="flex items-center gap-2 text-xs">
             <Users className="h-3 w-3 text-gray-500" />
             <span className="text-gray-700 truncate">
@@ -86,7 +84,7 @@ function BusinessModelKanbanCard({
             </span>
           </div>
         )}
-        {isFieldVisible('persona') && businessModel.valuePropositionStatement?.valueProposition?.persona && (
+        {isFieldVisible(visibleFields, 'persona') && businessModel.valuePropositionStatement?.valueProposition?.persona && (
           <div className="flex items-center gap-2 text-xs">
             <Users className="h-3 w-3 text-blue-500" />
             <span className="text-blue-700 truncate">
@@ -96,8 +94,7 @@ function BusinessModelKanbanCard({
         )}
       </div>
 
-      {/* Value Proposition Statement */}
-      {isFieldVisible('valuePropositionStatement') && businessModel.valuePropositionStatement && (
+      {isFieldVisible(visibleFields, 'valuePropositionStatement') && businessModel.valuePropositionStatement && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <Target className="h-3 w-3 text-purple-500" />
@@ -115,8 +112,7 @@ function BusinessModelKanbanCard({
         </div>
       )}
 
-      {/* Key Partners Preview */}
-      {isFieldVisible('keyPartners') && businessModel.keyPartners && businessModel.keyPartners.length > 0 && (
+      {isFieldVisible(visibleFields, 'keyPartners') && businessModel.keyPartners && businessModel.keyPartners.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <Handshake className="h-3 w-3 text-blue-500" />
@@ -142,8 +138,7 @@ function BusinessModelKanbanCard({
         </div>
       )}
 
-      {/* Key Activities Preview */}
-      {isFieldVisible('keyActivities') && businessModel.keyActivities && businessModel.keyActivities.length > 0 && (
+      {isFieldVisible(visibleFields, 'keyActivities') && businessModel.keyActivities && businessModel.keyActivities.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <Lightbulb className="h-3 w-3 text-orange-500" />
@@ -169,8 +164,7 @@ function BusinessModelKanbanCard({
         </div>
       )}
 
-      {/* Revenue Streams Preview */}
-      {isFieldVisible('revenueStreams') && businessModel.revenueStreams && businessModel.revenueStreams.length > 0 && (
+      {isFieldVisible(visibleFields, 'revenueStreams') && businessModel.revenueStreams && businessModel.revenueStreams.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <DollarSign className="h-3 w-3 text-emerald-500" />
@@ -196,8 +190,7 @@ function BusinessModelKanbanCard({
         </div>
       )}
 
-      {/* Tags */}
-      {isFieldVisible('tags') && businessModel.tags && businessModel.tags.length > 0 && (
+      {isFieldVisible(visibleFields, 'tags') && businessModel.tags && businessModel.tags.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {businessModel.tags.slice(0, 2).map((tag, index) => (
             <Badge
@@ -225,17 +218,14 @@ export function BusinessModelKanban({
   onBusinessModelMove,
   visibleFields = []
 }: BusinessModelKanbanProps) {
-  // Transform business models to kanban items and extract segment columns
   const { kanbanData, columns } = useMemo(() => {
     const segmentMap = new Map<string, SegmentKanbanColumn>();
 
-    // Create kanban items and collect segments
     const kanbanItems: BusinessModelKanbanItem[] = businessModels.map(businessModel => {
       const segment = businessModel.valuePropositionStatement?.valueProposition?.segment;
       const segmentId = segment?.id || 'unknown';
       const segmentName = segment?.name || 'Unknown Segment';
 
-      // Add segment to map if not exists
       if (!segmentMap.has(segmentId)) {
         segmentMap.set(segmentId, {
           id: segmentId,
@@ -259,7 +249,6 @@ export function BusinessModelKanban({
 
   const [data, setData] = useState<BusinessModelKanbanItem[]>(kanbanData);
 
-  // Update data when businessModels prop changes
   React.useEffect(() => {
     setData(kanbanData);
   }, [kanbanData]);
@@ -267,7 +256,6 @@ export function BusinessModelKanban({
   const handleDataChange = useCallback((newData: BusinessModelKanbanItem[]) => {
     setData(newData);
 
-    // Find moved business models and notify parent
     newData.forEach((item, index) => {
       const originalItem = kanbanData.find(orig => orig.id === item.id);
       if (originalItem && originalItem.column !== item.column) {
@@ -277,7 +265,6 @@ export function BusinessModelKanban({
   }, [kanbanData, onBusinessModelMove]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
-    // Additional drag end logic if needed
   }, []);
 
   if (businessModels.length === 0) {

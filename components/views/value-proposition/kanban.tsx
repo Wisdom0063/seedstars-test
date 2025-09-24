@@ -12,6 +12,7 @@ import {
   KanbanCard,
   type DragEndEvent,
 } from '@/components/ui/shadcn-io/kanban';
+import { isFieldVisible } from '@/lib/utils';
 
 interface ValuePropositionKanbanProps {
   valuePropositions: ValuePropositionWithRelations[];
@@ -41,9 +42,7 @@ function ValuePropositionKanbanCard({
   onValuePropositionClick?: (valueProposition: ValuePropositionWithRelations) => void;
   visibleFields?: string[];
 }) {
-  const isFieldVisible = (fieldName: string) => {
-    return visibleFields.length === 0 || visibleFields.includes(fieldName);
-  };
+
   return (
     <div
       className="space-y-3 cursor-pointer"
@@ -54,7 +53,7 @@ function ValuePropositionKanbanCard({
           <Lightbulb className="h-3 w-3" />
         </div>
         <div className="flex-1">
-          {isFieldVisible('name') && (
+          {isFieldVisible(visibleFields, 'name') && (
             <div className="font-medium text-sm">
               {valueProposition.persona ? ` ${valueProposition.persona.name}` : ` ${valueProposition.segment.name}`}
             </div>
@@ -65,14 +64,14 @@ function ValuePropositionKanbanCard({
 
 
 
-      {isFieldVisible('persona') && valueProposition.persona && (
+      {isFieldVisible(visibleFields, 'persona') && valueProposition.persona && (
         <div className="flex items-center gap-2 text-xs">
           <Users className="h-3 w-3 text-gray-500" />
           <span className="text-gray-700 truncate">{valueProposition.persona.name}</span>
         </div>
       )}
 
-      {isFieldVisible('valuePropositionStatements') && valueProposition.valuePropositionStatements && valueProposition.valuePropositionStatements.length > 0 && (
+      {isFieldVisible(visibleFields, 'valuePropositionStatements') && valueProposition.valuePropositionStatements && valueProposition.valuePropositionStatements.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <Target className="h-3 w-3 text-purple-500" />
@@ -102,7 +101,7 @@ function ValuePropositionKanbanCard({
         </div>
       )}
 
-      {isFieldVisible('customerJobs') && valueProposition.customerJobs && valueProposition.customerJobs.length > 0 && (
+      {isFieldVisible(visibleFields, 'customerJobs') && valueProposition.customerJobs && valueProposition.customerJobs.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <Tag className="h-3 w-3 text-blue-500" />
@@ -128,7 +127,7 @@ function ValuePropositionKanbanCard({
         </div>
       )}
 
-      {isFieldVisible('customerPains') && valueProposition.customerPains && valueProposition.customerPains.length > 0 && (
+      {isFieldVisible(visibleFields, 'customerPains') && valueProposition.customerPains && valueProposition.customerPains.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <Tag className="h-3 w-3 text-red-500" />
@@ -154,7 +153,7 @@ function ValuePropositionKanbanCard({
         </div>
       )}
 
-      {isFieldVisible('productsServices') && valueProposition.productsServices && valueProposition.productsServices.length > 0 && (
+      {isFieldVisible(visibleFields, 'productsServices') && valueProposition.productsServices && valueProposition.productsServices.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <Tag className="h-3 w-3 text-green-500" />

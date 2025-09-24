@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { ArrowUpDown, Search, Building2 } from 'lucide-react';
 import { BusinessModelWithRelations } from '@/lib/api/business-model';
 import { TableVirtuoso } from 'react-virtuoso';
+import { isFieldVisible } from '@/lib/utils';
 
 interface BusinessModelTableProps {
     businessModels: BusinessModelWithRelations[];
@@ -32,23 +33,6 @@ interface BusinessModelTableProps {
 }
 
 export function BusinessModelTable({ businessModels, onBusinessModelClick, visibleFields = [] }: BusinessModelTableProps) {
-    // Helper function to check if a field should be visible
-    const isFieldVisible = (fieldName: string) => {
-        return visibleFields.length === 0 || visibleFields.includes(fieldName);
-    };
-
-    const getStatusBadgeVariant = (status: string) => {
-        switch (status) {
-            case 'active':
-                return 'default';
-            case 'draft':
-                return 'secondary';
-            case 'archived':
-                return 'outline';
-            default:
-                return 'secondary';
-        }
-    };
 
     const allColumns: ColumnDef<BusinessModelWithRelations>[] = useMemo(
         () => [
@@ -286,7 +270,7 @@ export function BusinessModelTable({ businessModels, onBusinessModelClick, visib
         }
         return allColumns.filter(column => {
             const columnId = typeof column.id === 'string' ? column.id : '';
-            return isFieldVisible(columnId);
+            return isFieldVisible(visibleFields, columnId);
         });
     }, [allColumns, visibleFields, isFieldVisible]);
 

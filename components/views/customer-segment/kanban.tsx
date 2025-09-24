@@ -12,6 +12,7 @@ import {
   KanbanCard,
   type DragEndEvent,
 } from '@/components/ui/shadcn-io/kanban';
+import { isFieldVisible } from '@/lib/utils';
 
 interface PersonaKanbanProps {
   personas: Persona[];
@@ -44,10 +45,6 @@ function PersonaKanbanCard({
   onPersonaClick?: (persona: Persona) => void;
   visibleFields?: string[];
 }) {
-  // Helper function to check if a field should be visible
-  const isFieldVisible = (fieldName: string) => {
-    return visibleFields.length === 0 || visibleFields.includes(fieldName);
-  };
   return (
     <div
       className="space-y-3 cursor-pointer"
@@ -59,17 +56,17 @@ function PersonaKanbanCard({
           {persona.name.charAt(0).toUpperCase()}
         </div>
         <div className="flex-1">
-          {isFieldVisible('name') && (
+          {isFieldVisible(visibleFields, 'name') && (
             <div className="font-medium text-sm">{persona.name}</div>
           )}
-          {isFieldVisible('age') && persona.age && (
+          {isFieldVisible(visibleFields, 'age') && persona.age && (
             <div className="text-xs text-gray-500">{persona.age} years old</div>
           )}
         </div>
       </div>
 
       {/* Quote */}
-      {isFieldVisible('quote') && persona.quote && (
+      {isFieldVisible(visibleFields, 'quote') && persona.quote && (
         <div className="bg-gray-50 p-2 rounded border-l-2 border-l-gray-300">
           <div className="flex items-start gap-2">
             <Quote className="h-3 w-3 text-gray-400 mt-0.5 shrink-0" />
@@ -82,21 +79,21 @@ function PersonaKanbanCard({
 
       {/* Demographics */}
       <div className="space-y-1 text-xs">
-        {isFieldVisible('location') && persona.location && (
+        {isFieldVisible(visibleFields, 'location') && persona.location && (
           <div className="flex items-center gap-2">
             <MapPin className="h-3 w-3 text-gray-500" />
             <span className="text-gray-700 truncate">{persona.location}</span>
           </div>
         )}
 
-        {isFieldVisible('education') && persona.education && (
+        {isFieldVisible(visibleFields, 'education') && persona.education && (
           <div className="flex items-center gap-2">
             <GraduationCap className="h-3 w-3 text-gray-500" />
             <span className="text-gray-700 truncate">{persona.education}</span>
           </div>
         )}
 
-        {isFieldVisible('incomePerMonth') && persona.incomePerMonth && (
+        {isFieldVisible(visibleFields, 'incomePerMonth') && persona.incomePerMonth && (
           <div className="flex items-center gap-2">
             <DollarSign className="h-3 w-3 text-gray-500" />
             <span className="text-gray-700 truncate">{persona.incomePerMonth}</span>
@@ -104,8 +101,7 @@ function PersonaKanbanCard({
         )}
       </div>
 
-      {/* Pain Points Preview */}
-      {isFieldVisible('painPoints') && persona.painPoints && persona.painPoints.length > 0 && (
+      {isFieldVisible(visibleFields, 'painPoints') && persona.painPoints && persona.painPoints.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <Tag className="h-3 w-3 text-red-500" />
@@ -130,8 +126,7 @@ function PersonaKanbanCard({
         </div>
       )}
 
-      {/* Channels Preview */}
-      {isFieldVisible('channels') && persona.channels && persona.channels.length > 0 && (
+      {isFieldVisible(visibleFields, 'channels') && persona.channels && persona.channels.length > 0 && (
         <div>
           <div className="flex items-center gap-1 mb-1">
             <Tag className="h-3 w-3 text-blue-500" />
@@ -160,16 +155,13 @@ function PersonaKanbanCard({
 }
 
 export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visibleFields }: PersonaKanbanProps) {
-  // Transform personas to kanban items and extract unique segments
   const { kanbanData, columns } = useMemo(() => {
     const segmentMap = new Map<string, SegmentKanbanColumn>();
 
-    // Create kanban items and collect unique segments
     const kanbanItems: PersonaKanbanItem[] = personas.map(persona => {
       const segmentId = persona.segment.id;
       const segmentName = persona.segment.name;
 
-      // Add segment to map if not exists
       if (!segmentMap.has(segmentId)) {
         segmentMap.set(segmentId, {
           id: segmentId,
@@ -193,7 +185,6 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
 
   const [data, setData] = useState<PersonaKanbanItem[]>(kanbanData);
 
-  // Update data when personas prop changes
   React.useEffect(() => {
     setData(kanbanData);
   }, [kanbanData]);
@@ -201,7 +192,6 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
   const handleDataChange = useCallback((newData: PersonaKanbanItem[]) => {
     setData(newData);
 
-    // Find moved personas and notify parent
     newData.forEach((item, index) => {
       const originalItem = kanbanData.find(orig => orig.id === item.id);
       if (originalItem && originalItem.column !== item.column) {
@@ -211,7 +201,6 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
   }, [kanbanData, onPersonaMove]);
 
   const handleDragEnd = useCallback((event: DragEndEvent) => {
-    // Additional drag end logic if needed
   }, []);
 
   return (
@@ -234,25 +223,6 @@ export function PersonaKanban({ personas, onPersonaClick, onPersonaMove, visible
                 {data.filter(item => item.column === column.id).length}
               </Badge>
             </KanbanHeader>
-
-
-            {/* <Virtuoso
-              className="flex flex-grow flex-col gap-2 p-2"
-              style={{ height: 700 }}
-              data={data.filter(item => item.column === column.id)}
-              itemContent={(_, item) => (
-                <KanbanCard key={item.id} {...item}>
-                  <PersonaKanbanCard
-                    persona={(item as PersonaKanbanItem).persona}
-                    onPersonaClick={onPersonaClick}
-                    visibleFields={visibleFields}
-                  />
-                </KanbanCard>
-              )}
-            /> */}
-
-
-
 
             <KanbanCards id={column.id}>
               {(item) => (

@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input';
 import { ArrowUpDown, Search, Lightbulb } from 'lucide-react';
 import { ValuePropositionWithRelations } from '@/lib/api/value-proposition';
 import { TableVirtuoso } from 'react-virtuoso';
+import { isFieldVisible } from '@/lib/utils';
 
 interface ValuePropositionTableProps {
     valuePropositions: ValuePropositionWithRelations[];
@@ -32,23 +33,6 @@ interface ValuePropositionTableProps {
 }
 
 export function ValuePropositionTable({ valuePropositions, onValuePropositionClick, visibleFields = [] }: ValuePropositionTableProps) {
-    // Helper function to check if a field should be visible
-    const isFieldVisible = (fieldName: string) => {
-        return visibleFields.length === 0 || visibleFields.includes(fieldName);
-    };
-
-    const getStatusBadgeVariant = (status: string) => {
-        switch (status) {
-            case 'ACTIVE':
-                return 'default';
-            case 'DRAFT':
-                return 'secondary';
-            case 'ARCHIVED':
-                return 'outline';
-            default:
-                return 'secondary';
-        }
-    };
 
     const allColumns: ColumnDef<ValuePropositionWithRelations>[] = useMemo(
         () => [
@@ -296,7 +280,7 @@ export function ValuePropositionTable({ valuePropositions, onValuePropositionCli
     const columns = useMemo(() => {
         if (visibleFields.length === 0) return allColumns;
         return allColumns.filter(column =>
-            column.id && isFieldVisible(column.id)
+            column.id && isFieldVisible(visibleFields, column.id)
         );
     }, [allColumns, visibleFields, isFieldVisible]);
 
