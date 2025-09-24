@@ -87,6 +87,8 @@ Navigate to [http://localhost:3000](http://localhost:3000)
 
 **Design Decision:** Separated view management logic from framework-specific implementations to enable easy extension and maintenance.
 
+Personas represented as the framework card instead of customer segments to put more focus on the personas and allow for easy navigation.
+
 
 ### Mock API
 Mock API is used for development and testing purposes.
