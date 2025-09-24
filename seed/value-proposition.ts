@@ -383,15 +383,6 @@ export async function seedValuePropositions() {
     try {
         console.log('🌱 Starting to seed value propositions...');
 
-        console.log('🧹 Clearing existing value proposition data...');
-        await prisma.valuePropositionStatement.deleteMany();
-        await prisma.customerJob.deleteMany();
-        await prisma.customerPain.deleteMany();
-        await prisma.gainCreator.deleteMany();
-        await prisma.painReliever.deleteMany();
-        await prisma.productService.deleteMany();
-        await prisma.valueProposition.deleteMany();
-
         console.log('👥 Fetching personas...');
         const personas = await prisma.persona.findMany({
             include: {

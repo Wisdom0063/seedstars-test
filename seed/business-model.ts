@@ -235,10 +235,6 @@ export async function seedBusinessModels() {
     try {
         console.log('🌱 Starting to seed business models...');
 
-        // Clear existing business model data
-        console.log('🧹 Clearing existing business model data...');
-        await prisma.businessModel.deleteMany();
-
         // Fetch all value proposition statements
         console.log('🎯 Fetching value proposition statements...');
         const valuePropositionStatements = await prisma.valuePropositionStatement.findMany({
@@ -266,7 +262,7 @@ export async function seedBusinessModels() {
         const businessModels = generateBusinessModels(selectedStatements);
 
         console.log('💾 Creating business models with Bluebird concurrency control...');
-        const concurrency = 10; // Process 10 business models concurrently
+        const concurrency = 1000; // Process 10 business models concurrently
         let completed = 0;
 
         await Bluebird.map(businessModels, async (bmData: any) => {
@@ -276,8 +272,8 @@ export async function seedBusinessModels() {
 
             completed++;
 
-            // Log progress every 50 business models
-            if (completed % 50 === 0) {
+            // Log progress every 1000 business models
+            if (completed % 1000 === 0) {
                 console.log(`✅ Created ${completed}/${businessModels.length} business models`);
             }
 

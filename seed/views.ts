@@ -7,7 +7,6 @@ export async function seedViews() {
     console.log('🌱 Seeding views...');
 
     try {
-        await prisma.view.deleteMany();
         const createdViews = await Promise.all(
             DEFAULT_VIEWS.map(async (view) => {
                 return await prisma.view.create({
