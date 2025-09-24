@@ -641,13 +641,6 @@ export function ValuePropositionDetailDrawer({
 
     const footer = (
         <div className="flex justify-between w-full">
-            <div>
-                {onDelete && (
-                    <Button variant="destructive" size="sm" onClick={handleDelete}>
-                        Delete Value Proposition
-                    </Button>
-                )}
-            </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
                 Changes save when you move to the next field

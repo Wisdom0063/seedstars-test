@@ -262,14 +262,12 @@ export function BusinessModelDetailDrawer({
         if (!editedBM) return null;
 
         return (
-            <div className="space-y-6">
+            <div className="space-y-6 px-2">
                 <h3 className="font-semibold text-lg">Business Model Canvas</h3>
 
-                {/* Two Column Layout for Tablet and Desktop */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Left Column */}
                     <div className="space-y-6">
-                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <div className="p-4 rounded-lg border border-blue-200">
                             <h4 className="font-medium text-blue-900 mb-4 flex items-center gap-2">
                                 <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                                 Left Side
@@ -303,9 +301,8 @@ export function BusinessModelDetailDrawer({
                         </div>
                     </div>
 
-                    {/* Right Column */}
                     <div className="space-y-6">
-                        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <div className="p-4 rounded-lg border border-green-200">
                             <h4 className="font-medium text-green-900 mb-4 flex items-center gap-2">
                                 <div className="w-2 h-2 bg-green-600 rounded-full"></div>
                                 Right Side
@@ -340,8 +337,7 @@ export function BusinessModelDetailDrawer({
                     </div>
                 </div>
 
-                {/* Bottom Section - Full Width */}
-                <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                <div className=" p-4 rounded-lg border border-purple-200">
                     <h4 className="font-medium text-purple-900 mb-4 flex items-center gap-2">
                         <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
                         Financial Structure
@@ -366,7 +362,7 @@ export function BusinessModelDetailDrawer({
                     </div>
                 </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div className="p-4 rounded-lg border border-gray-200">
                     <h4 className="font-medium text-gray-900 mb-4 flex items-center gap-2">
                         <div className="w-2 h-2 bg-gray-600 rounded-full"></div>
                         Additional Information

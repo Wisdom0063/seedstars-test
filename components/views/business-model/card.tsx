@@ -43,7 +43,7 @@ export function BusinessModelCard({
                             <Building2 className="h-3 w-3" />
                         </div>
                         <div>
-                            {isFieldVisible(visibleFields, 'name') && (
+                            {isFieldVisible(visibleFields, 'valuePropositionStatement') && (
                                 <CardTitle className="text-lg font-semibold text-gray-900">
                                     {businessModel.valuePropositionStatement?.offering}
                                 </CardTitle>
