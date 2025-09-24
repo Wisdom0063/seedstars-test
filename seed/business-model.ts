@@ -255,7 +255,7 @@ export async function seedBusinessModels() {
         const businessModels = generateBusinessModels(selectedStatements);
 
         console.log('💾 Creating business models with Bluebird concurrency control...');
-        const concurrency = 1000; // Process 1000 business models concurrently
+        const concurrency = 500; // Process 1000 business models concurrently
         let completed = 0;
 
         await Bluebird.map(businessModels, async (bmData: any) => {
@@ -265,7 +265,7 @@ export async function seedBusinessModels() {
 
             completed++;
 
-            if (completed % 1000 === 0) {
+            if (completed % 500 === 0) {
                 console.log(`✅ Created ${completed}/${businessModels.length} business models`);
             }
 

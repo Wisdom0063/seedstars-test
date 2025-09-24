@@ -259,7 +259,7 @@ export async function seedCustomerSegments() {
         });
 
         console.log('💾 Creating personas with Bluebird concurrency control...');
-        const concurrency = 1000; // Process 1000 personas concurrently
+        const concurrency = 500; // Process 1000 personas concurrently
         let completed = 0;
 
         await Bluebird.map(personasWithSegmentId, async (personaData: any) => {
@@ -268,7 +268,7 @@ export async function seedCustomerSegments() {
             });
             completed++;
 
-            if (completed % 1000 === 0) {
+            if (completed % 500 === 0) {
                 console.log(`✅ Created ${completed}/${personasWithSegmentId.length} personas`);
             }
 
