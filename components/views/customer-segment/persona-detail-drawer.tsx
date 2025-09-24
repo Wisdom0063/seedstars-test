@@ -59,12 +59,6 @@ export function PersonaDetailDrawer({
         }
     }, [editedPersona, hasUnsavedChanges, onSave]);
 
-    const handleDelete = () => {
-        if (persona && onDelete) {
-            onDelete(persona);
-        }
-        onClose();
-    };
 
     const handleClose = () => {
         if (hasUnsavedChanges) {

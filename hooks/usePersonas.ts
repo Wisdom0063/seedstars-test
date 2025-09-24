@@ -17,7 +17,7 @@ interface UsePersonasReturn {
 }
 
 export function usePersonas(options: UsePersonasOptions = {}): UsePersonasReturn {
-    const { segmentId, autoFetch = true } = options;
+    const { segmentId, } = options;
 
     const [personas, setPersonas] = useState<Persona[]>([]);
     const [loading, setLoading] = useState(true);
