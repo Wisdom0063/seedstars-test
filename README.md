@@ -1,6 +1,6 @@
 # SIGMA Card Framework Navigator
 
-A modern, flexible card navigation system built for SIGMA's business design platform. This project implements a Notion-like, multi-view interface that transforms static framework cards into a dynamic, scalable, and collaborative experience for entrepreneurs working with Business Model Canvas, Value Proposition Canvas, and Customer Segments.
+A modern, flexible card navigation system built for SIGMA's business design platform. This project implements a Notion-like, multi-view interface that transforms static framework cards into a dynamic and scalable experience
 
 ## 🎯 Project Overview
 
