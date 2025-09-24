@@ -59,21 +59,27 @@ export function ViewToolbar({
 
     return (
         <div>
-            <div className="flex items-center justify-between py-3 border-b bg-white">
-                <div className="flex items-center gap-4">
-                    <ViewSelector
-                        views={views}
-                        currentView={currentView}
-                        onViewChange={onViewChange}
-                        onCreateView={onCreateView}
-                        onEditView={onEditView}
-                        onLayoutChange={onLayoutChange}
-                        source={source}
-                        availableProperties={availableProperties}
-                    />
+            <div className="flex items-center py-3 border-b bg-white min-h-[60px]">
+                <div className="flex-1 min-w-0 mr-4">
+                    <div className="overflow-x-auto overflow-y-hidden" style={{
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                    }}>
+                        <ViewSelector
+                            views={views}
+                            currentView={currentView}
+                            onViewChange={onViewChange}
+                            onCreateView={onCreateView}
+                            onEditView={onEditView}
+                            onLayoutChange={onLayoutChange}
+                            source={source}
+                            availableProperties={availableProperties}
+                        />
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                {/* Right side - Fixed Controls */}
+                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                     {onSearchChange && (
                         <AnimatedSearch
                             searchValue={searchValue}
@@ -137,7 +143,7 @@ export function ViewToolbar({
                     </ViewSettingsPopover>
 
                     {itemCount !== undefined && (
-                        <div className="text-sm text-gray-500 ml-2">
+                        <div className="text-sm text-gray-500 ml-1 sm:ml-2 whitespace-nowrap hidden sm:block">
                             {itemCount} {itemCount === 1 ? 'record' : 'records'}
                         </div>
                     )}
@@ -222,7 +228,7 @@ function AnimatedSearch({ searchValue, onSearchChange }: AnimatedSearchProps) {
                         placeholder="Search..."
                         value={searchValue || ''}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        className="pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-64 transition-all duration-200"
+                        className="pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-48 sm:w-64 transition-all duration-200"
                     />
                     {searchValue && (
                         <button
