@@ -59,94 +59,205 @@ export function ViewToolbar({
 
     return (
         <div>
-            <div className="flex items-center py-3 border-b bg-white min-h-[60px]">
-                <div className="flex-1 min-w-0 mr-4">
-                    <div className="overflow-x-auto overflow-y-hidden" style={{
-                        scrollbarWidth: 'none',
-                        msOverflowStyle: 'none',
-                    }}>
-                        <ViewSelector
-                            views={views}
-                            currentView={currentView}
-                            onViewChange={onViewChange}
-                            onCreateView={onCreateView}
-                            onEditView={onEditView}
+            <div className="border-b bg-white">
+                {/* Desktop Layout - Single Row */}
+                <div className="hidden lg:flex items-center py-3 min-h-[60px]">
+                    {/* Left side - Scrollable View Selector */}
+                    <div className="flex-1 min-w-0 mr-4">
+                        <div className="overflow-x-auto overflow-y-hidden" style={{
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                        }}>
+                            <style jsx>{`
+                                div::-webkit-scrollbar {
+                                    display: none;
+                                }
+                            `}</style>
+                            <ViewSelector
+                                views={views}
+                                currentView={currentView}
+                                onViewChange={onViewChange}
+                                onCreateView={onCreateView}
+                                onEditView={onEditView}
+                                onLayoutChange={onLayoutChange}
+                                source={source}
+                                availableProperties={availableProperties}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Right side - Fixed Controls */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        {onSearchChange && (
+                            <AnimatedSearch
+                                searchValue={searchValue}
+                                onSearchChange={onSearchChange}
+                            />
+                        )}
+
+                        {onFiltersChange && (
+                            <FilterPopup
+                                source={source}
+                                activeFilters={filters}
+                                getFilterFields={filterConfig?.getFilterFields}
+                                onAddFilter={(filterId) => {
+                                    const newFilters = { ...filters };
+                                    if (['segments', 'locations', 'education', 'income', 'painPoints', 'channels', 'gender'].includes(filterId)) {
+                                        newFilters[filterId] = [];
+                                    } else if (['age', 'ageRange'].includes(filterId)) {
+                                        newFilters[filterId] = {};
+                                    } else {
+                                        newFilters[filterId] = '';
+                                    }
+                                    onFiltersChange(newFilters);
+                                }}
+                            />
+                        )}
+
+                        {onSortsChange && (
+                            <SortDropdown
+                                sorts={sorts}
+                                onSortsChange={onSortsChange}
+                                source={source}
+                                availableFields={sortConfig?.getSortableFields() || []}
+                                onAddSort={(field: any) => {
+                                    const newSort: ViewSortCriteria = {
+                                        id: `${field.field}-${Date.now()}`,
+                                        field: field.field,
+                                        label: field.label,
+                                        order: 'ASC',
+                                        icon: field.icon,
+                                    };
+                                    onSortsChange([...sorts, newSort]);
+                                }}
+                            />
+                        )}
+
+                        <ViewSettingsPopover
+                            view={currentView}
                             onLayoutChange={onLayoutChange}
-                            source={source}
+                            onViewUpdate={(updatedView) => {
+                                onViewChange(updatedView);
+                            }}
                             availableProperties={availableProperties}
-                        />
+                        >
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 px-2"
+                            >
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </ViewSettingsPopover>
+
+                        {itemCount !== undefined && (
+                            <div className="text-sm text-gray-500 ml-2 whitespace-nowrap">
+                                {itemCount} {itemCount === 1 ? 'record' : 'records'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {/* Right side - Fixed Controls */}
-                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-                    {onSearchChange && (
-                        <AnimatedSearch
-                            searchValue={searchValue}
-                            onSearchChange={onSearchChange}
-                        />
-                    )}
-
-                    {onFiltersChange && (
-                        <FilterPopup
-                            source={source}
-                            activeFilters={filters}
-                            getFilterFields={filterConfig?.getFilterFields}
-                            onAddFilter={(filterId) => {
-                                const newFilters = { ...filters };
-                                if (['segments', 'locations', 'education', 'income', 'painPoints', 'channels', 'gender'].includes(filterId)) {
-                                    newFilters[filterId] = [];
-                                } else if (['age', 'ageRange'].includes(filterId)) {
-                                    newFilters[filterId] = {};
-                                } else {
-                                    newFilters[filterId] = '';
+                {/* Tablet & Mobile Layout - Two Rows */}
+                <div className="lg:hidden">
+                    {/* First Row - View Selector */}
+                    <div className="py-2 px-4">
+                        <div className="overflow-x-auto overflow-y-hidden" style={{
+                            scrollbarWidth: 'none',
+                            msOverflowStyle: 'none',
+                        }}>
+                            <style jsx>{`
+                                div::-webkit-scrollbar {
+                                    display: none;
                                 }
-                                onFiltersChange(newFilters);
-                            }}
-                        />
-                    )}
-
-                    {onSortsChange && (
-                        <SortDropdown
-                            sorts={sorts}
-                            onSortsChange={onSortsChange}
-                            source={source}
-                            availableFields={sortConfig?.getSortableFields() || []}
-                            onAddSort={(field: any) => {
-                                const newSort: ViewSortCriteria = {
-                                    id: `${field.field}-${Date.now()}`,
-                                    field: field.field,
-                                    label: field.label,
-                                    order: 'ASC',
-                                    icon: field.icon,
-                                };
-                                onSortsChange([...sorts, newSort]);
-                            }}
-                        />
-                    )}
-
-                    <ViewSettingsPopover
-                        view={currentView}
-                        onLayoutChange={onLayoutChange}
-                        onViewUpdate={(updatedView) => {
-                            onViewChange(updatedView);
-                        }}
-                        availableProperties={availableProperties}
-                    >
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-8 px-2"
-                        >
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </ViewSettingsPopover>
-
-                    {itemCount !== undefined && (
-                        <div className="text-sm text-gray-500 ml-1 sm:ml-2 whitespace-nowrap hidden sm:block">
-                            {itemCount} {itemCount === 1 ? 'record' : 'records'}
+                            `}</style>
+                            <ViewSelector
+                                views={views}
+                                currentView={currentView}
+                                onViewChange={onViewChange}
+                                onCreateView={onCreateView}
+                                onEditView={onEditView}
+                                onLayoutChange={onLayoutChange}
+                                source={source}
+                                availableProperties={availableProperties}
+                            />
                         </div>
-                    )}
+                    </div>
+
+                    {/* Second Row - Controls */}
+                    <div className="flex items-center justify-between px-4 py-2 border-t border-gray-100">
+                        <div className="flex items-center gap-2">
+                            {onSearchChange && (
+                                <AnimatedSearch
+                                    searchValue={searchValue}
+                                    onSearchChange={onSearchChange}
+                                />
+                            )}
+
+                            {onFiltersChange && (
+                                <FilterPopup
+                                    source={source}
+                                    activeFilters={filters}
+                                    getFilterFields={filterConfig?.getFilterFields}
+                                    onAddFilter={(filterId) => {
+                                        const newFilters = { ...filters };
+                                        if (['segments', 'locations', 'education', 'income', 'painPoints', 'channels', 'gender'].includes(filterId)) {
+                                            newFilters[filterId] = [];
+                                        } else if (['age', 'ageRange'].includes(filterId)) {
+                                            newFilters[filterId] = {};
+                                        } else {
+                                            newFilters[filterId] = '';
+                                        }
+                                        onFiltersChange(newFilters);
+                                    }}
+                                />
+                            )}
+
+                            {onSortsChange && (
+                                <SortDropdown
+                                    sorts={sorts}
+                                    onSortsChange={onSortsChange}
+                                    source={source}
+                                    availableFields={sortConfig?.getSortableFields() || []}
+                                    onAddSort={(field: any) => {
+                                        const newSort: ViewSortCriteria = {
+                                            id: `${field.field}-${Date.now()}`,
+                                            field: field.field,
+                                            label: field.label,
+                                            order: 'ASC',
+                                            icon: field.icon,
+                                        };
+                                        onSortsChange([...sorts, newSort]);
+                                    }}
+                                />
+                            )}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <ViewSettingsPopover
+                                view={currentView}
+                                onLayoutChange={onLayoutChange}
+                                onViewUpdate={(updatedView) => {
+                                    onViewChange(updatedView);
+                                }}
+                                availableProperties={availableProperties}
+                            >
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 px-2"
+                                >
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                            </ViewSettingsPopover>
+
+                            {itemCount !== undefined && (
+                                <div className="text-sm text-gray-500 whitespace-nowrap">
+                                    {itemCount} {itemCount === 1 ? 'record' : 'records'}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
 

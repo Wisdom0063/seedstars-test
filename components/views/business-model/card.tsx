@@ -52,8 +52,8 @@ export function BusinessModelCard({
             <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
-                            <Building2 className="h-5 w-5" />
+                        <div className="w-5 h-5 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                            <Building2 className="h-3 w-3" />
                         </div>
                         <div>
                             {isFieldVisible('name') && (

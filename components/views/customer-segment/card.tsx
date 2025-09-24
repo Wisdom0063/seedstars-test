@@ -39,12 +39,12 @@ export function PersonaCard({
             <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                        <div className="w-7 h-7 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
                             {persona.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
                             {isFieldVisible('name') && (
-                                <CardTitle className="text-lg font-semibold text-gray-900">
+                                <CardTitle className="text-md font-semibold text-gray-900">
                                     {persona.name}
                                 </CardTitle>
                             )}

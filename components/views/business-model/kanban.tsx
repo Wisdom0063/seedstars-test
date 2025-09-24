@@ -57,8 +57,8 @@ function BusinessModelKanbanCard({
     >
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white">
-          <Building2 className="h-4 w-4" />
+        <div className="w-5 h-5 bg-gray-500 rounded-full flex items-center justify-center text-white">
+          <Building2 className="h-3 w-3" />
         </div>
         <div className="flex-1">
           {isFieldVisible('valuePropositionStatement') && (
@@ -108,8 +108,8 @@ function BusinessModelKanbanCard({
             className="text-xs bg-purple-50 text-purple-700 border-purple-200"
             title={businessModel.valuePropositionStatement.offering}
           >
-            {businessModel.valuePropositionStatement.offering.length > 30 
-              ? `${businessModel.valuePropositionStatement.offering.substring(0, 30)}...` 
+            {businessModel.valuePropositionStatement.offering.length > 30
+              ? `${businessModel.valuePropositionStatement.offering.substring(0, 30)}...`
               : businessModel.valuePropositionStatement.offering}
           </Badge>
         </div>
