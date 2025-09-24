@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// GET /api/customer-segments - Fetch all customer segments
 export async function GET() {
   try {
     const customerSegments = await prisma.customerSegment.findMany({

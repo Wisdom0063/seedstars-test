@@ -43,7 +43,6 @@ async function getById(id: string) {
         return null;
     }
 
-    // Parse JSON fields back to arrays
     return {
         ...businessModel,
         keyPartners: businessModel.keyPartners ? JSON.parse(businessModel.keyPartners) : [],
@@ -126,7 +125,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
         const data = await request.json();
 
-        // Verify business model exists
         const existing = await prisma.businessModel.findUnique({
             where: { id }
         });
@@ -141,7 +139,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        // Update business model
         const businessModel = await prisma.businessModel.update({
             where: { id },
             data: {
@@ -169,7 +166,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
             }
         });
 
-        // Fetch the complete updated business model
         const result = await getById(businessModel.id);
 
         return NextResponse.json({

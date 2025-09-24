@@ -7,12 +7,7 @@ export async function seedViews() {
     console.log('🌱 Seeding views...');
 
     try {
-        // Check if views already exist
         await prisma.view.deleteMany();
-
-
-
-        // Create default views
         const createdViews = await Promise.all(
             DEFAULT_VIEWS.map(async (view) => {
                 return await prisma.view.create({
@@ -43,7 +38,6 @@ export async function seedViews() {
     }
 }
 
-// Run if called directly
 if (require.main === module) {
     seedViews()
         .then(() => {

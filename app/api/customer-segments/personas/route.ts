@@ -3,7 +3,6 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// GET /api/personas - Fetch all personas with their customer segments
 export async function GET() {
   try {
     const personas = await prisma.persona.findMany({
@@ -20,7 +19,6 @@ export async function GET() {
       }
     });
 
-    // Parse JSON fields for better frontend consumption
     const parsedPersonas = personas.map(persona => ({
       ...persona,
       painPoints: persona.painPoints ? JSON.parse(persona.painPoints) : [],
@@ -65,7 +63,7 @@ export async function PUT(request: Request) {
 
     // Prepare the update data - stringify JSON fields if they exist
     const processedData: any = { ...updateData };
-    
+
     // Handle JSON fields that need to be stringified for database storage
     if (updateData.painPoints && Array.isArray(updateData.painPoints)) {
       processedData.painPoints = JSON.stringify(updateData.painPoints);
@@ -89,7 +87,7 @@ export async function PUT(request: Request) {
     // Remove fields that shouldn't be updated
     delete processedData.id;
     delete processedData.createdAt;
-    
+
     // Update the updatedAt timestamp
     processedData.updatedAt = new Date();
 
@@ -123,7 +121,7 @@ export async function PUT(request: Request) {
 
   } catch (error: any) {
     console.error('Error updating persona:', error);
-    
+
     // Handle specific Prisma errors
     if (error?.code === 'P2025') {
       return NextResponse.json(

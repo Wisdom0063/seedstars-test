@@ -458,7 +458,6 @@ export async function seedValuePropositions() {
                     }))
                 }),
 
-                // Gain creators
                 prisma.gainCreator.createMany({
                     data: gainCreators.map((gain: any) => ({
                         ...gain,

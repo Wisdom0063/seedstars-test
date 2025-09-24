@@ -37,7 +37,6 @@ export async function GET(request: NextRequest) {
             }
         });
 
-        // Parse JSON fields back to arrays
         const parsedResult = result.map(businessModel => ({
             ...businessModel,
             keyPartners: businessModel.keyPartners ? JSON.parse(businessModel.keyPartners) : [],

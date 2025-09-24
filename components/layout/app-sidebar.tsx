@@ -26,14 +26,7 @@ import {
   Lightbulb,
 } from 'lucide-react';
 
-// Menu items for navigation
 const menuItems = [
-  {
-    title: 'Dashboard',
-    icon: BarChart3,
-    href: '/',
-    description: 'Overview and analytics'
-  },
   {
     title: 'Customer Segments',
     icon: Users,
