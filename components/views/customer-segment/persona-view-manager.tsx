@@ -156,7 +156,7 @@ const personaFilterConfig = {
     getFilterValue: (persona: Persona, field: string): any => {
         switch (field) {
             case 'segments':
-                return persona.segment?.name;
+                return persona.segment?.id;
             case 'locations':
                 return persona.location;
             case 'education':
@@ -185,7 +185,7 @@ const personaFilterConfig = {
 
         if (filters.segments && filters.segments.length > 0) {
             result = result.filter(persona =>
-                filters.segments.includes(persona.segment?.name)
+                persona.segment && filters.segments.includes(persona.segment.id)
             );
         }
 

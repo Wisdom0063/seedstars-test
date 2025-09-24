@@ -143,9 +143,9 @@ const businessModelFilterConfig: FilterConfig = {
     getFilterValue: (businessModel: BusinessModelWithRelations, fieldId: string) => {
         switch (fieldId) {
             case 'segments':
-                return businessModel.valuePropositionStatement?.valueProposition?.segment?.name;
+                return businessModel.valuePropositionStatement?.valueProposition?.segment?.id;
             case 'personas':
-                return businessModel.valuePropositionStatement?.valueProposition?.persona?.name;
+                return businessModel.valuePropositionStatement?.valueProposition?.persona?.id;
             case 'keyPartners':
                 return businessModel.keyPartners;
             case 'keyActivities':
@@ -170,14 +170,15 @@ const businessModelFilterConfig: FilterConfig = {
 
         if (filters.segments && filters.segments.length > 0) {
             result = result.filter(bm =>
-                filters.segments.includes(bm.valuePropositionStatement?.valueProposition?.segment?.name)
+                bm.valuePropositionStatement?.valueProposition?.segment &&
+                filters.segments.includes(bm.valuePropositionStatement.valueProposition.segment.id)
             );
         }
 
         if (filters.personas && filters.personas.length > 0) {
             result = result.filter(bm =>
                 bm.valuePropositionStatement?.valueProposition?.persona &&
-                filters.personas.includes(bm.valuePropositionStatement.valueProposition.persona.name)
+                filters.personas.includes(bm.valuePropositionStatement.valueProposition.persona.id)
             );
         }
 

@@ -151,9 +151,9 @@ const valuePropositionFilterConfig = {
     getFilterValue: (valueProposition: ValuePropositionWithRelations, field: string): any => {
         switch (field) {
             case 'segments':
-                return valueProposition.segment?.name;
+                return valueProposition.segment?.id;
             case 'personas':
-                return valueProposition.persona?.name;
+                return valueProposition.persona?.id;
             case 'valuePropositionStatements':
                 return valueProposition.valuePropositionStatements?.map(s => s.offering);
             case 'customerJobs':
@@ -180,13 +180,13 @@ const valuePropositionFilterConfig = {
 
         if (filters.segments && filters.segments.length > 0) {
             result = result.filter(vp =>
-                filters.segments.includes(vp.segment?.name)
+                vp.segment && filters.segments.includes(vp.segment.id)
             );
         }
 
         if (filters.personas && filters.personas.length > 0) {
             result = result.filter(vp =>
-                vp.persona && filters.personas.includes(vp.persona.name)
+                vp.persona && filters.personas.includes(vp.persona.id)
             );
         }
 

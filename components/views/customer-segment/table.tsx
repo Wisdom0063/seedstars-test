@@ -262,7 +262,7 @@ export function PersonaTable({ personas, onPersonaClick, visibleFields = [] }: P
                 <Table {...props} className="w-full caption-bottom text-sm" />
             ),
             TableHead: forwardRef<HTMLTableSectionElement>((props, ref) => (
-                <TableHeader {...props} ref={ref} className="bg-gray-50 sticky top-0 z-20 border-b" />
+                <TableHeader {...props} ref={ref} className="bg-gray-100 sticky top-0 z-20 border-b" />
             )),
             TableBody: forwardRef<HTMLTableSectionElement>((props, ref) => (
                 <TableBody {...props} ref={ref} />
