@@ -11,7 +11,7 @@ import {
   KanbanCards,
   KanbanCard,
   type DragEndEvent,
-} from '@/components/ui/shadcn-io/kanban';
+} from '@/components/ui/custom/kanban';
 import { isFieldVisible } from '@/lib/utils';
 
 interface ValuePropositionKanbanProps {

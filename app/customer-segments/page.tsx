@@ -4,15 +4,15 @@ import { useState, useEffect } from 'react';
 import { api, ApiError } from '@/lib/api';
 import { Persona } from '@/lib/api/customer-segment';
 import { PersonaViewManager } from '@/components/views/customer-segment/persona-view-manager';
+import { LoadingState } from '@/components/ui/custom/loading-state';
+import { ErrorState } from '@/components/ui/custom/error-state';
+import { EmptyState } from '@/components/ui/custom/empty-state';
+import { Users } from 'lucide-react';
 
 export default function CustomerSegmentsPage() {
     const [personas, setPersonas] = useState<Persona[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        fetchPersonas();
-    }, []);
 
     const fetchPersonas = async () => {
         try {
@@ -30,6 +30,10 @@ export default function CustomerSegmentsPage() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        fetchPersonas();
+    }, []);
 
     const handlePersonaClick = (persona: Persona) => {
         console.log('Persona clicked:', persona);
@@ -51,32 +55,15 @@ export default function CustomerSegmentsPage() {
     };
 
     if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex items-center justify-center min-h-64">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                        <p className="text-gray-600">Loading personas...</p>
-                    </div>
-                </div>
-            </div>
-        );
+        return <LoadingState message="Loading personas..." />;
     }
 
     if (error) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-                    <h2 className="text-red-800 font-semibold mb-2">Error</h2>
-                    <p className="text-red-600">{error}</p>
-                    <button
-                        onClick={fetchPersonas}
-                        className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-                    >
-                        Try Again
-                    </button>
-                </div>
-            </div>
+            <ErrorState
+                message={error}
+                onRetry={fetchPersonas}
+            />
         );
     }
 
@@ -84,7 +71,7 @@ export default function CustomerSegmentsPage() {
         <div className="container mx-auto lg:px-4 px-1">
             {/* Header */}
             <div className="mb-6">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Customer Personas</h1>
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">Customer Personas</h1>
                 <p className="text-gray-600">
                     Explore detailed personas across different customer segments
                 </p>
@@ -92,12 +79,11 @@ export default function CustomerSegmentsPage() {
 
             {/* Personas Views */}
             {personas.length === 0 ? (
-                <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">No personas found</p>
-                    <p className="text-gray-400 text-sm mt-2">
-                        Try running the seed script to populate data
-                    </p>
-                </div>
+                <EmptyState
+                    icon={Users}
+                    title="No personas found"
+                    description="Try running the seed script to populate data"
+                />
             ) : (
                 <PersonaViewManager
                     personas={personas}

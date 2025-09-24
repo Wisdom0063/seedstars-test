@@ -3,14 +3,15 @@
 import { useState, useEffect } from 'react';
 import { ValuePropositionWithRelations, valuePropositionsApi } from '@/lib/api/value-proposition';
 import { ValuePropositionViewManager } from '@/components/views/value-proposition/value-proposition-view-manager';
+import { LoadingState } from '@/components/ui/custom/loading-state';
+import { ErrorState } from '@/components/ui/custom/error-state';
+import { EmptyState } from '@/components/ui/custom/empty-state';
+import { Target } from 'lucide-react';
 
 export default function ValuePropositionsPage() {
     const [valuePropositions, setValuePropositions] = useState<ValuePropositionWithRelations[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    useEffect(() => {
-        fetchValuePropositions();
-    }, []);
 
     const fetchValuePropositions = async () => {
         try {
@@ -28,6 +29,13 @@ export default function ValuePropositionsPage() {
             setLoading(false);
         }
     };
+
+
+    useEffect(() => {
+        fetchValuePropositions();
+    }, []);
+
+
 
     const handleValuePropositionClick = (valueProposition: ValuePropositionWithRelations) => {
         console.log('Value proposition clicked:', valueProposition);
@@ -49,32 +57,15 @@ export default function ValuePropositionsPage() {
     };
 
     if (loading) {
-        return (
-            <div className="container mx-auto px-4 py-12">
-                <div className="flex items-center justify-center min-h-64">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                        <p className="text-gray-600">Loading value propositions...</p>
-                    </div>
-                </div>
-            </div>
-        );
+        return <LoadingState message="Loading value propositions..." />;
     }
 
     if (error) {
         return (
-            <div className="container mx-auto px-4 py-12">
-                <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-                    <h2 className="text-red-800 font-semibold mb-2">Error</h2>
-                    <p className="text-red-600">{error}</p>
-                    <button
-                        onClick={fetchValuePropositions}
-                        className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-                    >
-                        Try Again
-                    </button>
-                </div>
-            </div>
+            <ErrorState
+                message={error}
+                onRetry={fetchValuePropositions}
+            />
         );
     }
 
@@ -90,12 +81,11 @@ export default function ValuePropositionsPage() {
 
             {/* Value Propositions Views */}
             {valuePropositions.length === 0 ? (
-                <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg">No value propositions found</p>
-                    <p className="text-gray-400 text-sm mt-2">
-                        Try running the seed script to populate data
-                    </p>
-                </div>
+                <EmptyState
+                    icon={Target}
+                    title="No value propositions found"
+                    description="Try running the seed script to populate data"
+                />
             ) : (
                 <ValuePropositionViewManager
                     valuePropositions={valuePropositions}
