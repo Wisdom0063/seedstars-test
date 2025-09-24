@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import {
   Settings,
   Star,
@@ -43,7 +42,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
     setSelectedLayout(layout);
     onLayoutChange(layout);
 
-    // Auto-save layout change
     try {
       const updatedView = await viewsApi.update({
         id: view.id,
@@ -52,7 +50,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
       onViewUpdate?.(updatedView);
     } catch (error) {
       console.error('Failed to update view layout:', error);
-      // Revert on error
       setSelectedLayout(view.layout);
     }
   };
@@ -65,7 +62,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
 
     setIsEditingName(false);
 
-    // Auto-save name change
     try {
       const updatedView = await viewsApi.update({
         id: view.id,
@@ -74,7 +70,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
       onViewUpdate?.(updatedView);
     } catch (error) {
       console.error('Failed to update view name:', error);
-      // Revert on error
       setViewName(view.name);
     }
   };
@@ -86,7 +81,6 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
 
     setVisibleFields(newVisibleFields);
 
-    // Auto-save visible fields change
     try {
       const updatedView = await viewsApi.update({
         id: view.id,
@@ -95,13 +89,11 @@ export function ViewSettingsModal({ view, onClose, onLayoutChange, onEditView, o
       onViewUpdate?.(updatedView);
     } catch (error) {
       console.error('Failed to update view visible fields:', error);
-      // Revert on error
       setVisibleFields(view.visibleFields || []);
     }
   };
 
   const handleSave = () => {
-    // All changes are already auto-saved
     onClose();
   };
 

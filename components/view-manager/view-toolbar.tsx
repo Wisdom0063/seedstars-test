@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { ViewSelector } from './view-selector';
-import { ViewSettingsModal } from './view-settings-modal';
+import { ViewSettingsPopover } from './view-settings-popover';
 import { Button } from '@/components/ui/button';
 import {
     Search,
@@ -56,7 +56,6 @@ export function ViewToolbar({
     sortConfig,
     availableProperties,
 }: ViewToolbarProps) {
-    const [showViewSettings, setShowViewSettings] = useState(false);
 
     return (
         <div>
@@ -120,14 +119,22 @@ export function ViewToolbar({
                         />
                     )}
 
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 px-2"
-                        onClick={() => setShowViewSettings(true)}
+                    <ViewSettingsPopover
+                        view={currentView}
+                        onLayoutChange={onLayoutChange}
+                        onViewUpdate={(updatedView) => {
+                            onViewChange(updatedView);
+                        }}
+                        availableProperties={availableProperties}
                     >
-                        <MoreHorizontal className="h-4 w-4" />
-                    </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-2"
+                        >
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </ViewSettingsPopover>
 
                     {itemCount !== undefined && (
                         <div className="text-sm text-gray-500 ml-2">
@@ -150,18 +157,6 @@ export function ViewToolbar({
                 />
             )}
 
-            {showViewSettings && (
-                <ViewSettingsModal
-                    view={currentView}
-                    onClose={() => setShowViewSettings(false)}
-                    onLayoutChange={onLayoutChange}
-                    onEditView={onEditView}
-                    onViewUpdate={(updatedView) => {
-                        onViewChange(updatedView);
-                    }}
-                    availableProperties={availableProperties}
-                />
-            )}
         </div>
     );
 }
