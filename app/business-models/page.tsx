@@ -36,17 +36,12 @@ export default function BusinessModelsPage() {
 
 
     const handleBusinessModelClick = (businessModel: BusinessModelWithRelations) => {
-        console.log('Business model clicked:', businessModel);
     };
 
     const handleBusinessModelMove = (businessModelId: string, newSegmentId: string) => {
-        console.log('Business model moved:', businessModelId, 'to segment:', newSegmentId);
     };
 
     const handleBusinessModelUpdate = (updatedBusinessModel: BusinessModelWithRelations) => {
-        console.log('Business model updated in real-time:', updatedBusinessModel);
-
-        // Update the business models state with the new data
         setBusinessModels(prevBusinessModels =>
             prevBusinessModels.map(bm =>
                 bm.id === updatedBusinessModel.id ? updatedBusinessModel : bm
@@ -88,10 +83,7 @@ export default function BusinessModelsPage() {
                 <BusinessModelViewManager
                     businessModels={businessModels}
                     onBusinessModelClick={handleBusinessModelClick}
-                    onBusinessModelMove={(businessModelId, newSegmentId) => {
-                        console.log('Move business model:', businessModelId, 'to segment:', newSegmentId);
-                        // TODO: Implement business model move logic
-                    }}
+                    onBusinessModelMove={handleBusinessModelMove}
                     onBusinessModelUpdate={handleBusinessModelUpdate}
                 />
             )}

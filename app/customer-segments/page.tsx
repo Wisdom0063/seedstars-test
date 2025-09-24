@@ -36,17 +36,12 @@ export default function CustomerSegmentsPage() {
     }, []);
 
     const handlePersonaClick = (persona: Persona) => {
-        console.log('Persona clicked:', persona);
     };
 
     const handlePersonaMove = (personaId: string, newSegmentId: string) => {
-        console.log('Persona moved:', personaId, 'to segment:', newSegmentId);
     };
 
     const handlePersonaUpdate = (updatedPersona: Persona) => {
-        console.log('Persona updated in real-time:', updatedPersona);
-
-        // Update the personas state with the new data
         setPersonas(prevPersonas =>
             prevPersonas.map(persona =>
                 persona.id === updatedPersona.id ? updatedPersona : persona
@@ -69,7 +64,6 @@ export default function CustomerSegmentsPage() {
 
     return (
         <div className="container mx-auto lg:px-4 px-1">
-            {/* Header */}
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-gray-900 mb-2">Customer Personas</h1>
                 <p className="text-gray-600">
@@ -77,7 +71,6 @@ export default function CustomerSegmentsPage() {
                 </p>
             </div>
 
-            {/* Personas Views */}
             {personas.length === 0 ? (
                 <EmptyState
                     icon={Users}
@@ -88,10 +81,7 @@ export default function CustomerSegmentsPage() {
                 <PersonaViewManager
                     personas={personas}
                     onPersonaClick={handlePersonaClick}
-                    onPersonaMove={(personaId, newSegmentId) => {
-                        console.log('Move persona:', personaId, 'to segment:', newSegmentId);
-                        // TODO: Implement persona move logic
-                    }}
+                    onPersonaMove={handlePersonaMove}
                     onPersonaUpdate={handlePersonaUpdate}
                 />
             )}

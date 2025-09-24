@@ -38,17 +38,12 @@ export default function ValuePropositionsPage() {
 
 
     const handleValuePropositionClick = (valueProposition: ValuePropositionWithRelations) => {
-        console.log('Value proposition clicked:', valueProposition);
     };
 
     const handleValuePropositionMove = (valuePropositionId: string, newSegmentId: string) => {
-        console.log('Value proposition moved:', valuePropositionId, 'to segment:', newSegmentId);
     };
 
     const handleValuePropositionUpdate = (updatedValueProposition: ValuePropositionWithRelations) => {
-        console.log('Value proposition updated in real-time:', updatedValueProposition);
-
-        // Update the value propositions state with the new data
         setValuePropositions(prevValuePropositions =>
             prevValuePropositions.map(vp =>
                 vp.id === updatedValueProposition.id ? updatedValueProposition : vp
@@ -71,7 +66,6 @@ export default function ValuePropositionsPage() {
 
     return (
         <div className="container mx-auto px-4">
-            {/* Header */}
             <div className="mb-6">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Value Propositions</h1>
                 <p className="text-gray-600">
@@ -79,7 +73,6 @@ export default function ValuePropositionsPage() {
                 </p>
             </div>
 
-            {/* Value Propositions Views */}
             {valuePropositions.length === 0 ? (
                 <EmptyState
                     icon={Target}
@@ -90,10 +83,7 @@ export default function ValuePropositionsPage() {
                 <ValuePropositionViewManager
                     valuePropositions={valuePropositions}
                     onValuePropositionClick={handleValuePropositionClick}
-                    onValuePropositionMove={(valuePropositionId, newSegmentId) => {
-                        console.log('Move value proposition:', valuePropositionId, 'to segment:', newSegmentId);
-                        // TODO: Implement value proposition move logic
-                    }}
+                    onValuePropositionMove={handleValuePropositionMove}
                     onValuePropositionUpdate={handleValuePropositionUpdate}
                 />
             )}
