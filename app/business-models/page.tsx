@@ -1,37 +1,15 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { BusinessModelWithRelations, businessModelsApi } from '@/lib/api/business-model';
+import { BusinessModelWithRelations } from '@/lib/api/business-model';
 import { BusinessModelViewManager } from '@/components/views/business-model/business-model-view-manager';
 import { LoadingState } from '@/components/ui/custom/loading-state';
 import { ErrorState } from '@/components/ui/custom/error-state';
 import { EmptyState } from '@/components/ui/custom/empty-state';
 import { Building2 } from 'lucide-react';
+import { useBusinessModels } from '@/hooks/useBusinessModels';
 
 export default function BusinessModelsPage() {
-    const [businessModels, setBusinessModels] = useState<BusinessModelWithRelations[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchBusinessModels = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const data = await businessModelsApi.getAll();
-            setBusinessModels(data);
-        } catch (err) {
-            const errorMessage = err instanceof Error
-                ? err.message
-                : 'Failed to fetch business models';
-            setError(errorMessage);
-            console.error('Error fetching business models:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-    useEffect(() => {
-        fetchBusinessModels();
-    }, []);
+    const { businessModels, loading, error, refetch, setBusinessModels } = useBusinessModels();
 
 
 
@@ -57,7 +35,7 @@ export default function BusinessModelsPage() {
         return (
             <ErrorState
                 message={error}
-                onRetry={fetchBusinessModels}
+                onRetry={refetch}
             />
         );
     }

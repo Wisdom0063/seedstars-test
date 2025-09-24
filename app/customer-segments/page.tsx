@@ -1,39 +1,15 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { api, ApiError } from '@/lib/api';
 import { Persona } from '@/lib/api/customer-segment';
 import { PersonaViewManager } from '@/components/views/customer-segment/persona-view-manager';
 import { LoadingState } from '@/components/ui/custom/loading-state';
 import { ErrorState } from '@/components/ui/custom/error-state';
 import { EmptyState } from '@/components/ui/custom/empty-state';
 import { Users } from 'lucide-react';
+import { usePersonas } from '@/hooks/usePersonas';
 
 export default function CustomerSegmentsPage() {
-    const [personas, setPersonas] = useState<Persona[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const fetchPersonas = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const data = await api.personas.getAll();
-            setPersonas(data);
-        } catch (err) {
-            const errorMessage = err instanceof ApiError
-                ? err.message
-                : 'Failed to fetch personas';
-            setError(errorMessage);
-            console.error('Error fetching personas:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchPersonas();
-    }, []);
+    const { personas, loading, error, refetch, setPersonas } = usePersonas();
 
     const handlePersonaClick = (persona: Persona) => {
     };
@@ -42,11 +18,8 @@ export default function CustomerSegmentsPage() {
     };
 
     const handlePersonaUpdate = (updatedPersona: Persona) => {
-        setPersonas(prevPersonas =>
-            prevPersonas.map(persona =>
-                persona.id === updatedPersona.id ? updatedPersona : persona
-            )
-        );
+        // For now, just refetch all data. In a real app, you might want to update the local state
+        refetch();
     };
 
     if (loading) {
@@ -57,7 +30,7 @@ export default function CustomerSegmentsPage() {
         return (
             <ErrorState
                 message={error}
-                onRetry={fetchPersonas}
+                onRetry={refetch}
             />
         );
     }

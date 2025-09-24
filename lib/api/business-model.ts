@@ -1,4 +1,4 @@
-import { fetcher } from ".";
+import { ApiResponse, fetcher } from ".";
 import type {
   BusinessModel,
   ValuePropositionStatement,
@@ -71,11 +71,11 @@ export interface UpdateBusinessModelRequest {
 }
 
 export const businessModelsApi = {
-  getAll: (): Promise<BusinessModelWithRelations[]> => {
+  getAll: (): Promise<ApiResponse<BusinessModelWithRelations[]>> => {
     return fetcher<BusinessModelWithRelations[]>('/api/business-models');
   },
 
-  update: (data: UpdateBusinessModelRequest): Promise<BusinessModelWithRelations> => {
+  update: (data: UpdateBusinessModelRequest): Promise<ApiResponse<BusinessModelWithRelations>> => {
     return fetcher<BusinessModelWithRelations>(`/api/business-models/${data.id}`, {
       method: 'PUT',
       body: JSON.stringify(data),

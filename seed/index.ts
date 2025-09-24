@@ -6,9 +6,9 @@ import { seedBusinessModels } from "./business-model";
 async function main() {
     try {
         console.log('🌱 Starting to seed data...');
-        // await seedCustomerSegments();
-        // await seedValuePropositions();
-        // await seedBusinessModels();
+        await seedCustomerSegments();
+        await seedValuePropositions();
+        await seedBusinessModels();
         await seedViews();
         console.log('🎉 Data seeding completed successfully!');
     } catch (error) {

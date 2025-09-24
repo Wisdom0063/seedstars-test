@@ -25,7 +25,7 @@ export class ApiError extends Error {
 }
 
 // Base fetcher function with proper error handling
-async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
+async function fetcher<T>(url: string, options?: RequestInit): Promise<ApiResponse<T>> {
     try {
         const response = await fetch(url, {
             headers: {
@@ -49,7 +49,7 @@ async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
             throw new ApiError(data.error || 'API request failed');
         }
 
-        return data.data;
+        return data;
     } catch (error) {
         if (error instanceof ApiError) {
             throw error;
