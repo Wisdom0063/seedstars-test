@@ -14,6 +14,7 @@ import { FilterPopup } from './filter-popup';
 import { ActiveFiltersBar } from './active-filters-bar';
 import { SortDropdown } from './sort-dropdown';
 import { FilterConfig, SortConfig } from './generic-view-manager';
+import { SIDEBAR_WIDTH, SIDEBAR_WIDTH_ICON } from '@/components/layout/dashboard-layout';
 
 interface ViewToolbarProps {
     views: View[];
@@ -58,10 +59,10 @@ export function ViewToolbar({
 }: ViewToolbarProps) {
 
     return (
-        <div>
-            <div className="border-b bg-white">
-                <div className="hidden lg:flex items-center py-3 min-h-[60px]">
-                    <div className="flex-1 min-w-0 mr-4">
+        <div className="w-full overflow-hidden md:max-w-[calc(100vw-var(--sidebar-width)-2rem)] max-w-[calc(100vw-var(--sidebar-width-icon)-2rem)]">
+            <div className="border-b bg-white w-full">
+                <div className="hidden lg:flex items-center py-3 min-h-[60px] w-full max-w-full">
+                    <div className="flex-1 min-w-0 mr-4 overflow-hidden max-w-full">
                         <ViewSelector
                             views={views}
                             currentView={currentView}
@@ -74,7 +75,7 @@ export function ViewToolbar({
                         />
                     </div>
 
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-1 flex-shrink-0">
                         {onSearchChange && (
                             <AnimatedSearch
                                 searchValue={searchValue}
@@ -145,8 +146,8 @@ export function ViewToolbar({
                     </div>
                 </div>
 
-                <div className="lg:hidden">
-                    <div className="py-2 px-4">
+                <div className="lg:hidden w-full max-w-full">
+                    <div className="py-2 px-4 overflow-hidden w-full max-w-full">
                         <ViewSelector
                             views={views}
                             currentView={currentView}

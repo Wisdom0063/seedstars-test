@@ -48,12 +48,19 @@ function generateBreadcrumbs(pathname: string) {
     return breadcrumbs;
 }
 
+
+export const SIDEBAR_WIDTH = "14rem";
+export const SIDEBAR_WIDTH_ICON = "3rem";
+
 export function DashboardLayout({ children }: DashboardLayoutProps) {
     const pathname = usePathname();
     const breadcrumbs = generateBreadcrumbs(pathname);
 
     return (
-        <SidebarProvider>
+        <SidebarProvider style={{
+            "--sidebar-width": SIDEBAR_WIDTH,
+            "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+        } as React.CSSProperties}>
             <AppSidebar />
             <SidebarInset>
                 {/* Header with breadcrumbs */}
