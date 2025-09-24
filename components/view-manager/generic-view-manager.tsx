@@ -4,8 +4,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { LayoutSelectionPopup } from './layout-selection-popup';
 import { ViewToolbar } from './view-toolbar';
 import { View, ViewLayout, ViewSource, ViewSortCriteria, viewsApi } from '@/lib/api/views';
-import { Grid3X3, Kanban, Table } from 'lucide-react';
+import { Grid3X3, Kanban, Table, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
+import Link from 'next/link';
 
 export interface BaseDataItem {
     id: string;
@@ -60,6 +61,10 @@ export interface GenericViewManagerProps<T extends BaseDataItem> {
     onItemClick?: (item: T) => void;
     onItemMove?: (itemId: string, newSegmentId: string) => void;
     renderDetailDrawer?: (item: T | null, isOpen: boolean, onClose: () => void) => React.ReactNode;
+    previousPageUrl?: string;
+    nextPageUrl?: string;
+    previousPageLabel?: string;
+    nextPageLabel?: string;
 }
 
 export interface SortCriteria {
@@ -105,6 +110,10 @@ export function GenericViewManager<T extends BaseDataItem>({
     onItemClick,
     onItemMove,
     renderDetailDrawer,
+    previousPageUrl,
+    nextPageUrl,
+    previousPageLabel = "Previous",
+    nextPageLabel = "Next",
 }: GenericViewManagerProps<T>) {
     const [views, setViews] = useState<View[]>([]);
     const [currentView, setCurrentView] = useState<View | null>(null);
@@ -352,22 +361,37 @@ export function GenericViewManager<T extends BaseDataItem>({
 
             {renderDetailDrawer && renderDetailDrawer(selectedItem, isDrawerOpen, handleDrawerClose)}
 
-            <div className='d-flex flex-end'>
-                <Button
-                    variant="outline"
-                    onClick={() => {
-
-                    }}
-                >
-                    Previous                </Button>
-                <Button
-                    variant="outline"
-                    onClick={() => {
-
-                    }}
-                >
-                    Next                </Button>
-            </div>
+            {/* Navigation Buttons */}
+            {(previousPageUrl || nextPageUrl) && (
+                <div className="fixed bottom-6 right-6 flex gap-2 z-50">
+                    {previousPageUrl && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            asChild
+                            className="bg-white shadow-lg hover:shadow-xl transition-shadow border-gray-200 hover:border-gray-300"
+                        >
+                            <Link href={previousPageUrl}>
+                                <ChevronLeft className="h-4 w-4 mr-1" />
+                                {previousPageLabel}
+                            </Link>
+                        </Button>
+                    )}
+                    {nextPageUrl && (
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            asChild
+                            className="bg-white shadow-lg hover:shadow-xl transition-shadow border-gray-200 hover:border-gray-300"
+                        >
+                            <Link href={nextPageUrl}>
+                                {nextPageLabel}
+                                <ChevronRight className="h-4 w-4 ml-1" />
+                            </Link>
+                        </Button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

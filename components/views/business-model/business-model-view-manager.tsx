@@ -255,6 +255,7 @@ export function BusinessModelViewManager({
             onItemClick={onBusinessModelClick}
             onItemMove={onBusinessModelMove}
             renderDetailDrawer={renderBusinessModelDrawer}
+            previousPageUrl={"/value-propositions"}
         />
     );
 }

@@ -347,9 +347,11 @@ export function ValuePropositionViewManager({
         <GenericViewManager
             data={valuePropositions}
             config={valuePropositionViewConfig}
-            onItemClick={onValuePropositionClick} // Still called for backward compatibility
+            onItemClick={onValuePropositionClick}
             onItemMove={onValuePropositionMove}
-            renderDetailDrawer={renderValuePropositionDrawer} // Smart drawer integration
+            renderDetailDrawer={renderValuePropositionDrawer}
+            nextPageUrl='/business-models'
+            previousPageUrl='/customer-segments'
         />
     );
 }

@@ -326,9 +326,10 @@ export function PersonaViewManager({
         <GenericViewManager
             data={personas}
             config={personaViewConfig}
-            onItemClick={onPersonaClick} // Still called for backward compatibility
+            onItemClick={onPersonaClick}
             onItemMove={onPersonaMove}
-            renderDetailDrawer={renderPersonaDrawer} // Smart drawer integration
+            renderDetailDrawer={renderPersonaDrawer}
+            nextPageUrl='/value-propositions'
         />
     );
 }
